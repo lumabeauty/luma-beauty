@@ -1,42 +1,478 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Luma Beauty — админка</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
-<style>body{font:14px system-ui,sans-serif;margin:0;background:#faf3ef;color:#3b2b2f}header{background:#3b2b2f;color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}header b{font-size:18px;margin-right:auto}button,select,input{font:inherit}button{background:#d98a9b;color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer}button.g{background:#eee;color:#333}main{padding:20px;overflow-x:auto}table{border-collapse:collapse;width:100%;background:#fff}td,th{border-bottom:1px solid #eee;padding:6px 8px;text-align:left;vertical-align:top}input,select{border:1px solid #ddd;border-radius:6px;padding:5px 7px}textarea{width:170px;border:1px solid #ddd;border-radius:6px;font:inherit;padding:5px}td input[type=text]{width:100%;min-width:110px}img{width:40px;height:50px;object-fit:cover;border-radius:6px}#lg{max-width:320px;margin:15vh auto;display:flex;flex-direction:column;gap:10px}</style></head>
-<body><div id="app"></div><script>
-if(!window.CFG || !window.CFG.SUPABASE_URL || !window.CFG.SUPABASE_KEY)document.body.innerHTML='<p style="padding:30px">Заполните SUPABASE_URL и SUPABASE_KEY в config.js</p>';
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Luma Beauty — админка</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<style>
+body{font:14px system-ui,sans-serif;margin:0;background:#faf3ef;color:#3b2b2f}
+header{background:#3b2b2f;color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header b{font-size:18px;margin-right:auto}
+button,select,input{font:inherit}
+button{background:#d98a9b;color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer}
+button.g{background:#eee;color:#333}
+button:disabled{opacity:.6;cursor:wait}
+main{padding:20px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:#fff}
+td,th{border-bottom:1px solid #eee;padding:6px 8px;text-align:left;vertical-align:top}
+input,select{border:1px solid #ddd;border-radius:6px;padding:5px 7px}
+textarea{width:170px;border:1px solid #ddd;border-radius:6px;font:inherit;padding:5px}
+td input[type=text]{width:100%;min-width:110px}
+img{width:40px;height:50px;object-fit:cover;border-radius:6px}
+#lg{max-width:320px;margin:15vh auto;display:flex;flex-direction:column;gap:10px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
 const CFG = window.CFG || {};
-const sb = CFG.SUPABASE_URL && CFG.SUPABASE_KEY
-  ? supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY)
-  : null;
-const $ = i => document.getElementById(i);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=n=>(n||0).toLocaleString('ru-RU')+' сум',dt=s=>new Date(s).toLocaleString('ru-RU');
-const CATS=['Лицо','Тело','Волосы','Загар и SPF','Для мужчин'],ST={new:'Новый',paid:'Оплачен',shipped:'Отправлен',done:'Выполнен',canceled:'Отменён'};
-const opts=(o,v)=>Object.entries(o).map(([k,l])=>`<option value="${esc(k)}"${k==v?' selected':''}>${esc(l)}</option>`).join('');
-function showLogin(msg=''){$('app').innerHTML=`<div id="lg"><h2>Luma Beauty — админка</h2><input id="e" placeholder="E-mail"><input id="p" type="password" placeholder="Пароль"><button onclick="doLogin()">Войти</button><p style="color:#c0475e">${esc(msg)}</p></div>`}
-async function doLogin(){const {error}=await sb.auth.signInWithPassword({email:$('e').value.trim(),password:$('p').value});error?showLogin(error.message):init()}
-async function out(){await sb.auth.signOut();showLogin()}
-async function init(){const {data:{session}}=await sb.auth.getSession();if(!session)return showLogin();
-const {data}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).single();
-if(!data?.is_admin){await sb.auth.signOut();return showLogin('Нет доступа: этот аккаунт не админ')}
-$('app').innerHTML=`<header><b>Luma Beauty · админка</b>${[['orders','Заказы'],['products','Товары'],['clients','Клиенты'],['promos','Промокоды']].map(([k,l])=>`<button class="g" onclick="go('${k}')">${l}</button>`).join('')}<button onclick="out()">Выйти</button></header><main id="m"></main>`;go('orders')}
-function go(k){$('m').textContent='Загрузка…';({orders:vOrders,products:vProducts,clients:vClients,promos:vPromos})[k]()}
-async function vOrders(){const {data,error}=await sb.from('orders').select('*').order('id',{ascending:false}).limit(300);if(error)return $('m').textContent=error.message;
-$('m').innerHTML=`<h3>Заказы (${data.length})</h3><table><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Адрес доставки</th><th>Товары</th><th>Сумма</th><th>Оплата</th><th>Статус</th></tr>${data.map(o=>`<tr><td>${o.id}</td><td>${dt(o.created_at)}</td><td>${esc(o.customer_name)}<br>${esc(o.phone)}</td><td>${esc(o.address).replace(/https:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank">карта</a>`).replace(/\n/g,"<br>")}</td><td>${(o.items||[]).map(i=>esc(i.title)+' × '+i.qty).join('<br>')}</td><td><b>${fmt(o.total)}</b>${o.promo?'<br>'+esc(o.promo)+' −'+o.discount+'%':''}</td><td>${esc(o.payment)}</td><td><select onchange="setSt(${o.id},this.value)">${opts(ST,o.status)}</select></td></tr>`).join('')}</table>`}
-async function setSt(id,s){const {error}=await sb.from('orders').update({status:s}).eq('id',id);if(error)alert(error.message)}
-async function vProducts(){const {data,error}=await sb.from('products').select('*').order('id');if(error)return $('m').textContent=error.message;
-$('m').innerHTML=`<h3>Товары (${data.length}) <button onclick="addP()">+ Новый</button> <input placeholder="Поиск" oninput="filt(this.value)"></h3><table><tr><th>Фото</th><th>Название</th><th>Тип / бренд</th><th>Категория</th><th>Объём</th><th>Состав</th><th>Подходит</th><th>Не подходит</th><th>Цена, сум</th><th>Виден</th><th></th></tr>${data.map(p=>`<tr id="r${p.id}" data-q="${esc((p.title+' '+p.kind).toLowerCase())}"><td>${p.image?`<img src="${esc(p.image)}">`:''}<br><input type="file" accept="image/*" onchange="upImg(${p.id},this)" style="width:90px"></td><td><input type="text" name="title" value="${esc(p.title)}"></td><td><input type="text" name="kind" value="${esc(p.kind)}"></td><td><select name="category">${opts(Object.fromEntries(CATS.map(c=>[c,c])),p.category)}</select></td><td><input type="text" name="volume" value="${esc(p.volume)}" style="width:70px"></td><td><textarea name="ingredients" rows="3">${esc(p.ingredients)}</textarea></td><td><textarea name="suits" rows="3">${esc(p.suits)}</textarea></td><td><textarea name="avoid" rows="3">${esc(p.avoid)}</textarea></td><td><input type="number" name="price" value="${p.price}" style="width:100px"></td><td><input type="checkbox" name="active"${p.active?' checked':''}></td><td><button onclick="saveP(${p.id})">Сохранить</button></td></tr>`).join('')}</table>`}
-function filt(q){q=q.toLowerCase();document.querySelectorAll('tr[data-q]').forEach(r=>r.style.display=r.dataset.q.includes(q)?'':'none')}
-async function saveP(id){const r=$('r'+id),g=n=>r.querySelector('[name='+n+']');const {error}=await sb.from('products').update({title:g('title').value,kind:g('kind').value,category:g('category').value,volume:g('volume').value,ingredients:g('ingredients').value,suits:g('suits').value,avoid:g('avoid').value,price:+g('price').value||0,active:g('active').checked}).eq('id',id);alert(error?error.message:'Сохранено')}
-async function upImg(id,el){const f=el.files[0];if(!f)return;const path=Date.now()+'_'+f.name.replace(/[^\w.]/g,'_');const u=await sb.storage.from('products').upload(path,f);if(u.error)return alert(u.error.message);const url=sb.storage.from('products').getPublicUrl(path).data.publicUrl;const {error}=await sb.from('products').update({image:url}).eq('id',id);error?alert(error.message):vProducts()}
-async function addP(){const {error}=await sb.from('products').insert({title:'Новый товар',category:'Тело',price:0});error?alert(error.message):vProducts()}
-let _cl=[];
-async function vClients(){const {data,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(error)return $('m').textContent=error.message;_cl=data;
-$('m').innerHTML=`<h3>Клиенты (${data.length}) <button onclick="csv()">Скачать CSV</button></h3><table><tr><th>Имя</th><th>Телефон</th><th>E-mail</th><th>Регистрация</th></tr>${data.map(c=>`<tr><td>${esc(c.name)}${c.is_admin?' (админ)':''}</td><td>${esc(c.phone)}</td><td>${esc(c.email)}</td><td>${dt(c.created_at)}</td></tr>`).join('')}</table>`}
-function csv(){const r=[['Имя','Телефон','E-mail','Дата'],..._cl.map(c=>[c.name,c.phone,c.email,c.created_at])].map(x=>x.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+r],{type:'text/csv'}));a.download='clients.csv';a.click()}
-async function vPromos(){const {data,error}=await sb.from('promos').select('*').order('code');if(error)return $('m').textContent=error.message;
-$('m').innerHTML=`<h3>Промокоды</h3><table><tr><th>Код</th><th>Скидка, %</th><th>Активен</th><th></th></tr>${data.map(c=>`<tr data-c="${esc(c.code)}"><td><b>${esc(c.code)}</b></td><td><input type="number" name="percent" value="${c.percent}" style="width:70px"></td><td><input type="checkbox" name="active"${c.active?' checked':''}></td><td><button onclick="savePr(this)">Сохранить</button> <button class="g" onclick="delPr(this)">Удалить</button></td></tr>`).join('')}</table><h4>Новый промокод</h4><input id="nc" placeholder="КОД"> <input id="np" type="number" placeholder="%" style="width:70px"> <button onclick="addPr()">Добавить</button>`}
-async function savePr(b){const tr=b.closest('tr');const {error}=await sb.from('promos').update({percent:+tr.querySelector('[name=percent]').value,active:tr.querySelector('[name=active]').checked}).eq('code',tr.dataset.c);alert(error?error.message:'Сохранено')}
-async function delPr(b){if(!confirm('Удалить промокод?'))return;const {error}=await sb.from('promos').delete().eq('code',b.closest('tr').dataset.c);error?alert(error.message):vPromos()}
-async function addPr(){const {error}=await sb.from('promos').insert({code:$('nc').value.trim().toUpperCase(),percent:+$('np').value});error?alert(error.message):vPromos()}
-if(CFG.SUPABASE_URL)init();
-</script></body></html>
+const $ = id => document.getElementById(id);
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+const fmt = n => (n || 0).toLocaleString('ru-RU') + ' сум';
+const dt = s => s ? new Date(s).toLocaleString('ru-RU') : '';
+
+const CATS = ['Лицо','Тело','Волосы','Загар и SPF','Для мужчин'];
+const ST = {
+  new:'Новый',
+  paid:'Оплачен',
+  shipped:'Отправлен',
+  done:'Выполнен',
+  canceled:'Отменён'
+};
+
+const opts = (o,v) => Object.entries(o).map(([k,l]) =>
+  `<option value="${esc(k)}"${k==v?' selected':''}>${esc(l)}</option>`
+).join('');
+
+let sb = null;
+let _cl = [];
+
+function showConfigError(){
+  $('app').innerHTML =
+    '<p style="padding:30px">Не найдены SUPABASE_URL или SUPABASE_KEY в config.js. Проверь настройки конфигурации.</p>';
+}
+
+function showLogin(msg=''){
+  $('app').innerHTML = `
+    <div id="lg">
+      <h2>Luma Beauty — админка</h2>
+      <input id="e" type="email" placeholder="E-mail">
+      <input id="p" type="password" placeholder="Пароль">
+      <button onclick="doLogin()">Войти</button>
+      <p style="color:#c0475e">${esc(msg)}</p>
+    </div>`;
+}
+
+async function doLogin(){
+  const {error} = await sb.auth.signInWithPassword({
+    email:$('e').value.trim(),
+    password:$('p').value
+  });
+  if(error) return showLogin(error.message);
+  await init();
+}
+
+async function out(){
+  await sb.auth.signOut();
+  showLogin();
+}
+
+async function init(){
+  const {data:{session},error:sessionError} = await sb.auth.getSession();
+
+  if(sessionError) return showLogin(sessionError.message);
+  if(!session) return showLogin();
+
+  const {data,error} = await sb
+    .from('profiles')
+    .select('is_admin')
+    .eq('id',session.user.id)
+    .single();
+
+  if(error) return showLogin('Не удалось проверить права: ' + error.message);
+
+  if(!data?.is_admin){
+    await sb.auth.signOut();
+    return showLogin('Нет доступа: этот аккаунт не админ');
+  }
+
+  $('app').innerHTML = `
+    <header>
+      <b>Luma Beauty · админка</b>
+      ${[
+        ['orders','Заказы'],
+        ['products','Товары'],
+        ['clients','Клиенты'],
+        ['promos','Промокоды']
+      ].map(([k,l]) =>
+        `<button class="g" onclick="go('${k}')">${l}</button>`
+      ).join('')}
+      <button onclick="out()">Выйти</button>
+    </header>
+    <main id="m"></main>`;
+
+  go('orders');
+}
+
+function go(k){
+  $('m').textContent = 'Загрузка…';
+  ({
+    orders:vOrders,
+    products:vProducts,
+    clients:vClients,
+    promos:vPromos
+  })[k]();
+}
+
+async function vOrders(){
+  const {data,error} = await sb
+    .from('orders')
+    .select('*')
+    .order('id',{ascending:false})
+    .limit(300);
+
+  if(error) return $('m').textContent = error.message;
+
+  $('m').innerHTML = `
+    <h3>Заказы (${data.length})</h3>
+    <table>
+      <tr>
+        <th>№</th><th>Дата</th><th>Клиент</th>
+        <th>Адрес доставки</th><th>Товары</th>
+        <th>Сумма</th><th>Оплата</th><th>Статус</th>
+      </tr>
+      ${data.map(o => `
+        <tr>
+          <td>${esc(o.id)}</td>
+          <td>${dt(o.created_at)}</td>
+          <td>${esc(o.customer_name)}<br>${esc(o.phone)}</td>
+          <td>${esc(o.address)
+            .replace(/https:\/\/[^\s<]+/g,u =>
+              `<a href="${u}" target="_blank" rel="noopener">карта</a>`
+            )
+            .replace(/\n/g,'<br>')}
+          </td>
+          <td>${(o.items||[]).map(i =>
+            esc(i.title)+' × '+esc(i.qty)
+          ).join('<br>')}</td>
+          <td><b>${fmt(o.total)}</b>
+            ${o.promo ? '<br>'+esc(o.promo)+' −'+esc(o.discount)+'%' : ''}
+          </td>
+          <td>${esc(o.payment)}</td>
+          <td>
+            <select onchange="setSt(${JSON.stringify(o.id)},this.value)">
+              ${opts(ST,o.status)}
+            </select>
+          </td>
+        </tr>
+      `).join('')}
+    </table>`;
+}
+
+async function setSt(id,s){
+  const {error} = await sb
+    .from('orders')
+    .update({status:s})
+    .eq('id',id);
+
+  if(error) alert('Ошибка изменения статуса: '+error.message);
+}
+
+async function vProducts(){
+  const {data,error} = await sb
+    .from('products')
+    .select('*')
+    .order('id');
+
+  if(error) return $('m').textContent = error.message;
+
+  $('m').innerHTML = `
+    <h3>
+      Товары (${data.length})
+      <button onclick="addP()">+ Новый</button>
+      <input placeholder="Поиск" oninput="filt(this.value)">
+    </h3>
+    <table>
+      <tr>
+        <th>Фото</th><th>Название</th><th>Тип / бренд</th>
+        <th>Категория</th><th>Объём</th><th>Состав</th>
+        <th>Подходит</th><th>Не подходит</th>
+        <th>Цена, сум</th><th>Виден</th><th></th>
+      </tr>
+      ${data.map(p => `
+        <tr id="r${esc(p.id)}"
+            data-q="${esc((p.title+' '+(p.kind||'')).toLowerCase())}">
+          <td>
+            ${p.image ? `<img src="${esc(p.image)}" alt="">` : ''}
+            <br>
+            <input type="file" accept="image/*"
+              onchange="upImg(${JSON.stringify(p.id)},this)"
+              style="width:90px">
+          </td>
+          <td><input type="text" name="title" value="${esc(p.title)}"></td>
+          <td><input type="text" name="kind" value="${esc(p.kind)}"></td>
+          <td>
+            <select name="category">
+              ${opts(Object.fromEntries(CATS.map(c=>[c,c])),p.category)}
+            </select>
+          </td>
+          <td><input type="text" name="volume" value="${esc(p.volume)}" style="width:70px"></td>
+          <td><textarea name="ingredients" rows="3">${esc(p.ingredients)}</textarea></td>
+          <td><textarea name="suits" rows="3">${esc(p.suits)}</textarea></td>
+          <td><textarea name="avoid" rows="3">${esc(p.avoid)}</textarea></td>
+          <td><input type="number" name="price" value="${esc(p.price)}" style="width:100px"></td>
+          <td><input type="checkbox" name="active"${p.active?' checked':''}></td>
+          <td><button onclick="saveP(${JSON.stringify(p.id)},this)">Сохранить</button></td>
+        </tr>
+      `).join('')}
+    </table>`;
+}
+
+function filt(q){
+  q = q.toLowerCase();
+  document.querySelectorAll('tr[data-q]').forEach(r => {
+    r.style.display = r.dataset.q.includes(q) ? '' : 'none';
+  });
+}
+
+/* Сохранение товара с проверкой ответа базы */
+async function saveP(id,button){
+  const r = $('r'+id);
+  if(!r) return alert('Не найдена строка товара. Обнови список товаров.');
+
+  const g = n => r.querySelector('[name="'+n+'"]');
+  const title = g('title').value.trim();
+
+  if(!title) return alert('Название товара не может быть пустым.');
+
+  const changes = {
+    title,
+    kind:g('kind').value.trim(),
+    category:g('category').value,
+    volume:g('volume').value.trim(),
+    ingredients:g('ingredients').value,
+    suits:g('suits').value,
+    avoid:g('avoid').value,
+    price:Number(g('price').value)||0,
+    active:g('active').checked
+  };
+
+  if(button) button.disabled = true;
+
+  try{
+    const {data,error} = await sb
+      .from('products')
+      .update(changes)
+      .eq('id',id)
+      .select('id,title');
+
+    if(error){
+      alert('Ошибка сохранения: '+error.message);
+      return;
+    }
+
+    if(!data || data.length===0){
+      alert(
+        'База не подтвердила изменение. '+
+        'Возможны ограничения доступа (RLS) или неверный ID товара. '+
+        'Название не считаем сохранённым.'
+      );
+      return;
+    }
+
+    const saved = data[0];
+
+    if(saved.title !== title){
+      alert('База вернула другое название. Проверь товар в базе данных.');
+      return;
+    }
+
+    alert('Название сохранено в базе: '+saved.title);
+    await vProducts();
+
+  }catch(e){
+    alert('Не удалось сохранить товар: '+(e.message||e));
+  }finally{
+    if(button) button.disabled = false;
+  }
+}
+
+async function upImg(id,el){
+  const f = el.files && el.files[0];
+  if(!f) return;
+
+  if(!f.type.startsWith('image/')){
+    return alert('Выбери файл изображения.');
+  }
+
+  const path = Date.now()+'_'+f.name.replace(/[^\w.-]/g,'_');
+
+  try{
+    const {error:uploadError} = await sb.storage
+      .from('products')
+      .upload(path,f);
+
+    if(uploadError) return alert('Ошибка загрузки фото: '+uploadError.message);
+
+    const url = sb.storage.from('products').getPublicUrl(path).data.publicUrl;
+
+    const {data,error} = await sb
+      .from('products')
+      .update({image:url})
+      .eq('id',id)
+      .select('id,image');
+
+    if(error) return alert('Фото загружено, но не удалось сохранить адрес: '+error.message);
+
+    if(!data || data.length===0){
+      return alert('Фото загружено в хранилище, но база не подтвердила привязку к товару.');
+    }
+
+    alert('Фото привязано к товару.');
+    await vProducts();
+
+  }catch(e){
+    alert('Ошибка загрузки фото: '+(e.message||e));
+  }
+}
+
+async function addP(){
+  const {error} = await sb.from('products').insert({
+    title:'Новый товар',
+    category:'Тело',
+    price:0
+  });
+
+  if(error) return alert('Не удалось добавить товар: '+error.message);
+  await vProducts();
+}
+
+async function vClients(){
+  const {data,error} = await sb
+    .from('profiles')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(error) return $('m').textContent = error.message;
+  _cl = data || [];
+
+  $('m').innerHTML = `
+    <h3>Клиенты (${_cl.length}) <button onclick="csv()">Скачать CSV</button></h3>
+    <table>
+      <tr><th>Имя</th><th>Телефон</th><th>E-mail</th><th>Регистрация</th></tr>
+      ${_cl.map(c => `
+        <tr>
+          <td>${esc(c.name)}${c.is_admin?' (админ)':''}</td>
+          <td>${esc(c.phone)}</td>
+          <td>${esc(c.email)}</td>
+          <td>${dt(c.created_at)}</td>
+        </tr>
+      `).join('')}
+    </table>`;
+}
+
+function csv(){
+  const rows = [
+    ['Имя','Телефон','E-mail','Дата'],
+    ..._cl.map(c=>[c.name,c.phone,c.email,c.created_at])
+  ];
+
+  const content = rows.map(row =>
+    row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')
+  ).join('\n');
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(
+    new Blob(['\ufeff'+content],{type:'text/csv;charset=utf-8'})
+  );
+  a.download = 'clients.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function vPromos(){
+  const {data,error} = await sb
+    .from('promos')
+    .select('*')
+    .order('code');
+
+  if(error) return $('m').textContent = error.message;
+
+  $('m').innerHTML = `
+    <h3>Промокоды</h3>
+    <table>
+      <tr><th>Код</th><th>Скидка, %</th><th>Активен</th><th></th></tr>
+      ${(data||[]).map(c=>`
+        <tr data-c="${esc(c.code)}">
+          <td><b>${esc(c.code)}</b></td>
+          <td><input type="number" name="percent" value="${esc(c.percent)}" style="width:70px"></td>
+          <td><input type="checkbox" name="active"${c.active?' checked':''}></td>
+          <td>
+            <button onclick="savePr(this)">Сохранить</button>
+            <button class="g" onclick="delPr(this)">Удалить</button>
+          </td>
+        </tr>
+      `).join('')}
+    </table>
+    <h4>Новый промокод</h4>
+    <input id="nc" placeholder="КОД">
+    <input id="np" type="number" placeholder="%" style="width:70px">
+    <button onclick="addPr()">Добавить</button>`;
+}
+
+async function savePr(b){
+  const tr = b.closest('tr');
+  const {error} = await sb.from('promos').update({
+    percent:Number(tr.querySelector('[name=percent]').value),
+    active:tr.querySelector('[name=active]').checked
+  }).eq('code',tr.dataset.c);
+
+  if(error) alert('Ошибка: '+error.message);
+  else alert('Запрос выполнен. Проверь результат обновлением списка.');
+}
+
+async function delPr(b){
+  if(!confirm('Удалить промокод?')) return;
+
+  const {error} = await sb.from('promos')
+    .delete()
+    .eq('code',b.closest('tr').dataset.c);
+
+  if(error) alert(error.message);
+  else await vPromos();
+}
+
+async function addPr(){
+  const code = $('nc').value.trim().toUpperCase();
+  const percent = Number($('np').value);
+
+  if(!code) return alert('Введи код промокода.');
+  if(!Number.isFinite(percent) || percent<0 || percent>100){
+    return alert('Укажи скидку от 0 до 100%.');
+  }
+
+  const {error} = await sb.from('promos').insert({code,percent});
+
+  if(error) alert(error.message);
+  else await vPromos();
+}
+
+if(!CFG.SUPABASE_URL || !CFG.SUPABASE_KEY){
+  showConfigError();
+}else if(!window.supabase){
+  $('app').textContent = 'Не удалось загрузить библиотеку Supabase. Обнови страницу.';
+}else{
+  sb = window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);
+  init();
+}
+</script>
+</body>
+</html>
