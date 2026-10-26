@@ -2,8 +2,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
 <style>body{font:14px system-ui,sans-serif;margin:0;background:#faf3ef;color:#3b2b2f}header{background:#3b2b2f;color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}header b{font-size:18px;margin-right:auto}button,select,input{font:inherit}button{background:#d98a9b;color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer}button.g{background:#eee;color:#333}main{padding:20px;overflow-x:auto}table{border-collapse:collapse;width:100%;background:#fff}td,th{border-bottom:1px solid #eee;padding:6px 8px;text-align:left;vertical-align:top}input,select{border:1px solid #ddd;border-radius:6px;padding:5px 7px}textarea{width:170px;border:1px solid #ddd;border-radius:6px;font:inherit;padding:5px}td input[type=text]{width:100%;min-width:110px}img{width:40px;height:50px;object-fit:cover;border-radius:6px}#lg{max-width:320px;margin:15vh auto;display:flex;flex-direction:column;gap:10px}</style></head>
 <body><div id="app"></div><script>
-if(!CFG.SUPABASE_URL)document.body.innerHTML='<p style="padding:30px">Заполните SUPABASE_URL и SUPABASE_KEY в config.js</p>';
-const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY),$=i=>document.getElementById(i);
+if(!window.CFG || !window.CFG.SUPABASE_URL || !window.CFG.SUPABASE_KEY)document.body.innerHTML='<p style="padding:30px">Заполните SUPABASE_URL и SUPABASE_KEY в config.js</p>';
+const CFG = window.CFG || {};
+const sb = CFG.SUPABASE_URL && CFG.SUPABASE_KEY
+  ? supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY)
+  : null;
+const $ = i => document.getElementById(i);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>(n||0).toLocaleString('ru-RU')+' сум',dt=s=>new Date(s).toLocaleString('ru-RU');
 const CATS=['Лицо','Тело','Волосы','Загар и SPF','Для мужчин'],ST={new:'Новый',paid:'Оплачен',shipped:'Отправлен',done:'Выполнен',canceled:'Отменён'};
