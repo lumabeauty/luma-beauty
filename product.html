@@ -31,7 +31,7 @@ let product=null,qty=1,photos=[];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number(n).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';
 function showPhoto(i){$('mainPhoto').src=photos[i];document.querySelectorAll('.thumb').forEach((b,n)=>b.classList.toggle('active',n===i))}
-function addToCart(){location.href='index.html?add='+encodeURIComponent(product.id)}
+function addToCart(){location.href='index.html?add='+encodeURIComponent(product.id)+'&qty='+qty}
 function tab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));const p=$('panel');if(name==='description')p.innerHTML='<h3>Описание</h3><p>'+esc(product.kind||product.title)+'</p><p>Подробная информация о средстве и рекомендации по применению указаны на упаковке производителя.</p>';else if(name==='ingredients')p.innerHTML='<h3>Состав</h3><p>'+esc(product.ingredients||'Полный состав (INCI) указан на упаковке товара.')+'</p>';else if(name==='suits')p.innerHTML='<h3>Для какого типа кожи / волос</h3><p>'+esc(product.suits||'Ориентируйтесь на назначение средства и информацию производителя на упаковке.')+'</p>';else p.innerHTML='<h3>Дополнительная информация</h3><p>Категория: '+esc(product.category||'—')+'</p><p>Тип: '+esc(product.kind||'—')+'</p><p>Объём: '+esc(product.volume||'—')+'</p>'}
 async function load(){if(!id){$('content').textContent='Не указан товар. Вернитесь в каталог.';return}
 const {data,error}=await sb.from('products').select('*').eq('id',id).eq('active',true).maybeSingle();
