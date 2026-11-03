@@ -105,6 +105,34 @@ footer .logo{display:block;margin-bottom:6px}
 #mus{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 20px -8px rgba(0,0,0,.25)}#mus.on{background:var(--rose);border-color:var(--rose);color:#fff}
 @media(max-width:640px){.cartbtn{margin-left:8px;padding:6px 12px}.logo{font-size:23px}}
 @media(max-width:640px){nav{display:none}.grid{grid-template-columns:repeat(2,1fr);gap:12px}.bd h3{font-size:20px}.bd{padding:12px}h2{font-size:34px}}
+
+/* Luma Beauty — luxury cream & champagne refresh */
+:root{--bg:#f8f4ec;--card:#fffdf8;--ink:#29251f;--mute:#82796c;--rose:#b99a68;--rose2:#eee5d5;--gold:#a9854f;--line:#e8dfd0}
+body{background:var(--bg);letter-spacing:.01em}
+header{background:rgba(248,244,236,.92);border-bottom-color:#e3d8c6}
+.logo i,.hero h1 em{color:var(--gold)}
+.hero{padding-top:14vh;padding-bottom:12vh;background:radial-gradient(ellipse at 15% 15%,#eee4d2 0,transparent 42%),radial-gradient(ellipse at 85% 80%,#e8ddc9 0,transparent 38%)}
+.hero:before,.hero:after{display:none}
+.eyebrow{letter-spacing:.38em;color:#9a7848}
+.hero h1{font-weight:500;letter-spacing:-.025em}
+.hero h1 em{background:linear-gradient(100deg,#9d7844,#c5a875,#8f6b3d);background-clip:text;-webkit-background-clip:text;color:transparent}
+.cta,.buy{background:#302a20;color:#fbf7ef;border-radius:4px;letter-spacing:.14em}
+.cta:hover,.buy:hover{background:#8d7046}
+.card{border-radius:4px;border-color:#e7dece;box-shadow:0 8px 24px -20px #5b4b34}
+.card:hover{box-shadow:0 16px 32px -20px #8d7046}
+.ph{background:linear-gradient(145deg,#eee6d8,#f8f4ec)}
+.tag{border-radius:2px;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
+.chip{border-radius:2px;background:transparent;letter-spacing:.07em}
+.chip.on,.add,.promo-row button,.tabs .on{background:#b99a68;border-color:#b99a68;color:#fff}
+.add{border-radius:50%}
+.promo{background:#f0e8da;border-color:#c4a979;border-radius:3px}
+#dr,.box{border-radius:4px;background:#fffdf8}
+.md{backdrop-filter:blur(5px)}
+.ib{border-radius:3px;background:#f6f1e8}
+.ask{border-color:#b99a68;border-radius:3px}
+footer{border-color:#e3d8c6}
+@media(max-width:640px){.hero{padding-top:10vh;padding-bottom:9vh}.grid{gap:10px}.card{border-radius:3px}}
+.detail-thumbs{display:flex;gap:8px;overflow:auto;padding:8px 0}.detail-thumbs button{border:1px solid var(--line);background:#f3ede2;padding:3px;width:58px;height:68px;flex:none;cursor:pointer}.detail-thumbs img{width:100%;height:100%;object-fit:cover}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center"><nav><a href="#catalog">Каталог</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="hero" id="top"><div class="eyebrow">Luma Beauty</div><h1 class="serif">Сияние, которое<br>начинается <em>с ухода</em></h1><p>Нежный уход за телом, волосами и кожей — ежедневный ритуал, который хочется повторять.</p><a class="cta" href="#catalog">Смотреть каталог</a></div>
@@ -150,7 +178,7 @@ const S=h(['волос','шампун','кондиционер'])?[]:[['сух',
 const m=[p.k,p.t].map(s=>s.match(/ с ([^,(]+)/i)).find(Boolean);
 return{ing:p.ing||(m?'В названии указано: «с '+m[1].trim()+'». Полный список компонентов — на упаковке.':'Полный состав указан на упаковке товара.'),su:p.su||(S.length?'По названию предназначено для: '+S.join(', ')+'. ':'')+r[1],av:p.av||r[2]+' Аллергия на любой из компонентов.'}}
 function openInfo(i){const p=P[i],x=infoOf(p),q=encodeURIComponent('Здравствуйте! Пришлите, пожалуйста, полный состав: '+p.k+' '+p.t+(p.v?' ('+p.v+')':''));
-modal(`${p.i?`<img src="${p.i}" alt="" style="width:100%;max-height:250px;object-fit:cover;border-radius:16px">`:''}<h3 class="serif" style="font-size:26px">${p.t}</h3><p class="mu"><span>${p.k}</span> <span>${p.v}</span></p><div class="ib"><b>Состав</b><p>${x.ing}</p></div><div class="ib ok2"><b>Подходит</b><p>${x.su}</p></div><div class="ib no"><b>Не подходит / осторожно</b><p>${x.av}</p></div><p class="mu" style="font-size:12px">Общие рекомендации по типу средства. Точный состав (INCI) смотрите на упаковке. При чувствительной коже сделайте тест на запястье, при аллергии посоветуйтесь с врачом.</p>${p.p?`<button class="buy" onclick="add(${i});closeM()">В корзину — ${f(np(p.p))}</button>`:''}<a class="ask" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${q}">Запросить полный состав</a>`)}
+modal(`${p.i?`<img id="detailMain" src="${p.i}" alt="" style="width:100%;max-height:290px;object-fit:contain;background:#f3ede2;border-radius:3px">${[p.i,...(p.gallery||[])].filter(Boolean).slice(0,5).length>1?`<div class="detail-thumbs">${[p.i,...(p.gallery||[])].filter(Boolean).slice(0,5).map((u,n)=>`<button type="button" onclick="document.getElementById('detailMain').src='${u}'"><img src="${u}" alt="Фото ${n+1}"></button>`).join('')}</div>`:''}`:''}<h3 class="serif" style="font-size:26px">${p.t}</h3><p class="mu"><span>${p.k}</span> <span>${p.v}</span></p><div class="ib"><b>Состав</b><p>${x.ing}</p></div><div class="ib ok2"><b>Подходит</b><p>${x.su}</p></div><div class="ib no"><b>Не подходит / осторожно</b><p>${x.av}</p></div><p class="mu" style="font-size:12px">Общие рекомендации по типу средства. Точный состав (INCI) смотрите на упаковке. При чувствительной коже сделайте тест на запястье, при аллергии посоветуйтесь с врачом.</p>${p.p?`<button class="buy" onclick="add(${i});closeM()">В корзину — ${f(np(p.p))}</button>`:''}<a class="ask" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${q}">Запросить полный состав</a>`)}
 function addrStep(){modal(`<h3 class="serif">Как получить заказ?</h3><button class="opt" onclick="pickMode('delivery')"><b>🚚 Доставка</b><small>Курьер привезёт по вашему адресу</small></button><button class="opt" onclick="pickMode('pickup')"><b>🏬 Самовывоз</b><small>${PICKUP}</small></button>`)}
 function pickMode(m){mode=m;if(m=='pickup'){addr=PICKUP;payStep()}else delivStep()}
 function delivStep(){let sv='';try{sv=localStorage.getItem('luma_addr')||''}catch(e){}
@@ -163,7 +191,7 @@ a.value=(nm?nm+'\n':'')+`📍 ${la}, ${lo}\nhttps://www.google.com/maps?q=${la},
 function addrNext(){const v=$('ad').value.trim();if(v.length<8)return $('ge').textContent='Укажите адрес доставки (город, улица, дом).';if(!dlD||!dlT||dlD<iso(new Date()))return $('ge').textContent='Выберите дату и время доставки.';addr=v;try{localStorage.setItem('luma_addr',v)}catch(e){}payStep()}
 function payStep(){const T=Object.keys(cart).reduce((s,k)=>s+np(P[k].p)*cart[k],0);modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Самовывоз':'Доставка'}: ${addr.split('\n')[0].replace(/</g,'&lt;')}</p>${mode=='pickup'?'':`<p class="mu">📅 ${fd()}</p>`}<p class="mu">К оплате: <b>${f(T)}</b></p><button class="pay payme" onclick="pay('payme',${T})">Оплатить через Payme</button><button class="pay click" onclick="pay('click',${T})">Оплатить через Click</button>`)}
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
-async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,i:r.image||'',ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));render()}
+async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));render()}
 async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
 function acct(m='in'){
 if(user)return modal(`<h3 class="serif">Здравствуйте, ${user.name}!</h3><p class="mu">${user.email}</p><button class="buy" onclick="logout()">Выйти</button>`);
