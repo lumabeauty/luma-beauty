@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#faf6f0">
+<title>Товар — Luma Beauty</title>
+<meta name="description" content="Подробная информация о товаре в Luma Beauty.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<style>
+:root{--bg:#faf6f0;--paper:#fffdf9;--ink:#2c221e;--muted:#87796e;--gold:#b8860b;--line:#e9dfd2;--soft:#f2eadf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Jost,Arial,sans-serif}a{color:inherit}.top{border-bottom:1px solid var(--line);padding:15px max(22px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;background:#fffdf9}.logo{font:600 34px 'Cormorant Garamond',serif;letter-spacing:.5px;text-decoration:none}.logo i{color:var(--gold);font-style:normal}.back{font-size:14px;text-decoration:none;color:var(--muted)}main{max-width:1180px;margin:32px auto 70px;padding:0 22px}.crumb{font-size:13px;color:var(--muted);margin-bottom:25px}.crumb a{text-decoration:none}.layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:54px;align-items:start}.gallery{display:grid;grid-template-columns:76px 1fr;gap:14px;position:sticky;top:20px}.thumbs{display:flex;flex-direction:column;gap:10px}.thumb{height:82px;border:1px solid var(--line);background:var(--paper);padding:4px;cursor:pointer;border-radius:8px}.thumb.active{border-color:var(--gold)}.thumb img{width:100%;height:100%;object-fit:contain}.mainphoto{min-height:490px;background:linear-gradient(145deg,#f4ede3,#fffdf9);border-radius:18px;display:grid;place-items:center;overflow:hidden}.mainphoto img{width:100%;height:490px;object-fit:contain;padding:25px}.placeholder{color:var(--muted);font:24px 'Cormorant Garamond',serif}.info{padding:8px 0}.kind{color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-size:12px}.title{font:600 clamp(32px,4vw,46px)/1.08 'Cormorant Garamond',serif;margin:12px 0}.volume{color:var(--muted);font-size:14px}.price{font:600 30px 'Cormorant Garamond',serif;margin:24px 0 7px}.no-price{font-size:18px;color:var(--muted)}.desc{line-height:1.75;color:#6f6258;margin:20px 0 26px}.qtyrow{display:flex;align-items:center;gap:14px;margin:20px 0}.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--paper);height:48px}.stepper button{width:42px;height:46px;border:0;background:none;font-size:21px;cursor:pointer;color:var(--ink)}.stepper span{min-width:24px;text-align:center}.buy{height:50px;flex:1;background:var(--gold);color:#fff;border:0;border-radius:9px;font:600 15px Jost;cursor:pointer;transition:.2s}.buy:hover{background:#986e08}.ask{display:block;text-align:center;margin-top:12px;color:var(--muted);font-size:13px}.assurances{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}.assurance{background:var(--soft);border-radius:10px;padding:13px 9px;text-align:center;font-size:12px;color:#6f6258}.assurance b{display:block;font-size:18px;margin-bottom:4px;color:var(--gold)}.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-top:50px;overflow:auto}.tab{border:0;background:none;padding:14px 0;white-space:nowrap;font:500 14px Jost;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}.tab.active{color:var(--ink);border-color:var(--gold)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px;margin-top:16px;line-height:1.75;color:#6f6258;min-height:85px}.panel h3{font:600 24px 'Cormorant Garamond',serif;color:var(--ink);margin:0 0 8px}.related{margin-top:52px;padding-top:28px;border-top:1px solid var(--line)}.related h2{font:600 32px 'Cormorant Garamond',serif}.notice{padding:50px 20px;text-align:center;color:var(--muted)}footer{text-align:center;padding:24px;color:var(--muted);border-top:1px solid var(--line);font-size:13px}
+@media(max-width:760px){main{margin-top:20px}.layout{grid-template-columns:1fr;gap:24px}.gallery{position:static;grid-template-columns:58px 1fr;gap:9px}.thumb{height:66px}.mainphoto{min-height:320px}.mainphoto img{height:320px}.info{padding:0}.assurances{grid-template-columns:repeat(3,1fr)}.tabs{gap:17px}.title{font-size:36px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><a class="back" href="index.html">← Вернуться в каталог</a></header>
+<main><div class="crumb"><a href="index.html">Главная</a>　›　<a href="index.html#catalog">Каталог</a>　›　<span id="crumbName">Товар</span></div>
+<div id="content" class="notice">Загружаем информацию о товаре…</div>
+</main>
+<footer>© 2026 Luma Beauty. Красота. Уход. Вдохновение.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search),id=params.get('id');
+const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);
+let product=null,qty=1,photos=[];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>Number(n).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';
+function showPhoto(i){$('mainPhoto').src=photos[i];document.querySelectorAll('.thumb').forEach((b,n)=>b.classList.toggle('active',n===i))}
+function addToCart(){location.href='index.html?add='+encodeURIComponent(product.id)}
+function tab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));const p=$('panel');if(name==='description')p.innerHTML='<h3>Описание</h3><p>'+esc(product.kind||product.title)+'</p><p>Подробная информация о средстве и рекомендации по применению указаны на упаковке производителя.</p>';else if(name==='ingredients')p.innerHTML='<h3>Состав</h3><p>'+esc(product.ingredients||'Полный состав (INCI) указан на упаковке товара.')+'</p>';else if(name==='suits')p.innerHTML='<h3>Для какого типа кожи / волос</h3><p>'+esc(product.suits||'Ориентируйтесь на назначение средства и информацию производителя на упаковке.')+'</p>';else p.innerHTML='<h3>Дополнительная информация</h3><p>Категория: '+esc(product.category||'—')+'</p><p>Тип: '+esc(product.kind||'—')+'</p><p>Объём: '+esc(product.volume||'—')+'</p>'}
+async function load(){if(!id){$('content').textContent='Не указан товар. Вернитесь в каталог.';return}
+const {data,error}=await sb.from('products').select('*').eq('id',id).eq('active',true).maybeSingle();
+if(error||!data){$('content').textContent='Товар не найден или больше не доступен.';return}
+product=data;document.title=data.title+' — Luma Beauty';$('crumbName').textContent=data.title;
+photos=[data.image,...(Array.isArray(data.gallery)?data.gallery:[])].filter(Boolean).slice(0,5);
+const price=data.price?'<div class="price">'+money(data.price)+'</div>':'<div class="price no-price">Цена по запросу</div>';
+$('content').className='';$('content').innerHTML=`
+<section class="layout">
+<div class="gallery"><div class="thumbs">${photos.map((u,n)=>'<button class="thumb '+(n===0?'active':'')+'" onclick="showPhoto('+n+')" aria-label="Фото '+(n+1)+'"><img src="'+esc(u)+'" alt=""></button>').join('')}</div>
+<div class="mainphoto">${photos.length?'<img id="mainPhoto" src="'+esc(photos[0])+'" alt="'+esc(data.title)+'">':'<div class="placeholder">Luma Beauty</div>'}</div></div>
+<div class="info"><div class="kind">${esc(data.category||data.kind||'Luma Beauty')}</div><h1 class="title">${esc(data.title)}</h1><div class="volume">${esc(data.volume||'')}</div>${price}
+<p class="desc">${esc(data.kind||'Косметика и уход для вашей красоты.')}. Точные характеристики и состав смотрите на упаковке товара.</p>
+<div class="qtyrow"><div class="stepper"><button onclick="qty=Math.max(1,qty-1);$('qty').textContent=qty">−</button><span id="qty">1</span><button onclick="qty=Math.min(99,qty+1);$('qty').textContent=qty">+</button></div><button class="buy" onclick="addToCart()">Добавить в корзину</button></div>
+<a class="ask" href="https://t.me/${encodeURIComponent(CFG.TG_USER||'')}?text=${encodeURIComponent('Здравствуйте! Хочу узнать подробнее о товаре: '+data.title)}" target="_blank" rel="noopener">Задать вопрос о товаре</a>
+<div class="assurances"><div class="assurance"><b>◇</b>Оригинальная продукция</div><div class="assurance"><b>♧</b>Доставка</div><div class="assurance"><b>♡</b>Поддержка</div></div>
+</div></section>
+<div class="tabs"><button class="tab active" data-tab="description" onclick="tab('description')">Описание</button><button class="tab" data-tab="ingredients" onclick="tab('ingredients')">Состав</button><button class="tab" data-tab="suits" onclick="tab('suits')">Для кого</button><button class="tab" data-tab="specs" onclick="tab('specs')">Характеристики</button></div><div class="panel" id="panel"></div>`;
+tab('description');
+}
+load();
+</script>
+</body></html>
