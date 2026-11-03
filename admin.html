@@ -306,44 +306,43 @@ async function saveP(id,button){
 }
 
 async function upGallery(id,el){
-  const f = el.files && el.files[0];
-  if(!f) return;
-
-  if(!f.type.startsWith('image/')){
-    return alert('Выбери файл изображения.');
-  }
-
-  const path = Date.now()+'_'+f.name.replace(/[^\w.-]/g,'_');
+  const files = Array.from(el.files || []);
+  if(!files.length) return;
+  if(files.some(f => !f.type.startsWith('image/'))) return alert('Выбери только изображения.');
 
   try{
-    const {error:uploadError} = await sb.storage
-      .from('products')
-      .upload(path,f);
+    const {data:row,error:readError} = await sb.from('products')
+      .select('image,gallery').eq('id',id).single();
+    if(readError) return alert('Не удалось прочитать товар: '+readError.message);
 
-    if(uploadError) return alert('Ошибка загрузки фото: '+uploadError.message);
+    let main = row.image || '';
+    let gallery = Array.isArray(row.gallery) ? [...row.gallery] : [];
 
-    const url = sb.storage.from('products').getPublicUrl(path).data.publicUrl;
-
-    const {data,error} = await sb
-      .from('products')
-      .update({image:url})
-      .eq('id',id)
-      .select('id,image');
-
-    if(error) return alert('Фото загружено, но не удалось сохранить адрес: '+error.message);
-
-    if(!data || data.length===0){
-      return alert('Фото загружено в хранилище, но база не подтвердила привязку к товару.');
+    for(const file of files){
+      if(main && gallery.length >= 4){
+        alert('Максимум 5 фотографий на один товар. Остальные файлы пропущены.');
+        break;
+      }
+      const safeName = file.name.replace(/[^\\w.-]/g,'_');
+      const path = Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safeName;
+      const {error:uploadError} = await sb.storage.from('products').upload(path,file);
+      if(uploadError) throw uploadError;
+      const url = sb.storage.from('products').getPublicUrl(path).data.publicUrl;
+      if(!main) main = url;
+      else gallery.push(url);
     }
 
-    alert('Фото привязано к товару.');
-    await vProducts();
+    const {data,error} = await sb.from('products')
+      .update({image:main,gallery}).eq('id',id).select('id,image,gallery');
+    if(error) return alert('Фото загружены, но не удалось сохранить их в товаре: '+error.message);
+    if(!data || !data.length) return alert('База не подтвердила сохранение фотографий.');
 
+    alert('Фотографии сохранены. Первое фото используется как главное.');
+    await vProducts();
   }catch(e){
     alert('Ошибка загрузки фото: '+(e.message||e));
   }
 }
-
 async function addP(){
   const {error} = await sb.from('products').insert({
     title:'Новый товар',
