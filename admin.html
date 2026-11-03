@@ -324,7 +324,7 @@ async function upGallery(id,el){
         alert('Максимум 5 фотографий на один товар. Остальные файлы пропущены.');
         break;
       }
-      const safeName = file.name.replace(/[^\\w.-]/g,'_');
+      const safeName = file.name.replace(/[^\w.-]/g,'_');
       const path = Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safeName;
       const {error:uploadError} = await sb.storage.from('products').upload(path,file);
       if(uploadError) throw uploadError;
