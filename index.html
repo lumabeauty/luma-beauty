@@ -272,6 +272,92 @@ footer{background:#38232d;color:#f7e8ed}
  .cartbtn{font-size:12px;padding:6px 10px}
 }
 @media(min-width:641px) and (max-width:900px){.hero-copy{padding-left:28px}.hero-copy h1{font-size:58px}.hero-visual{width:54%}}
+
+/* Luma Beauty — Bloom-inspired editorial storefront */
+:root{--bg:#f5f5f7;--card:#fff;--ink:#29282b;--mute:#77777e;--rose:#ef5265;--rose2:#ffe6e9;--gold:#ef5265;--line:#e8e8eb}
+body{background:#f5f5f7;color:#29282b;font-family:Jost,Arial,sans-serif}
+header{position:sticky;top:0;min-height:62px;padding:8px max(22px,calc((100% - 1280px)/2));gap:18px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid #e9e9ec;box-shadow:0 3px 16px #17171a0a}
+.logo{font:800 32px/.95 Arial,sans-serif;letter-spacing:-.075em;color:#ef5265}
+.logo i{color:#ef5265}
+header>div{display:flex;align-items:center;gap:12px!important}
+nav a{margin:0 10px;color:#45454a;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none}
+nav a:hover{color:#ef5265}
+.langsel,.cartbtn{background:#fff;border:1px solid #ededf0;color:#343439;border-radius:24px;padding:9px 15px;box-shadow:0 2px 10px #00000008}
+.cartbtn b{background:#ef5265;color:#fff}
+.luma-hero{min-height:430px;max-width:1360px;margin:0 auto 26px;border:0;border-radius:0 0 28px 28px;background:#e9e9ed;display:block;position:relative}
+.hero-visual{position:absolute;inset:0;width:100%;height:100%;background-position:center 42%;background-size:cover}
+.luma-hero:after{background:linear-gradient(90deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.78) 30%,rgba(255,255,255,.08) 70%,transparent 100%)}
+.hero-copy{padding:76px max(30px,calc((100vw - 1120px)/2));max-width:720px}
+.hero-copy .eyebrow{color:#ef5265;font-size:12px;letter-spacing:.22em;font-weight:600}
+.hero-copy h1{font:700 clamp(52px,6vw,78px)/.96 Arial,sans-serif;letter-spacing:-.055em;color:#29282b;margin:16px 0}
+.hero-copy h1 em{font-style:normal;color:#ef5265}
+.hero-copy p{color:#5f5f66;font-size:17px;max-width:440px}
+.hero-copy .cta,.home-story-copy .cta{background:#ef5265;color:white;border-radius:24px;box-shadow:0 6px 18px #ef526533;padding:13px 24px;text-transform:none;letter-spacing:0;font-weight:600}
+.hero-stamp{display:none}
+.hero-instagram{border:1px solid #ef5265;color:#ef5265;border-radius:24px}
+#favorites,.home-section,#catalog{max-width:1280px}
+.home-section{padding:22px 5vw 42px}
+.home-section .section-head h2,.home-cats h2,.home-section h2,#catalog h2{font:700 clamp(27px,3vw,36px)/1.15 Arial,sans-serif;letter-spacing:-.035em;color:#29282b}
+.home-section .sub,.home-cats .sub{color:#77777e}
+.home-story{border:0;border-radius:18px;background:#fff;box-shadow:0 5px 22px #24242a0b;grid-template-columns:1.15fr .85fr}
+.story-gallery{height:320px;background:#eee}
+.home-story-copy{padding:34px}
+.home-story-copy h2{font:700 30px Arial,sans-serif}
+.home-story-copy p{color:#6c6c73}
+#catalog{padding:28px 5vw 70px}
+#catalog h2{text-align:left}
+#catalog .promo{background:#fff;border:1px solid #f2d5da;color:#555;border-radius:12px}
+#catalog .promo b{color:#ef5265}
+#catalog .sq{border:1px solid #e5e5e9;border-radius:24px;background:#fff;max-width:560px}
+#catalog .chip{border:1px solid #e6e6e9;border-radius:24px;background:#fff;color:#444;padding:9px 19px}
+#catalog .chip.on{background:#ef5265;border-color:#ef5265;color:#fff}
+#catalog .grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+#catalog .card,.fav-card{border:0;border-radius:16px;background:#fff;box-shadow:0 4px 18px #25252b0b;overflow:hidden}
+#catalog .card:hover{transform:translateY(-5px);box-shadow:0 12px 28px #25252b17}
+#catalog .ph{background:#f3f3f5;aspect-ratio:1/1.08}
+#catalog .ph img{object-fit:contain;mix-blend-mode:multiply;padding:12px}
+#catalog .bd{padding:14px 15px 16px}
+#catalog .bd h3{font:600 19px/1.2 Arial,sans-serif;color:#29282b}
+#catalog .k{color:#8a8a90}
+#catalog .pr{color:#29282b;font-weight:700}
+#catalog .add{background:#ef5265;color:#fff;border-radius:50%;width:42px;height:42px}
+.home-benefits{background:#fff;border:0;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:25px max(5vw,calc((100% - 1280px)/2))}
+.benefit{border-color:#eee}.benefit b{color:#ef5265}.benefit small{color:#85858b}
+footer{background:#29282b;color:#f5f5f7}
+footer .logo{font:800 34px Arial,sans-serif;color:#fff}
+footer .logo i{color:#ef5265}
+.social-cta{background:#ef5265;border-radius:24px}
+#dr,.box{background:#fff;color:#29282b}
+.buy,#dr .buy,#md .buy{background:#ef5265;border-radius:24px}
+@media(max-width:760px){
+ header{padding:9px 14px;min-height:56px}
+ .logo{font-size:27px}
+ header>div{gap:5px!important}
+ nav{display:none}
+ .luma-hero{min-height:520px;margin-bottom:18px;border-radius:0 0 20px 20px}
+ .hero-visual{height:100%;opacity:1;background-position:58% center}
+ .luma-hero:after{background:linear-gradient(0deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.88) 38%,rgba(255,255,255,.08) 100%)}
+ .hero-copy{padding:260px 22px 30px}
+ .hero-copy h1{font-size:clamp(42px,11vw,60px)}
+ .hero-copy p{font-size:15px;max-width:330px}
+ .hero-stamp{display:none}
+ .hero-instagram{margin:8px 0 0 7px;padding:11px 14px}
+ .home-section{padding:18px 16px 32px}
+ .home-story{grid-template-columns:1fr;gap:0}
+ .story-gallery{height:230px;min-height:230px}
+ .home-story-copy{padding:22px}
+ #catalog{padding:22px 14px 48px}
+ #catalog .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #catalog .card{border-radius:13px}
+ #catalog .ph{aspect-ratio:1/1.12}
+ #catalog .bd{padding:10px}
+ #catalog .bd h3{font-size:16px}
+ #catalog .add{width:36px;height:36px}
+ .home-benefits{grid-template-columns:repeat(2,1fr);padding:20px 16px;gap:16px}
+ .benefit{border:0;padding:0}
+}
+@media(prefers-reduced-motion:reduce){.hero-copy,.hero-stamp{animation:none!important}}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
