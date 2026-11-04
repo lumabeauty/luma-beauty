@@ -130,7 +130,8 @@ async function init(){
         ['products','Товары'],
         ['clients','Клиенты'],
         ['promos','Промокоды'],
-        ['banners','Большой пост']
+        ['banners','Большой пост'],
+        ['hero','Главный баннер']
       ].map(([k,l]) =>
         `<button class="g" onclick="go('${k}')">${l}</button>`
       ).join('')}
@@ -148,7 +149,8 @@ function go(k){
     products:vProducts,
     clients:vClients,
     promos:vPromos,
-    banners:vBanners
+    banners:vBanners,
+    hero:vHero
   })[k]();
 }
 
@@ -416,6 +418,43 @@ function csv(){
   a.download = 'clients.csv';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+
+async function vHero(){
+ const {data,error}=await sb.from('home_hero').select('*').eq('id',1).maybeSingle();
+ if(error)return $('m').innerHTML='<h3>Главный баннер</h3><p>Сначала выполни SQL-файл sql/5_home_hero.sql в Supabase.</p><pre>'+esc(error.message)+'</pre>';
+ const photos=Array.isArray(data?.photos)?data.photos:[];
+ const defaults=['https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=2000&q=88','https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=2000&q=88','https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=2000&q=88','https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=2000&q=88','https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=2000&q=88'];
+ const shown=photos.length?photos:defaults;
+ $('m').innerHTML='<h3>Главный баннер</h3><p>Сейчас на сайте используются эти 5 фотографий. Они останутся без изменений, пока ты не загрузишь новые.</p><div class="photo-stack">'+shown.map((u,i)=>'<div style="display:inline-block;text-align:center"><img src="'+esc(u)+'" style="width:150px;height:90px;object-fit:cover;border-radius:10px"><br><small>Фото '+(i+1)+'</small></div>').join('')+'</div><p><b>Заменить фотографии</b> (выбери до 5 изображений; новая подборка заменит текущую)</p><input id="heroFiles" type="file" accept="image/*" multiple><p><button onclick="uploadHeroPhotos()">Загрузить новые фотографии</button> <button class="g" onclick="resetHeroPhotos()">Вернуть исходные фотографии</button></p><p class="photo-help">Фотографии автоматически меняются каждые 5 секунд. Можно загрузить от 1 до 5 изображений.</p>';
+}
+async function uploadHeroPhotos(){
+ const files=Array.from($('heroFiles').files||[]);
+ if(!files.length)return alert('Сначала выбери фотографии.');
+ if(files.length>5)return alert('Можно загрузить максимум 5 фотографий.');
+ if(files.some(f=>!f.type.startsWith('image/')))return alert('Выбери только изображения.');
+ try{
+  const urls=[];
+  for(const file of files){
+   const safe=file.name.replace(/[^\\w.-]/g,'_');
+   const path='home-hero/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safe;
+   const {error}=await sb.storage.from('products').upload(path,file);
+   if(error)throw error;
+   urls.push(sb.storage.from('products').getPublicUrl(path).data.publicUrl);
+  }
+  const {error}=await sb.from('home_hero').upsert({id:1,photos:urls},{onConflict:'id'});
+  if(error)throw error;
+  alert('Фотографии главного баннера обновлены!');
+  await vHero();
+ }catch(e){alert('Ошибка загрузки: '+(e.message||e));}
+}
+async function resetHeroPhotos(){
+ if(!confirm('Вернуть исходные 5 фотографий баннера?'))return;
+ const {error}=await sb.from('home_hero').delete().eq('id',1);
+ if(error)return alert('Не удалось сбросить: '+error.message);
+ alert('Исходные фотографии восстановлены.');
+ await vHero();
 }
 
 async function vBanners(){const {data,error}=await sb.from('site_banners').select('*').eq('id',1).maybeSingle();if(error)return $('m').innerHTML='<h3>Большой фото-блок</h3><p>Сначала выполни SQL-файл sql/4_site_banners.sql в Supabase.</p><pre>'+esc(error.message)+'</pre>';const d=data||{};const photos=Array.isArray(d.photos)?d.photos:[];$('m').innerHTML='<h3>Большой фото-блок на главной</h3><p>Загрузи до 5 фотографий. Они будут автоматически перелистываться на сайте.</p><label>Заголовок<br><input id="bannerTitle" style="width:min(500px,95%)" value="'+esc(d.title||'Время для себя')+'"></label><br><br><label>Текст<br><textarea id="bannerSubtitle" style="width:min(500px,95%);height:70px">'+esc(d.subtitle||'Создайте свой ежедневный ритуал красоты')+'</textarea></label><h4>Фотографии ('+photos.length+'/5)</h4><div class="photo-stack">'+photos.map(u=>'<img src="'+esc(u)+'" style="width:100px;height:100px">').join('')+'</div><p><input id="bannerFiles" type="file" accept="image/*" multiple></p><button onclick="uploadBannerPhotos()">Загрузить выбранные фото</button> <button class="g" onclick="saveBannerText()">Сохранить заголовок и текст</button><p class="photo-help">При новой загрузке галерея заменяется выбранными фотографиями. Максимум 5.</p>';}
