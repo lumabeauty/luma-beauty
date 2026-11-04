@@ -129,7 +129,8 @@ async function init(){
         ['orders','Заказы'],
         ['products','Товары'],
         ['clients','Клиенты'],
-        ['promos','Промокоды']
+        ['promos','Промокоды'],
+        ['banners','Большой пост']
       ].map(([k,l]) =>
         `<button class="g" onclick="go('${k}')">${l}</button>`
       ).join('')}
@@ -146,7 +147,8 @@ function go(k){
     orders:vOrders,
     products:vProducts,
     clients:vClients,
-    promos:vPromos
+    promos:vPromos,
+    banners:vBanners
   })[k]();
 }
 
@@ -416,6 +418,9 @@ function csv(){
   URL.revokeObjectURL(a.href);
 }
 
+async function vBanners(){const {data,error}=await sb.from('site_banners').select('*').eq('id',1).maybeSingle();if(error)return $('m').innerHTML='<h3>Большой фото-блок</h3><p>Сначала выполни SQL-файл sql/4_site_banners.sql в Supabase.</p><pre>'+esc(error.message)+'</pre>';const d=data||{};const photos=Array.isArray(d.photos)?d.photos:[];$('m').innerHTML='<h3>Большой фото-блок на главной</h3><p>Загрузи до 5 фотографий. Они будут автоматически перелистываться на сайте.</p><label>Заголовок<br><input id="bannerTitle" style="width:min(500px,95%)" value="'+esc(d.title||'Время для себя')+'"></label><br><br><label>Текст<br><textarea id="bannerSubtitle" style="width:min(500px,95%);height:70px">'+esc(d.subtitle||'Создайте свой ежедневный ритуал красоты')+'</textarea></label><h4>Фотографии ('+photos.length+'/5)</h4><div class="photo-stack">'+photos.map(u=>'<img src="'+esc(u)+'" style="width:100px;height:100px">').join('')+'</div><p><input id="bannerFiles" type="file" accept="image/*" multiple></p><button onclick="uploadBannerPhotos()">Загрузить выбранные фото</button> <button class="g" onclick="saveBannerText()">Сохранить заголовок и текст</button><p class="photo-help">При новой загрузке галерея заменяется выбранными фотографиями. Максимум 5.</p>';}
+async function saveBannerText(){const payload={id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim()};const {error}=await sb.from('site_banners').upsert(payload,{onConflict:'id'});if(error)return alert('Не удалось сохранить: '+error.message);alert('Текст фото-блока сохранён.');await vBanners();}
+async function uploadBannerPhotos(){const files=Array.from($('bannerFiles').files||[]);if(!files.length)return alert('Сначала выбери фотографии.');if(files.length>5)return alert('Можно загрузить максимум 5 фотографий.');if(files.some(f=>!f.type.startsWith('image/')))return alert('Выбери только изображения.');try{const urls=[];for(const file of files){const safe=file.name.replace(/[^\\w.-]/g,'_');const path='site-banner/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safe;const {error}=await sb.storage.from('products').upload(path,file);if(error)throw error;urls.push(sb.storage.from('products').getPublicUrl(path).data.publicUrl);}const {error}=await sb.from('site_banners').upsert({id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim(),photos:urls},{onConflict:'id'});if(error)throw error;alert('Загружено '+urls.length+' фотографий.');await vBanners();}catch(e){alert('Ошибка загрузки: '+(e.message||e));}}
 async function vPromos(){
   const {data,error} = await sb
     .from('promos')
