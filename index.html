@@ -220,8 +220,38 @@ header{background:rgba(255,247,248,.95);border-color:#efd9df}
 footer{background:#38232d;color:#f7e8ed}
 footer .logo{color:#fff8fa}footer .logo i{color:#e2a4b7}
 #dr{background:#fffafa;color:#39252d}
+/* Premium polish, blush palette and accessible motion */
+:root{--bg:#fff7f8;--card:#fffdfd;--ink:#38232d;--mute:#8e707b;--rose:#d7839d;--rose2:#f7e0e7;--gold:#b98a78;--line:#efd9e0}
+body{background:var(--bg);color:var(--ink)}
+@keyframes lb-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lb-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.hero-copy{animation:lb-rise .8s both}.hero-stamp{animation:lb-float 5s ease-in-out infinite}
+.hero-copy .eyebrow{color:#a85e78}.hero-copy h1{color:#38232d}.hero-copy h1 em{color:#c16e8b}.hero-copy p{color:#785d68}
+.hero-copy .cta,.home-story-copy .cta{background:linear-gradient(110deg,#e7afbf,#c06f8c);box-shadow:0 9px 22px #b9678333}
+.hero-copy .cta:hover,.home-story-copy .cta:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.category-art{background:radial-gradient(circle at 35% 30%,#fffafb,#f1d6df);border-color:#f0d6df}
+#catalog .card{background:#fffdfd;border-color:#f0dce2;box-shadow:0 8px 25px #8d52610b}
+#catalog .card:hover{transform:translateY(-5px);box-shadow:0 15px 32px #8d52611c}
+#catalog .add{background:linear-gradient(120deg,#e4a4b7,#b96783)}
+.home-benefits{background:#f8e7eb;border-color:#efd5de}.benefit b{color:#c57590}
+footer{background:#38232d;color:#f7e8ed}
+.social-cta{display:inline-flex;align-items:center;gap:10px;border-radius:99px;background:linear-gradient(110deg,#e7afbf,#c06f8c);color:white;padding:12px 22px;font-weight:600}
+#favorites{display:none;max-width:1280px;margin:0 auto;padding:28px 5vw 40px}
+#favorites.show{display:block;animation:lb-rise .35s both}
+#favorites h2{font:600 36px 'Cormorant Garamond',serif;margin:0 0 14px}
+#favGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.fav-card{position:relative;background:#fffdfd;border:1px solid #f0dce2;border-radius:15px;overflow:hidden}
+.fav-card img{width:100%;aspect-ratio:1;object-fit:contain;background:#fae9ee;mix-blend-mode:multiply}
+.fav-card a{display:block;text-decoration:none;padding:8px;color:inherit}
+.fav-card button,.like-btn{position:absolute;right:10px;top:10px;z-index:2;border:0;border-radius:50%;width:34px;height:34px;background:#fff;color:#b45d7c;font-size:20px;cursor:pointer;box-shadow:0 2px 8px #5b29351c}
+.card{position:relative}
+#md .box{border:1px solid #efd9e0;box-shadow:0 24px 80px #5b29352b}
+#md input{border:1px solid #e8cbd4;border-radius:12px;padding:12px 14px;width:100%;margin:6px 0}
+#md .buy,#dr .buy{background:linear-gradient(110deg,#e7afbf,#b96783);border-radius:99px}
+@media(max-width:760px){#favGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.social-cta{width:100%;justify-content:center}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
-<header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center"><nav><a href="#catalog">Каталог</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
+<header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
 <section class="home-cats"><h2>Выберите свой ритуал</h2><p class="sub">Всё для красоты и ежедневного ухода</p><div class="category-row">
 <button class="category-tile" onclick="setCategory('Лицо')"><span class="category-art">✧</span>Уход за лицом</button>
@@ -234,7 +264,7 @@ footer .logo{color:#fff8fa}footer .logo i{color:#e2a4b7}
 <section class="home-section"><div class="section-head"><div><h2>Маленькие радости каждый день</h2><p class="sub">Подберите уход, который подходит именно вам</p></div><a href="#catalog">Смотреть каталог →</a></div><div class="home-story"><img src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=1000&q=85" alt="Косметика и средства ухода"><div class="home-story-copy"><h2>Время для себя</h2><p>Создайте свой ежедневный ритуал красоты: мягкое очищение, любимый уход и несколько минут только для себя.</p><a class="cta" href="#catalog">Найти любимое средство →</a></div></div></section>
 <section id="catalog"><h2 class="serif">Избранное для вашей красоты</h2><p class="sub" id="sub"></p><div class="promo">Промокод <b>LUMA25</b> — скидка 20% на все товары. Введите его в корзине.</div><div style="text-align:center;margin-bottom:18px"><input class="sq" placeholder="Поиск по товарам" oninput="q=this.value.trim().toLowerCase();render()"></div><div class="chips" id="chips"></div><div class="grid" id="grid"></div></section>
 <section class="home-benefits"><div class="benefit"><b>◇</b><span><strong>Оригинальная косметика</strong><small>Только проверенные товары</small></span></div><div class="benefit"><b>▤</b><span><strong>Бережная доставка</strong><small>Удобно и аккуратно</small></span></div><div class="benefit"><b>♧</b><span><strong>Поддержка 24/7</strong><small>Поможем с выбором</small></span></div><div class="benefit"><b>✧</b><span><strong>С любовью к деталям</strong><small>Красота в каждом моменте</small></span></div></section>
-<footer><span class="logo serif">Luma<i>·</i>Beauty</span><p>Красота. Уход. Вдохновение.</p><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
+<footer><span class="logo serif">Luma<i>·</i>Beauty</span><p>Красота. Уход. Вдохновение.</p><p><a href="tel:+998910010184">☎ +998 91 001 01 84</a>　 <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram @lumabeautyuz</a></p><a class="social-cta" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Подписаться в Instagram ↗</a><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
 <aside id="dr"><h3 class="serif">Корзина <button onclick="dr.classList.remove('open')">×</button></h3><div id="items"></div><div class="promo-row"><input id="pc" placeholder="Промокод"><button onclick="promo()">Применить</button></div><div id="pm" class="mu"></div><div class="tot"><span>Итого</span><b id="tot">0 сум</b></div><button class="buy" onclick="buy()">Оформить заказ</button></aside>
 <button id="mus" onclick="music()">♪ Музыка: выкл</button><div id="md" class="md"><div class="box" id="mb"></div></div><div id="toast"></div>
 <script>
