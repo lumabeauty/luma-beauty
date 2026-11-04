@@ -631,16 +631,25 @@ const LUMA_HERO_PHOTOS=[
 ];
 let lumaHeroIndex=0,lumaHeroTimer=null;
 function showHeroPhoto(i){
- lumaHeroIndex=(i+LUMA_HERO_PHOTOS.length)%LUMA_HERO_PHOTOS.length;
+ const photos=window._lumaHeroPhotos||LUMA_HERO_PHOTOS;
+ lumaHeroIndex=(i+photos.length)%photos.length;
  const img=$('heroSlideImage');if(!img)return;
  img.classList.add('is-changing');
- setTimeout(()=>{img.src=LUMA_HERO_PHOTOS[lumaHeroIndex];img.onload=()=>img.classList.remove('is-changing');},180);
- const dots=$('heroSlideDots');if(dots)dots.innerHTML=LUMA_HERO_PHOTOS.map((p,n)=>'<button type="button" class="'+(n===lumaHeroIndex?'active':'')+'" aria-label="Фото '+(n+1)+'" onclick="showHeroPhoto('+n+')"></button>').join('');
+ setTimeout(()=>{img.src=photos[lumaHeroIndex];img.onload=()=>img.classList.remove('is-changing');},180);
+ const dots=$('heroSlideDots');if(dots)dots.innerHTML=photos.map((p,n)=>'<button type="button" class="'+(n===lumaHeroIndex?'active':'')+'" aria-label="Фото '+(n+1)+'" onclick="showHeroPhoto('+n+')"></button>').join('');
 }
 function heroNext(){showHeroPhoto(lumaHeroIndex+1);resetHeroTimer()}
 function heroPrev(){showHeroPhoto(lumaHeroIndex-1);resetHeroTimer()}
 function resetHeroTimer(){if(lumaHeroTimer)clearInterval(lumaHeroTimer);lumaHeroTimer=setInterval(()=>showHeroPhoto(lumaHeroIndex+1),5000)}
-function initHeroSlider(){const img=$('heroSlideImage');if(!img)return;img.src=LUMA_HERO_PHOTOS[0];img.onload=()=>img.classList.remove('is-changing');showHeroPhoto(0);resetHeroTimer()}
+
+async function initHeroSlider(){
+ const img=$('heroSlideImage');if(!img)return;
+ let photos=LUMA_HERO_PHOTOS;
+ try{const {data,error}=await sb.from('home_hero').select('photos').eq('id',1).maybeSingle();if(!error&&Array.isArray(data?.photos)&&data.photos.length)photos=data.photos.filter(Boolean).slice(0,5);}catch(e){}
+ window._lumaHeroPhotos=photos;
+ img.src=photos[0];img.onload=()=>img.classList.remove('is-changing');
+ showHeroPhoto(0);resetHeroTimer();
+}
 
 async function loadHomeStory(){try{const {data,error}=await sb.from('site_banners').select('*').eq('id',1).maybeSingle();if(error||!data)return;const pics=(data.photos||[]).filter(Boolean).slice(0,5);if(!pics.length)return;const g=$('storyGallery');g.innerHTML='<img id="storyPhoto" src="'+pics[0]+'" alt="Luma Beauty"><div class="story-dots">'+pics.map((u,i)=>'<button class="'+(!i?'on':'')+'" aria-label="Фото '+(i+1)+'" onclick="storyGo('+i+')"></button>').join('')+'</div>';window._storyPhotos=pics;window._storyIndex=0;window.storyGo=i=>{window._storyIndex=i;$('storyPhoto').src=window._storyPhotos[i];g.querySelectorAll('.story-dots button').forEach((b,n)=>b.classList.toggle('on',n===i))};if(pics.length>1)window._storyTimer=setInterval(()=>window.storyGo((window._storyIndex+1)%pics.length),4500);if(data.title)$('homeStory').querySelector('h2').textContent=data.title;if(data.subtitle)$('homeStory').querySelector('p').textContent=data.subtitle;}catch(e){console.warn('Story gallery:',e)}}
 function ask(i){const p=P[i];window.open('https://t.me/'+TG_USER+'?text='+encodeURIComponent('Здравствуйте! Хочу узнать цену: '+p.k+' '+p.t+(p.v?' ('+p.v+')':'')),'_blank')}
