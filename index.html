@@ -250,9 +250,29 @@ footer{background:#38232d;color:#f7e8ed}
 #md .buy,#dr .buy{background:linear-gradient(110deg,#e7afbf,#b96783);border-radius:99px}
 @media(max-width:760px){#favGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.social-cta{width:100%;justify-content:center}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Final responsive details */
+.hero-instagram{display:inline-flex;align-items:center;justify-content:center;margin-left:12px;padding:13px 22px;border:1px solid #c87994;border-radius:99px;color:#a95775;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s,transform .2s}
+.hero-instagram:hover{background:#c87994;color:#fff;transform:translateY(-2px)}
+@media(max-width:640px){
+ .luma-hero{min-height:600px;grid-template-columns:1fr;align-items:end}
+ .hero-visual{width:100%;height:58%;top:0;right:0;background-position:center 28%}
+ .luma-hero:after{background:linear-gradient(0deg,#faedf0 0%,rgba(250,237,240,.96) 35%,rgba(250,237,240,.08) 100%)}
+ .hero-copy{padding:280px 22px 34px}
+ .hero-copy h1{font-size:clamp(48px,13vw,66px);margin:12px 0}
+ .hero-copy p{font-size:15px;line-height:1.45;margin-bottom:20px}
+ .hero-copy .cta{padding:12px 18px;font-size:13px}
+ .hero-instagram{margin:10px 0 0 8px;padding:11px 15px;font-size:13px}
+ .hero-stamp{width:76px;height:76px;font-size:12px;right:18px;bottom:245px}
+ header{padding:10px 14px}
+ header>div{gap:5px!important}
+ #acc{max-width:74px;font-size:12px;padding:6px 9px}
+ .cartbtn{font-size:12px;padding:6px 10px}
+}
+@media(min-width:641px) and (max-width:900px){.hero-copy{padding-left:28px}.hero-copy h1{font-size:58px}.hero-visual{width:54%}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
-<div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
+<div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
 <section class="home-cats"><h2>Выберите свой ритуал</h2><p class="sub">Всё для красоты и ежедневного ухода</p><div class="category-row">
 <button class="category-tile" onclick="setCategory('Лицо')"><span class="category-art">✧</span>Уход за лицом</button>
 <button class="category-tile" onclick="setCategory('Тело')"><span class="category-art">❀</span>Уход за телом</button>
