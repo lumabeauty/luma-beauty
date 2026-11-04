@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fbf1e8">
+<meta name="theme-color" content="#fff7f7">
 <title>Товар — Luma Beauty</title>
 <meta name="description" content="Подробная информация о товаре в Luma Beauty.">
 <link rel="icon" type="image/png" href="./favicon.png">
@@ -22,6 +22,25 @@ footer{border-top:1px solid #ead8c8;text-align:center;padding:20px;color:#826d5d
 .notice{padding:65px 20px;text-align:center;color:var(--muted)}
 @media(max-width:900px){.topbar{padding:0 18px}.perks span:nth-child(2){display:none}.head{grid-template-columns:150px 1fr 120px;padding:8px 18px}.brand{font-size:40px}.nav{gap:14px;font-size:13px}.actions{gap:12px}.layout{grid-template-columns:1fr 1fr;gap:24px}.gallery{grid-template-columns:62px 1fr;gap:10px}.thumb{width:62px;height:62px}.assurances{grid-template-columns:repeat(2,1fr);row-gap:12px}.assurance:nth-child(2){border:0}.panels{grid-template-columns:1fr 1fr}.panel:last-child{grid-column:1/-1;border-top:1px solid var(--line);padding:15px 0 0}.related-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:640px){.topbar{height:34px;font-size:10px;padding:0 10px}.perks{gap:8px}.perks span{gap:4px}.perks span:nth-child(3),.contacts a:first-child{display:none}.perks span+span{padding-left:8px}.head{min-height:62px;grid-template-columns:1fr auto;padding:8px 15px}.brand{font-size:36px}.brand small{font-size:9px;margin-top:7px}.nav{display:none}.actions{gap:13px}.actions button{font-size:22px}.contacts{gap:8px}.contacts a{font-size:11px}main{padding:10px 14px 40px}.crumb{font-size:11px;margin-bottom:10px}.layout{display:flex;flex-direction:column;gap:20px;align-items:stretch}.gallery{grid-template-columns:58px 1fr;gap:9px;width:100%}.thumb{width:58px;height:58px}.mainphoto{height:min(92vw,390px)}.info{padding:0 2px}.pill{font-size:12px;padding:5px 17px}.title{font-size:38px}.subtitle{font-size:16px}.price{font-size:31px}.desc{font-size:15px}.buyrow{gap:8px}.stepper{min-width:118px;height:52px}.stepper button{width:32px}.buy{height:52px;font-size:16px}.favorite{height:52px;width:52px;font-size:22px}.assurances{margin-top:22px}.assurance{font-size:12px;padding:5px 8px}.assurance b{font-size:23px}.tabs{margin-top:22px}.tab{padding:12px 14px;font-size:14px}.panels{display:block;padding-top:14px}.panel,.panel:first-child,.panel:last-child{border:0;border-bottom:1px solid #e5c8ad;padding:12px 0}.panel h3{font-size:23px}.related{margin-top:20px}.related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.rel-card .rname{font-size:12px}.rel-card .rprice{font-size:13px}}
+
+/* Matching feminine blush-pink palette */
+:root{--bg:#fff7f7;--paper:#fffafa;--ink:#39252d;--muted:#947c84;--gold:#c87994;--gold2:#e5a9bb;--line:#efd9df;--peach:#f8e3e9;--deep:#a95775}
+body{background:radial-gradient(ellipse at 8% 18%,#fff0f3 0,transparent 38%),radial-gradient(ellipse at 98% 44%,#f5dce3 0,transparent 32%),var(--bg);color:var(--ink)}
+.topbar,.head{background:#fff0f2d9;border-color:#efd9df}
+.ico{color:#b86682}.brand{color:#39252d}.nav a:hover{color:#b86682}
+.thumb{background:#f7e3e9}.thumb.active{border-color:#c87994;box-shadow:0 2px 7px #b866822b}
+.mainphoto{background:linear-gradient(135deg,#f6e0e6,#fff0f2 58%,#edc5d2)}
+.mainphoto:before{background:radial-gradient(ellipse,#e7b4c3a6,transparent 70%)}
+.heart,.zoom,.favorite{color:#633b4a}
+.pill{background:linear-gradient(100deg,#eab3c2,#d4829c);color:#492936;box-shadow:0 2px 5px #b8668235}
+.stars{color:#d58aa1}
+.discount{background:#fbd9e1;color:#a53d61}
+.stepper{border-color:#efd0d9;background:#fff0f2}.stepper button{color:#a95775}
+.buy{background:linear-gradient(100deg,#e5a4b7,#b96783);box-shadow:0 4px 9px #9a4f6d33}
+.favorite{border-color:#efd0d9;background:#fff7f8}
+.assurance b{color:#c87994}.tab.active{border-color:#c87994}
+.panel{border-color:#e8c7d1}.note{background:#f8e3e9}
+.rel-card{background:#f7e3e9}
 </style>
 </head>
 <body>
