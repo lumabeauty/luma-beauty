@@ -24,6 +24,23 @@ td input[type=text]{width:100%;min-width:110px}
 img{width:40px;height:50px;object-fit:cover;border-radius:6px}
 body{background:#f8f4ec;color:#29251f}header{background:#302a20}button{background:#b99a68;border-radius:3px}table{border:1px solid #e8dfd0}th{background:#f3ede2}
 #lg{max-width:320px;margin:15vh auto;display:flex;flex-direction:column;gap:10px}
+/* Responsive blush boutique admin */
+body{font:14px Jost,system-ui,sans-serif;background:#fff7f8;color:#38232d}
+header{background:#38232d;color:#fff;padding:14px 20px;box-shadow:0 5px 18px #38232d18}
+header b{font:600 26px 'Cormorant Garamond',serif;letter-spacing:.04em}
+button{background:linear-gradient(110deg,#e5a4b7,#b96783);border-radius:99px;padding:9px 16px}
+button.g{background:#f8e7eb;color:#704657}
+main{padding:22px;overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:#fffdfd;border:1px solid #efd9e0;border-radius:14px;overflow:hidden;min-width:1100px}
+td,th{border-bottom:1px solid #f2e4e8;padding:9px 10px;text-align:left;vertical-align:top}
+th{background:#f8e7eb;color:#654452}
+input,select,textarea{border:1px solid #ead2da;border-radius:8px;padding:8px;background:#fffafb;color:#38232d}
+#lg{max-width:360px;padding:24px;background:#fffdfd;border:1px solid #efd9e0;border-radius:18px;box-shadow:0 18px 50px #5b29351a}
+.photo-stack{display:flex;flex-wrap:wrap;gap:4px;max-width:190px}
+.photo-stack img{width:42px;height:48px;object-fit:cover;border-radius:7px;border:1px solid #efd9e0}
+.photo-help{display:block;color:#947c84;font-size:11px;margin:5px 0}
+input[type=file]{max-width:170px;font-size:11px}
+@media(max-width:700px){main{padding:12px}header{gap:7px}header b{width:100%;margin:0}header button{font-size:12px;padding:8px 11px}}
 </style>
 </head>
 <body>
@@ -212,11 +229,12 @@ async function vProducts(){
         <tr id="r${esc(p.id)}"
             data-q="${esc((p.title+' '+(p.kind||'')).toLowerCase())}">
           <td>
-            ${p.image ? `<img src="${esc(p.image)}" alt="">` : ''}
+            ${[p.image,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean).length ? `<div class="photo-stack">${[p.image,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean).map(u=>`<img src="${esc(u)}" alt="">`).join('')}</div>` : ''}
             <br>
             <input type="file" accept="image/*"
               multiple onchange="upGallery(${JSON.stringify(p.id)},this)"
-              style="width:90px">
+              style="width:150px">
+            <span class="photo-help">${1+(Array.isArray(p.gallery)?p.gallery.length:0)} / 5 фото · можно выбрать несколько</span>
           </td>
           <td><input type="text" name="title" value="${esc(p.title)}"></td>
           <td><input type="text" name="kind" value="${esc(p.kind)}"></td>
