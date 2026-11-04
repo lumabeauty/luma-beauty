@@ -192,6 +192,34 @@ footer .logo{color:#fff6e9;font-size:40px}footer .logo i{color:#d6a55e}
  .home-story{grid-template-columns:1fr;gap:0}.home-story img{height:210px}.home-story-copy{padding:22px}
  #catalog{padding:24px 18px 50px}#catalog .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#catalog .bd{padding:11px}#catalog .bd h3{font-size:20px}
 }
+
+/* Feminine blush-pink boutique palette */
+:root{--bg:#fff7f7;--card:#fffafa;--ink:#39252d;--mute:#947c84;--rose:#d987a0;--rose2:#f8e1e8;--gold:#c28a78;--line:#efd9df}
+body{background:#fff7f7;color:#39252d}
+header{background:rgba(255,247,248,.95);border-color:#efd9df}
+.logo i,nav a:hover{color:#c86f8d}
+.cartbtn{border-color:#c9879b;color:#633b4a}.cartbtn b{background:#c86f8d}
+.luma-hero{background:linear-gradient(110deg,#fae8ec 0%,#f9edf0 48%,#eac8d0 100%);border-color:#efd9df}
+.luma-hero:after{background:linear-gradient(90deg,rgba(252,239,242,.97) 0%,rgba(252,239,242,.83) 42%,rgba(252,239,242,0) 73%)}
+.hero-copy .eyebrow{color:#a85d78}.hero-copy h1{color:#39232d}.hero-copy h1 em{color:#bd6f8a}
+.hero-copy p{color:#765c66}.hero-copy .cta,.home-story-copy .cta{background:linear-gradient(105deg,#e4a4b7,#b96783);box-shadow:0 8px 18px #b9678335}
+.hero-stamp{background:#a85c7966}
+.home-cats h2,.home-section h2,#catalog h2{color:#39252d}
+.category-art{background:radial-gradient(circle at 35% 30%,#fffafb,#f1d6df);border-color:#f0d6df;box-shadow:0 8px 22px #8f526412}
+.category-tile{color:#503541}
+#catalog .promo{background:#f9e8ed;border-color:#d9a2b3;color:#633b4a}
+#catalog .sq{background:#fffafa;border-color:#efd9df}
+#catalog .chip{border-color:#efd9df;background:#fffafa;color:#694b57}
+#catalog .chip.on{background:#c86f8d;border-color:#c86f8d;color:white}
+#catalog .card{background:#fffafa;border-color:#f0dce2;box-shadow:0 8px 25px #8d52610b}
+#catalog .ph{background:linear-gradient(145deg,#f8e7eb,#fff7f7)}
+#catalog .add{background:linear-gradient(120deg,#e4a4b7,#b96783);color:white}
+.home-benefits{background:#f7e5e9;border-color:#efd5de}
+.benefit{border-color:#e2b8c4}.benefit b{color:#c57590}.benefit small{color:#876c77}
+.home-story{background:#fffafa;border-color:#f0dce2}.home-story-copy p{color:#876c77}
+footer{background:#38232d;color:#f7e8ed}
+footer .logo{color:#fff8fa}footer .logo i{color:#e2a4b7}
+#dr{background:#fffafa;color:#39252d}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center"><nav><a href="#catalog">Каталог</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
