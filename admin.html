@@ -234,7 +234,7 @@ async function vProducts(){
             <input type="file" accept="image/*"
               multiple onchange="upGallery(${JSON.stringify(p.id)},this)"
               style="width:150px">
-            <span class="photo-help">${1+(Array.isArray(p.gallery)?p.gallery.length:0)} / 5 фото · можно выбрать несколько</span>
+            <span class="photo-help">${[p.image,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean).length} / 5 фото · можно выбрать несколько</span>
           </td>
           <td><input type="text" name="title" value="${esc(p.title)}"></td>
           <td><input type="text" name="kind" value="${esc(p.kind)}"></td>
