@@ -323,15 +323,24 @@ function payStep(){const T=Object.keys(cart).reduce((s,k)=>s+np(P[k].p)*cart[k],
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
 async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));cart=LS.get('luma_cart')||{};render();const addId=new URLSearchParams(location.search).get('add');if(addId){const i=P.findIndex(p=>String(p.id)===addId);if(i>=0){const count=Math.max(1,Math.min(99,Number(new URLSearchParams(location.search).get('qty'))||1));cart[i]=(cart[i]||0)+count;LS.set('luma_cart',cart);upd();toast('Добавлено в корзину')}history.replaceState(null,'',location.pathname)}}
 async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
+let signupPending=null;
+function cleanPhone(v){let n=String(v||'').replace(/[^0-9+]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(n.startsWith('998'))n='+'+n;if(n.startsWith('0'))n='+998'+n.slice(1);if(!n.startsWith('+'))n='+998'+n;return n}
 function acct(m='in'){
-if(user)return modal(`<h3 class="serif">Здравствуйте, ${user.name}!</h3><p class="mu">${user.email}</p><button class="buy" onclick="logout()">Выйти</button>`);
-modal(`<h3 class="serif">${m=='in'?'Вход':'Регистрация'}</h3><div class="tabs"><button class="${m=='in'?'on':''}" onclick="acct('in')">Вход</button><button class="${m=='up'?'on':''}" onclick="acct('up')">Регистрация</button></div>${m=='up'?'<input id="fn" placeholder="Имя"><input id="fph" placeholder="Телефон">':''}<input id="fe" type="email" placeholder="E-mail"><input id="fw" type="password" placeholder="Пароль (минимум 6 символов)"><p class="err" id="er"></p><button class="buy" onclick="auth('${m}')">${m=='in'?'Войти':'Создать аккаунт'}</button>`)}
-async function auth(m){const e=$('fe').value.trim(),w=$('fw').value,er=$('er');
-if(!e||w.length<6)return er.textContent='Укажите e-mail и пароль от 6 символов';
-let r;if(m=='up'){const n=$('fn').value.trim(),ph=$('fph').value.trim();if(!n||!ph)return er.textContent='Введите имя и телефон';r=await sb.auth.signUp({email:e,password:w,options:{data:{name:n,phone:ph}}})}else r=await sb.auth.signInWithPassword({email:e,password:w});
-if(r.error)return er.textContent=r.error.message;
-if(!r.data.session)return er.textContent='Подтвердите e-mail по письму, затем войдите';
-await loadUser();closeM();toast('Добро пожаловать, '+user.name+'!');if(pend){pend=false;buy()}}
+if(user)return modal('<h3 class="serif">Здравствуйте, '+user.name+'!</h3><p class="mu">'+(user.phone||'')+'</p><button class="buy" onclick="logout()">Выйти</button>');
+modal('<h3 class="serif">'+(m==='in'?'Вход':'Регистрация')+'</h3><div class="tabs"><button class="'+(m==='in'?'on':'')+'" onclick="acct(\'in\')">Вход</button><button class="'+(m==='up'?'on':'')+'" onclick="acct(\'up\')">Регистрация</button></div>'+(m==='up'?'<input id="fn" placeholder="Ваше имя" autocomplete="name">':'')+'<input id="fph" type="tel" placeholder="'+(m==='in'?'Телефон или e-mail':'Номер телефона +998…')+'" autocomplete="tel"><input id="fw" type="password" placeholder="Пароль (минимум 6 символов)" autocomplete="'+(m==='in'?'current-password':'new-password')+'"><p class="err" id="er"></p><button class="buy" onclick="auth(\''+m+'\')">'+(m==='in'?'Войти':'Получить SMS-код')+'</button>'+(m==='in'?'<small class="mu">Для старых аккаунтов доступен вход по e-mail.</small>':'<small class="mu">Код придёт по SMS. При следующих входах SMS не требуется.</small>'));
+}
+async function auth(m){const raw=$('fph').value.trim(),w=$('fw').value,er=$('er');if(!raw||w.length<6)return er.textContent='Введите телефон и пароль от 6 символов';
+try{
+ if(m==='up'){const n=$('fn').value.trim(),ph=cleanPhone(raw);if(!n)return er.textContent='Введите имя';if(!/^\+998\d{9}$/.test(ph))return er.textContent='Введите номер Узбекистана в формате +998 XX XXX XX XX';
+ signupPending={phone:ph,password:w,name:n};const r=await sb.auth.signUp({phone:ph,password:w,options:{data:{name:n,phone:ph}}});if(r.error)return er.textContent=r.error.message;
+ if(r.data.session){await sb.auth.signOut();return er.textContent='SMS-подтверждение выключено в Supabase. Включите подтверждение телефона и настройте SMS-провайдера.'}
+ modal('<h3 class="serif">Подтвердите номер</h3><p>Мы отправили SMS на <b>'+ph+'</b>.</p><input id="smsCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Код из SMS"><p class="err" id="smsErr"></p><button class="buy" onclick="verifySignup()">Подтвердить номер</button><button class="cartbtn" onclick="acct(\'up\')">Изменить номер</button>');return;
+ }
+ let r;if(raw.includes('@'))r=await sb.auth.signInWithPassword({email:raw,password:w});else r=await sb.auth.signInWithPassword({phone:cleanPhone(raw),password:w});
+ if(r.error)return er.textContent=r.error.message;await finishAuth();
+}catch(e){er.textContent=e.message||'Не удалось выполнить вход'}}
+async function verifySignup(){const token=$('smsCode').value.trim(),err=$('smsErr');if(!token)return err.textContent='Введите код из SMS';const r=await sb.auth.verifyOtp({phone:signupPending.phone,token,type:'sms'});if(r.error)return err.textContent=r.error.message;await finishAuth()}
+async function finishAuth(){signupPending=null;await loadUser();closeM();toast('Добро пожаловать, '+(user?.name||'в Luma Beauty')+'!');if(pend){pend=false;buy()}}
 async function logout(){await sb.auth.signOut();await loadUser();closeM()}
 async function promo(){const c=$('pc').value.trim().toUpperCase(),m=$('pm');const {data}=await sb.rpc('check_promo',{c});
 if(data>0){disc=data/100;pcode=c;m.textContent='Промокод применён: скидка '+data+'% на все товары';m.className='ok'}else{disc=0;pcode='';m.textContent='Промокод не найден';m.className='err'}render();upd()}
