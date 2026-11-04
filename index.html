@@ -358,11 +358,46 @@ footer .logo i{color:#ef5265}
 }
 @media(prefers-reduced-motion:reduce){.hero-copy,.hero-stamp{animation:none!important}}
 
+
+/* Editorial category mosaic + Instagram badge */
+.bloom-categories{max-width:1360px;margin:24px auto 18px;padding:0 3.2%;display:grid;grid-template-columns:1.18fr 1fr 1fr 1fr;grid-template-rows:220px 220px;gap:12px}
+.bloom-cat{position:relative;display:block;overflow:hidden;border-radius:22px;background:#eee center/cover no-repeat;min-height:0;text-decoration:none;isolation:isolate;transition:transform .28s,box-shadow .28s}
+.bloom-cat:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(22,22,25,.52),transparent 48%);z-index:-0}
+.bloom-cat:after{content:"";position:absolute;inset:0;background:inherit;z-index:-1;transition:transform .55s}
+.bloom-cat:hover{transform:translateY(-3px);box-shadow:0 12px 28px #24242a18}
+.bloom-cat:hover:after{transform:scale(1.045)}
+.bloom-cat span{position:absolute;left:20px;bottom:17px;color:#fff;font:700 21px/1.1 Arial,sans-serif;text-shadow:0 2px 8px #0005}
+.bloom-cat-makeup{grid-column:1;grid-row:1/3;background-image:url('https://images.unsplash.com/photo-1583241800698-e8ab01830a73?auto=format&fit=crop&w=900&q=85')}
+.bloom-cat-face{grid-column:2;grid-row:1;background-image:url('https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=700&q=85')}
+.bloom-cat-hair{grid-column:3;grid-row:1;background-image:url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=85')}
+.bloom-cat-gift{grid-column:4;grid-row:1;background-image:url('https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=700&q=85')}
+.bloom-cat-perfume{grid-column:2/4;grid-row:2;background-image:url('https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1100&q=85')}
+.bloom-cat-sale{grid-column:4;grid-row:2;background-image:url('https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=700&q=85')}
+.bloom-insta{display:flex;justify-content:center;padding:20px 0 34px}
+.bloom-insta a{display:flex;flex-direction:column;align-items:center;gap:6px;color:#29282b;text-decoration:none;font:500 15px Arial,sans-serif}
+.bloom-insta-icon{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#7b39b7 0%,#e83279 48%,#ff9b35 100%);padding:4px;box-shadow:0 2px 8px #e8327930}
+.bloom-insta-icon svg{width:100%;height:100%;border:3px solid #fff;border-radius:50%;padding:13px}
+@media(max-width:760px){.bloom-categories{padding:0 14px;grid-template-columns:1fr 1fr;grid-template-rows:190px 150px 150px;gap:9px;margin:16px auto}.bloom-cat{border-radius:16px}.bloom-cat-makeup{grid-column:1;grid-row:1/3}.bloom-cat-face{grid-column:2;grid-row:1}.bloom-cat-hair{grid-column:2;grid-row:2}.bloom-cat-gift{grid-column:1;grid-row:3}.bloom-cat-perfume{grid-column:2;grid-row:3}.bloom-cat-sale{display:none}.bloom-cat span{left:12px;bottom:12px;font-size:16px}.bloom-insta{padding:16px 0 28px}.bloom-insta-icon{width:66px;height:66px}}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
 
-<section id="favorites"><h2>Мне нравится ♡</h2><div id="favGrid"></div><p id="favEmpty" class="sub">Сохраняйте понравившиеся товары на странице товара — они появятся здесь.</p></section><section class="home-section"><div class="section-head"><div><h2>Маленькие радости каждый день</h2><p class="sub">Подберите уход, который подходит именно вам</p></div><a href="#catalog">Смотреть каталог →</a></div><div class="home-story" id="homeStory"><div class="story-gallery" id="storyGallery"><img src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=1000&q=85" alt="Косметика и средства ухода"><div class="story-dots"></div></div><div class="home-story-copy"><h2>Время для себя</h2><p>Создайте свой ежедневный ритуал красоты: мягкое очищение, любимый уход и несколько минут только для себя.</p><a class="cta" href="#catalog">Найти любимое средство →</a></div></div></section>
+<section id="favorites"><h2>Мне нравится ♡</h2><div id="favGrid"></div><p id="favEmpty" class="sub">Сохраняйте понравившиеся товары на странице товара — они появятся здесь.</p></section>
+<section class="bloom-categories" aria-label="Категории косметики">
+ <a class="bloom-cat bloom-cat-makeup" href="#catalog"><span>Макияж</span></a>
+ <a class="bloom-cat bloom-cat-face" href="#catalog"><span>Уход за лицом</span></a>
+ <a class="bloom-cat bloom-cat-hair" href="#catalog"><span>Уход за волосами</span></a>
+ <a class="bloom-cat bloom-cat-gift" href="#catalog"><span>Подарочные карты</span></a>
+ <a class="bloom-cat bloom-cat-perfume" href="#catalog"><span>Парфюмерия</span></a>
+ <a class="bloom-cat bloom-cat-sale" href="#catalog"><span>Скидки</span></a>
+</section>
+<section class="bloom-insta">
+ <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener" aria-label="Luma Beauty в Instagram">
+  <span class="bloom-insta-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.6" cy="6.6" r="1.2" fill="currentColor"/></svg></span>
+  <span>Insta</span>
+ </a>
+</section>
 <section id="catalog"><h2 class="serif">Избранное для вашей красоты</h2><p class="sub" id="sub"></p><div class="promo">Промокод <b>LUMA25</b> — скидка 20% на все товары. Введите его в корзине.</div><div style="text-align:center;margin-bottom:18px"><input class="sq" placeholder="Поиск по товарам" oninput="q=this.value.trim().toLowerCase();render()"></div><div class="chips" id="chips"></div><div class="grid" id="grid"></div></section>
 <section class="home-benefits"><div class="benefit"><b>◇</b><span><strong>Оригинальная косметика</strong><small>Только проверенные товары</small></span></div><div class="benefit"><b>▤</b><span><strong>Бережная доставка</strong><small>Удобно и аккуратно</small></span></div><div class="benefit"><b>♧</b><span><strong>Поддержка 24/7</strong><small>Поможем с выбором</small></span></div><div class="benefit"><b>✧</b><span><strong>С любовью к деталям</strong><small>Красота в каждом моменте</small></span></div></section>
 <footer><span class="logo serif">Luma<i>·</i>Beauty</span><p>Красота. Уход. Вдохновение.</p><p><a href="tel:+998910010184">☎ +998 91 001 01 84</a>　 <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram @lumabeautyuz</a></p><a class="social-cta" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Подписаться в Instagram ↗</a><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
