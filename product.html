@@ -69,7 +69,7 @@ const {data,error}=await sb.from('products').select('*').eq('id',id).eq('active'
 if(error||!data){$('content').textContent='Товар не найден или больше не доступен.';return}
 product=data;document.title=data.title+' — Luma Beauty';$('crumbName').textContent=data.title;
 photos=[data.image,...(Array.isArray(data.gallery)?data.gallery:[])].filter(Boolean).slice(0,5);
-let relq=sb.from('products').select('id,title,price,image,category').eq('active',true).neq('id',id).limit(6);if(data.category)relq=relq.eq('category',data.category);const rr=await relq;related=rr.data||[];
+let relq=sb.from('products').select('id,title,price,discount_percent,image,category').eq('active',true).neq('id',id).limit(6);if(data.category)relq=relq.eq('category',data.category);const rr=await relq;related=rr.data||[];
 let fav=[];try{fav=JSON.parse(localStorage.getItem('luma_favorites')||'[]')}catch(e){}
 const thumbs=photos.map((u,n)=>'<button class="thumb '+(n===0?'active':'')+'" onclick="showPhoto('+n+')" aria-label="Фото '+(n+1)+'"><img src="'+esc(u)+'" alt=""></button>').join('');
 const photo=photos.length?'<img id="mainPhoto" src="'+esc(photos[0])+'" alt="'+esc(data.title)+'">':'<div class="placeholder">Luma Beauty</div>';
