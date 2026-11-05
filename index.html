@@ -545,7 +545,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <aside id="dr"><h3 class="serif">Корзина <button onclick="dr.classList.remove('open')">×</button></h3><div id="items"></div><div class="promo-row"><input id="pc" placeholder="Промокод"><button onclick="promo()">Применить</button></div><div id="pm" class="mu"></div><div class="tot"><span>Итого</span><b id="tot">0 сум</b></div><button class="buy" onclick="buy()">Оформить заказ</button></aside>
 <button id="mus" onclick="music()">♪ Музыка: выкл</button><div id="md" class="md"><div class="box" id="mb"></div></div><div id="toast"></div>
 <script>
-let P=[];const $=i=>document.getElementById(i);const dr=$('dr');let cur='Все',cart={},disc=0,user=null,pend=false;const {TG_USER,PAYME_ID,CLICK_SERVICE,CLICK_MERCHANT}=CFG;const np=n=>Math.round(n*(1-disc));const salePrice=p=>Math.round(Number(p.p||0)*(100-(p.d||0))/100);const finalPrice=p=>np(salePrice(p));const productPrice=p=>(p.d?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d?'new':''}">${f(salePrice(p))}</span>`;const cartPrice=p=>((p.d||disc)?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d||disc?'new':''}">${f(finalPrice(p))}</span>`;
+let P=[];const $=i=>document.getElementById(i);const dr=$('dr');let cur='Все',cart={},disc=0,user=null,pend=false,cashbackBalance=0;const {TG_USER,PAYME_ID,CLICK_SERVICE,CLICK_MERCHANT}=CFG;const np=n=>Math.round(n*(1-disc));const salePrice=p=>Math.round(Number(p.p||0)*(100-(p.d||0))/100);const finalPrice=p=>np(salePrice(p));const productPrice=p=>(p.d?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d?'new':''}">${f(salePrice(p))}</span>`;const cartPrice=p=>((p.d||disc)?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d||disc?'new':''}">${f(finalPrice(p))}</span>`;
 const f=n=>n.toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';
 const cats=['Все','Лицо','Тело','Волосы','Загар и SPF','Для мужчин'];let q='';
 $('chips').innerHTML=cats.map(c=>`<button class="chip${c==cur?' on':''}" data-c="${c}">${c}</button>`).join('');
@@ -598,10 +598,16 @@ try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json
 a.value=(nm?nm+'\n':'')+`📍 ${la}, ${lo}\nhttps://www.google.com/maps?q=${la},${lo}`;g.textContent='Местоположение определено. Проверьте адрес и допишите дом, квартиру и ориентир.'},
 ()=>{g.textContent='Не удалось определить местоположение. Разрешите доступ к геолокации или введите адрес вручную.'},{enableHighAccuracy:true,timeout:10000})}
 function addrNext(){const v=$('ad').value.trim();if(v.length<8)return $('ge').textContent='Укажите адрес доставки (город, улица, дом).';if(!dlD||!dlT||dlD<iso(new Date()))return $('ge').textContent='Выберите дату и время доставки.';addr=v;try{localStorage.setItem('luma_addr',v)}catch(e){}payStep()}
-function payStep(){const T=Object.keys(cart).reduce((s,k)=>s+finalPrice(P[k])*cart[k],0);modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Самовывоз':'Доставка'}: ${addr.split('\n')[0].replace(/</g,'&lt;')}</p>${mode=='pickup'?'':`<p class="mu">📅 ${fd()}</p>`}<p class="mu">К оплате: <b>${f(T)}</b></p><button class="pay payme" onclick="pay('payme',${T})">Оплатить через Payme</button><button class="pay click" onclick="pay('click',${T})">Оплатить через Click</button>`)}
+async function payStep(){
+const T=Object.keys(cart).reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0);
+const {data}=await sb.from('profiles').select('cashback_balance').eq('id',user.id).single();
+cashbackBalance=Math.max(0,Number(data?.cashback_balance)||0);
+const max=Math.min(cashbackBalance,Math.floor(T*0.5));
+modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Самовывоз':'Доставка'}: ${addr.split('\\n')[0].replace(/</g,'&lt;')}</p>${mode=='pickup'?'':`<p class="mu">📅 ${fd()}</p>`}<div class="ib"><b>Ваш кешбэк</b><p>Баланс: <strong>${f(cashbackBalance)}</strong></p><p>Можно использовать до: <strong>${f(max)}</strong> (не более 50% заказа)</p><input id="cbUse" type="number" min="0" max="${max}" step="1" value="0" style="width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit" placeholder="Сколько кешбэка списать?"></div><p class="mu">Сумма до кешбэка: <b>${f(T)}</b></p><button class="pay payme" onclick="pay('payme')">Продолжить через Payme</button><button class="pay click" onclick="pay('click')">Продолжить через Click</button>`);
+}
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
 async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,d:Number(r.discount_percent)||0,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));cart=LS.get('luma_cart')||{};render();const addId=new URLSearchParams(location.search).get('add');if(addId){const i=P.findIndex(p=>String(p.id)===addId);if(i>=0){const count=Math.max(1,Math.min(99,Number(new URLSearchParams(location.search).get('qty'))||1));cart[i]=(cart[i]||0)+count;LS.set('luma_cart',cart);upd();toast('Добавлено в корзину')}history.replaceState(null,'',location.pathname)}}
-async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
+async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={id:session.user.id,name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
 let signupPending=null;
 function cleanPhone(v){let n=String(v||'').replace(/[^0-9+]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(n.startsWith('998'))n='+'+n;if(n.startsWith('0'))n='+998'+n.slice(1);if(!n.startsWith('+'))n='+998'+n;return n}
 function acct(m='in'){
@@ -626,18 +632,22 @@ if(data>0){disc=data/100;pcode=c;m.textContent='Промокод применё�
 function buy(){const T=Object.keys(cart).reduce((s,k)=>s+finalPrice(P[k])*cart[k],0);if(!T)return toast('Корзина пуста');dr.classList.remove('open');
 if(!user){pend=true;toast('Войдите, чтобы оформить заказ');return acct('in')}
 addrStep()}
-async function pay(m){const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart);
-const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''} × ${cart[k]} — ${f(finalPrice(P[k])*cart[k])}`).join('\n');
-const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa()});
-if(error)return toast('Не удалось создать заказ, попробуйте ещё раз');
-const o=data.id,T=data.total;let u='';
+async function pay(m){
+const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart),cb=Math.max(0,Math.floor(Number($('cbUse')?.value)||0));
+const base=ks.reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0),max=Math.min(cashbackBalance,Math.floor(base*0.5));
+if(cb>max)return toast('Можно использовать не более '+f(max));
+const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''} × ${cart[k]} — ${f(finalPrice(P[k])*cart[k])}`).join('\\n');
+const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa(),p_cashback_to_use:cb});
+if(error){console.error(error);return toast(error.message?.includes('cashback')?'Проверьте баланс кешбэка и сумму списания':'Не удалось создать заказ, попробуйте ещё раз')}
+const o=data.id,T=data.total,used=Number(data.cashback_used)||0;let u='';
 if(m=='payme'&&PAYME_ID)u='https://checkout.paycom.uz/'+btoa(`m=${PAYME_ID};ac.order_id=${o};a=${T*100};l=ru`);
 if(m=='click'&&CLICK_SERVICE&&CLICK_MERCHANT)u=`https://my.click.uz/services/pay?service_id=${CLICK_SERVICE}&merchant_id=${CLICK_MERCHANT}&amount=${T}&transaction_param=${o}`;
-const txt=`Новый заказ №${o} — Luma Beauty\nКлиент: ${user.name}, ${user.phone}\nОплата: ${N}\n${fa()}\n\n${L}\n\n${disc?'Промокод '+pcode+' (−'+Math.round(disc*100)+'%)\n':''}Итого: ${f(T)}`;
+const txt=`Новый заказ №${o} — Luma Beauty\\nКлиент: ${user.name}, ${user.phone}\\nОплата: ${N}\\n${fa()}\\n\\n${L}\\n\\n${disc?'Промокод '+pcode+' (−'+Math.round(disc*100)+'%)\\n':''}${used?'Списан кешбэк: '+f(used)+'\\n':''}Итого к оплате: ${f(T)}`;
 cart={};upd();
 const tg=TG_USER?`<a class="buy" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${encodeURIComponent(txt)}">Сообщить о заказе в Telegram</a>`:'';
 const py=u?`<a class="pay ${m}" style="text-align:center;text-decoration:none" href="${u}">Перейти к оплате ${N}</a>`:`<p class="mu">Оплата ${N} пока не подключена: мы свяжемся с вами по заказу.</p>`;
-modal(`<h3 class="serif">Заказ №${o} создан</h3><pre class="mu" style="white-space:pre-wrap;max-height:170px;overflow:auto;font:inherit">${txt.replace(/</g,'&lt;')}</pre>${tg}${py}`)}
+modal(`<h3 class="serif">Заказ №${o} создан</h3>${used?`<p class="ok">Использовано кешбэка: ${f(used)}</p>`:''}<pre class="mu" style="white-space:pre-wrap;max-height:170px;overflow:auto;font:inherit">${txt.replace(/</g,'&lt;')}</pre>${tg}${py}`);
+}
 let au,bus,master,tm,on=false,stp=0;
 const CH=[[130.81,196,261.63,329.63,493.88],[110,164.81,261.63,329.63,392],[87.31,174.61,261.63,329.63,440],[98,196,293.66,329.63,493.88]],BL=[523.25,587.33,659.25,783.99,880];
 function note(f,t,d,ty,v,a){const o=au.createOscillator(),g=au.createGain();o.type=ty;o.frequency.value=f;o.detune.value=(Math.random()-.5)*10;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.linearRampToValueAtTime(0,t+d);o.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.1)}
