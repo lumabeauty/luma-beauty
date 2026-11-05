@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Luma Beauty — админка</title>
+<title>Luma Beauty — Центр управления</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <style>
@@ -157,7 +157,7 @@ function showConfigError(){
 function showLogin(msg=''){
   $('app').innerHTML = `
     <div id="lg">
-      <h2>Luma Beauty — админка</h2>
+      <h2>Luma Beauty — Центр управления</h2>
       <input id="e" type="email" placeholder="E-mail">
       <input id="p" type="password" placeholder="Пароль">
       <button onclick="doLogin()">Войти</button>
@@ -200,7 +200,7 @@ async function init(){
 
   $('app').innerHTML = `
     <header>
-      <b>Luma Beauty · админка</b>
+      <b>Luma Beauty · Центр управления</b>
       ${[
         ['analytics','Главная'],
         ['orders','Заказы'],
