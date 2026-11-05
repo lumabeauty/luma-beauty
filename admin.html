@@ -421,14 +421,16 @@ async function clientHistory(id){
   const {data,error}=await sb.from('orders').select('*').eq('user_id',id).order('created_at',{ascending:false});
   if(error)return alert('Не удалось загрузить историю: '+error.message);
   const rows=data||[];
-  const spend=rows.filter(o=>o.status!=='canceled').reduce((n,o)=>n+Number(o.total||0),0);
+  const spend=rows.filter(o=>['paid','shipped','done'].includes(o.status)).reduce((n,o)=>n+Number(o.total||0),0);
   const modal=document.createElement('div');modal.className='admin-modal';
   modal.innerHTML='<div class="admin-modal-card"><button class="modal-close" onclick="this.closest(\'.admin-modal\').remove()">Закрыть</button><h3>'+esc(c?.name||'Клиент')+'</h3><p>'+esc(c?.phone||'')+' · Заказов: '+rows.length+' · Сумма неотменённых: '+fmt(spend)+'</p><table class="mini-table"><tr><th>№</th><th>Дата</th><th>Статус</th><th>Сумма</th><th>Товары</th></tr>'+rows.map(o=>'<tr><td>#'+esc(o.id)+'</td><td>'+dt(o.created_at)+'</td><td>'+esc(ST[o.status]||o.status)+'</td><td>'+fmt(o.total)+'</td><td>'+esc((o.items||[]).map(i=>(i.title||'Товар')+' × '+(i.qty||1)).join(', '))+'</td></tr>').join('')+'</table></div>';
   modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});document.body.appendChild(modal);
 }
-function exportOrders(){
+async function exportOrders(){
+  const {data,error}=await sb.from('orders').select('*').order('id',{ascending:false});
+  if(error)return alert('Не удалось экспортировать заказы: '+error.message);
   const rows=[['Номер','Дата','Клиент','Телефон','Адрес','Товары','Сумма','Оплата','Статус','Промокод','Кешбэк']];
-  (_orders||[]).forEach(o=>rows.push([o.id,o.created_at,o.customer_name,o.phone,o.address,(o.items||[]).map(i=>(i.title||'')+' x '+(i.qty||1)).join('; '),o.total,o.payment,ST[o.status]||o.status,o.promo,o.cashback_used]));
+  (data||[]).forEach(o=>rows.push([o.id,o.created_at,o.customer_name,o.phone,o.address,(o.items||[]).map(i=>(i.title||'')+' x '+(i.qty||1)).join('; '),o.total,o.payment,ST[o.status]||o.status,o.promo,o.cashback_used]));
   downloadCSV(rows,'luma-orders.csv');
 }
 function downloadCSV(rows,name){
@@ -444,7 +446,7 @@ async function printOrder(id){
 }
 async function backupData(){
   if(!confirm('Скачать резервную копию каталога, заказов, клиентов и промокодов на этот компьютер? Файл содержит персональные данные клиентов. Храни его в безопасном месте.'))return;
-  const tables=['products','orders','profiles','promos','cashback_transactions','cashback_redemptions'];
+  const tables=['products','orders','profiles','promos','home_hero','site_banners','cashback_transactions','cashback_redemptions','admin_audit_logs'];
   const backup={created_at:new Date().toISOString(),project:'Luma Beauty',tables:{}};
   for(const t of tables){const {data,error}=await sb.from(t).select('*');if(error)return alert('Не удалось создать копию ('+t+'): '+error.message);backup.tables[t]=data||[];}
   const a=document.createElement('a');const u=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));a.href=u;a.download='luma-beauty-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
