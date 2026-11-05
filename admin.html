@@ -227,7 +227,7 @@ async function vProducts(){
         <th>Фото</th><th>Название</th><th>Тип / бренд</th>
         <th>Категория</th><th>Объём</th><th>Состав</th>
         <th>Подходит</th><th>Не подходит</th>
-        <th>Цена, сум</th><th>Виден</th><th></th>
+        <th>Цена, сум</th><th>Скидка, %</th><th>Виден</th><th></th>
       </tr>
       ${data.map(p => `
         <tr id="r${esc(p.id)}"
@@ -251,7 +251,7 @@ async function vProducts(){
           <td><textarea name="ingredients" rows="3">${esc(p.ingredients)}</textarea></td>
           <td><textarea name="suits" rows="3">${esc(p.suits)}</textarea></td>
           <td><textarea name="avoid" rows="3">${esc(p.avoid)}</textarea></td>
-          <td><input type="number" name="price" value="${esc(p.price)}" style="width:100px"></td>
+          <td><input type="number" name="price" value="${esc(p.price)}" style="width:100px"></td><td><input type="number" name="discount_percent" min="0" max="100" step="1" value="${esc(p.discount_percent||0)}" style="width:70px"></td>
           <td><input type="checkbox" name="active"${p.active?' checked':''}></td>
           <td><button onclick="saveP(${JSON.stringify(p.id)},this)">Сохранить</button></td>
         </tr>
@@ -275,6 +275,8 @@ async function saveP(id,button){
   const title = g('title').value.trim();
 
   if(!title) return alert('Название товара не может быть пустым.');
+  const discountPercent = Number(g('discount_percent').value);
+  if(!Number.isInteger(discountPercent) || discountPercent < 0 || discountPercent > 100) return alert('Скидка должна быть целым числом от 0 до 100.');
 
   const changes = {
     title,
@@ -285,6 +287,7 @@ async function saveP(id,button){
     suits:g('suits').value,
     avoid:g('avoid').value,
     price:Number(g('price').value)||0,
+    discount_percent:discountPercent,
     active:g('active').checked
   };
 
@@ -370,7 +373,8 @@ async function addP(){
   const {error} = await sb.from('products').insert({
     title:'Новый товар',
     category:'Тело',
-    price:0
+    price:0,
+    discount_percent:0
   });
 
   if(error) return alert('Не удалось добавить товар: '+error.message);
