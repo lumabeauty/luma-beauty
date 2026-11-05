@@ -494,12 +494,15 @@ async function vClients(){
     <h3>Клиенты (${_cl.length}) <button onclick="csv()">Скачать CSV</button></h3>
     <div class="order-tools">
       <input id="clientSearch" placeholder="Поиск по имени или номеру телефона…" oninput="filterClients()">
+      <label>С даты <input id="clientDateFrom" type="date" aria-label="С даты регистрации" onchange="filterClients()"></label>
+      <label>По дату <input id="clientDateTo" type="date" aria-label="По дату регистрации" onchange="filterClients()"></label>
+      <button class="g" onclick="clearClientFilters()">Сбросить</button>
       <button class="g" onclick="vClients()">Обновить</button>
     </div>
     <table id="clientsTable">
       <tr><th>Имя</th><th>Телефон</th><th>E-mail</th><th>Регистрация</th></tr>
       ${_cl.map(c => `
-        <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}">
+        <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}" data-created="${c.created_at ? new Date(c.created_at).getTime() : ''}">
           <td>${esc(c.name)}${c.is_admin?' (админ)':''}</td>
           <td>${esc(c.phone)}</td>
           <td>${esc(c.email)}</td>
@@ -511,9 +514,24 @@ async function vClients(){
 
 function filterClients(){
   const q = ($('clientSearch')?.value || '').trim().toLowerCase();
+  const fromValue = $('clientDateFrom')?.value || '';
+  const toValue = $('clientDateTo')?.value || '';
+  const from = fromValue ? new Date(fromValue+'T00:00:00').getTime() : null;
+  const to = toValue ? new Date(toValue+'T23:59:59.999').getTime() : null;
   document.querySelectorAll('#clientsTable tr[data-search]').forEach(row=>{
-    row.style.display = (row.dataset.search||'').includes(q) ? '' : 'none';
+    const created = Number(row.dataset.created);
+    const matchesSearch = (row.dataset.search||'').includes(q);
+    const matchesFrom = from === null || (Number.isFinite(created) && created >= from);
+    const matchesTo = to === null || (Number.isFinite(created) && created <= to);
+    row.style.display = matchesSearch && matchesFrom && matchesTo ? '' : 'none';
   });
+}
+
+function clearClientFilters(){
+  if($('clientSearch')) $('clientSearch').value='';
+  if($('clientDateFrom')) $('clientDateFrom').value='';
+  if($('clientDateTo')) $('clientDateTo').value='';
+  filterClients();
 }
 
 function csv(){
