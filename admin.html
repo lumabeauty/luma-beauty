@@ -42,6 +42,24 @@ input,select,textarea{border:1px solid #ead2da;border-radius:8px;padding:8px;bac
 input[type=file]{max-width:170px;font-size:11px}
 @media(max-width:700px){main{padding:12px}header{gap:7px}header b{width:100%;margin:0}header button{font-size:12px;padding:8px 11px}}
 
+
+/* Цветные статусы заказов */
+#ordersTable select.status-select{
+  min-width:132px;
+  padding:8px 30px 8px 12px;
+  border:1px solid transparent;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:none;
+}
+#ordersTable select.status-new{background:#fff2c9;color:#8a5a00;border-color:#f0d98f}
+#ordersTable select.status-paid{background:#dceeff;color:#185b91;border-color:#b9dcfa}
+#ordersTable select.status-shipped{background:#e9e0ff;color:#6241a1;border-color:#d2c2fa}
+#ordersTable select.status-done{background:#dff4e5;color:#216b3b;border-color:#b9e3c5}
+#ordersTable select.status-canceled{background:#ffe1df;color:#a3332d;border-color:#f4c0bc}
+#ordersTable select.status-select:focus{outline:2px solid var(--adm-gold);outline-offset:2px}
+
 /* Luma Beauty admin refresh */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&display=swap');
 :root{--adm-bg:#f7f3eb;--adm-card:#fffdf9;--adm-ink:#30271e;--adm-muted:#8b7b69;--adm-gold:#b58a50;--adm-gold-dark:#8e6835;--adm-line:#e9dfcf;--adm-shadow:0 12px 34px rgba(75,54,29,.07)}
@@ -252,7 +270,7 @@ async function vOrders(){
           </td>
           <td>${esc(o.payment)}</td>
           <td>
-            <select onchange="setSt(${JSON.stringify(o.id)},this.value)">
+            <select class="status-select status-${esc(o.status)}" onchange="setSt(${JSON.stringify(o.id)},this)">
               ${opts(ST,o.status)}
             </select>
           </td>
@@ -271,13 +289,22 @@ function filterOrderRows(){
   });
 }
 
-async function setSt(id,s){
+async function setSt(id,el){
+  const s = el.value;
   const {error} = await sb
     .from('orders')
     .update({status:s})
     .eq('id',id);
 
-  if(error) alert('Ошибка изменения статуса: '+error.message);
+  if(error){
+    alert('Ошибка изменения статуса: '+error.message);
+    return;
+  }
+
+  el.className = 'status-select status-'+s;
+  const row = el.closest('tr');
+  if(row) row.dataset.status = s;
+  filterOrderRows();
 }
 
 async function vProducts(){
