@@ -490,6 +490,21 @@ async function vClients(){
   if(error) return $('m').textContent = error.message;
   _cl = data || [];
 
+  const {data:orders,error:ordersError} = await sb
+    .from('orders')
+    .select('user_id,total,status')
+    .in('status',['paid','shipped','done']);
+
+  if(ordersError) return $('m').textContent = 'Не удалось загрузить покупки клиентов: '+ordersError.message;
+
+  const purchaseStats = {};
+  (orders||[]).forEach(o=>{
+    if(!o.user_id) return;
+    if(!purchaseStats[o.user_id]) purchaseStats[o.user_id]={count:0,total:0};
+    purchaseStats[o.user_id].count++;
+    purchaseStats[o.user_id].total += Number(o.total||0);
+  });
+
   $('m').innerHTML = `
     <h3>Клиенты (${_cl.length}) <button onclick="csv()">Скачать CSV</button></h3>
     <div class="order-tools">
@@ -500,16 +515,49 @@ async function vClients(){
       <button class="g" onclick="vClients()">Обновить</button>
     </div>
     <table id="clientsTable">
-      <tr><th>Имя</th><th>Телефон</th><th>E-mail</th><th>Регистрация</th></tr>
-      ${_cl.map(c => `
+      <tr><th>Имя</th><th>Телефон</th><th>Покупок</th><th>Сумма покупок</th><th>Баланс кешбэка</th><th>Кешбэк, %</th><th>E-mail</th><th>Регистрация</th></tr>
+      ${_cl.map(c => {
+        const stats = purchaseStats[c.id] || {count:0,total:0};
+        return `
         <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}" data-created="${c.created_at ? new Date(c.created_at).getTime() : ''}">
           <td>${esc(c.name)}${c.is_admin?' (админ)':''}</td>
           <td>${esc(c.phone)}</td>
+          <td><b>${stats.count}</b></td>
+          <td>${fmt(stats.total)}</td>
+          <td><b>${fmt(c.cashback_balance||0)}</b></td>
+          <td>
+            <div style="display:flex;gap:6px;align-items:center;min-width:130px">
+              <input class="cashback-rate" type="number" min="0" max="100" step="0.1" value="${Number(c.cashback_percent??1)}" aria-label="Процент кешбэка для ${esc(c.name)}" style="width:75px">
+              <button class="g" onclick="saveCashbackRate(${JSON.stringify(c.id)},this.previousElementSibling)">Сохранить</button>
+            </div>
+          </td>
           <td>${esc(c.email)}</td>
           <td>${dt(c.created_at)}</td>
         </tr>
-      `).join('')}
+        `;
+      }).join('')}
     </table>`;
+}
+
+async function saveCashbackRate(userId,input){
+  const percent=Number(input.value);
+  if(!Number.isFinite(percent)||percent<0||percent>100){
+    alert('Укажи процент от 0 до 100.');
+    return;
+  }
+  const button=input.nextElementSibling;
+  button.disabled=true;
+  const {error}=await sb.rpc('admin_set_cashback_percent',{
+    p_user_id:userId,
+    p_percent:percent
+  });
+  button.disabled=false;
+  if(error){
+    alert('Не удалось сохранить процент кешбэка: '+error.message);
+    return;
+  }
+  input.value=percent.toFixed(2).replace(/0+$/,'').replace(/\\.$/,'');
+  alert('Процент кешбэка сохранён.');
 }
 
 function filterClients(){
