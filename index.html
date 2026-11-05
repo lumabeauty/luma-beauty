@@ -461,6 +461,65 @@ footer .logo i{color:#ef5265}
   .bloom-categories{grid-template-rows:150px 112px 112px 96px}
 }
 
+
+
+/* Final mobile polish: spacing, touch targets and overflow safety */
+html{overflow-x:clip}
+body{min-width:320px;overflow-x:clip}
+button,a,select,input{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--rose,#c87994);outline-offset:3px}
+@media(min-width:761px) and (max-width:1050px){
+  header{padding-left:22px;padding-right:22px}
+  section{padding-left:24px;padding-right:24px}
+  #catalog .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .bloom-categories{padding-left:22px;padding-right:22px}
+}
+@media(max-width:760px){
+  header{min-height:60px;padding:8px 10px;gap:5px}
+  header>div{gap:5px}
+  header>.logo{font-size:20px;letter-spacing:-.02em}
+  .langsel{height:34px;border-radius:9px}
+  .cartbtn{min-height:34px;border-radius:99px}
+  .luma-hero{min-height:470px}
+  .hero-copy{padding-top:52px;padding-bottom:112px}
+  .hero-copy h1{max-width:360px;font-size:clamp(43px,11.5vw,58px);line-height:.98}
+  .hero-copy p{max-width:310px}
+  .hero-slider-controls{left:18px;right:auto}
+  .hero-stamp{right:12px;bottom:14px;width:66px;height:66px}
+  .bloom-categories{grid-template-rows:155px 112px 112px 92px}
+  #favorites{padding-top:24px;padding-bottom:28px}
+  #catalog{scroll-margin-top:70px}
+  #catalog .grid{align-items:stretch}
+  #catalog .card{height:100%}
+  #catalog .bd{min-width:0}
+  #catalog .bd h3{overflow-wrap:anywhere}
+  #catalog .pr .old{font-size:10px}
+  #dr{box-sizing:border-box;right:0;left:auto;width:100%;max-width:100%;padding-left:14px;padding-right:14px}
+  #dr .it{min-width:0}
+  #dr .it>div{min-width:0;overflow-wrap:anywhere}
+  .home-benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+  footer .logo{font-size:26px}
+}
+@media(max-width:390px){
+  header>.logo{font-size:17px}
+  header>div{gap:4px}
+  .langsel{min-width:35px;padding-left:3px!important;padding-right:3px!important}
+  .cartbtn{padding-left:6px!important;padding-right:6px!important}
+  #acc{max-width:45px}
+  .hero-copy{padding-left:16px;padding-right:16px}
+  .hero-copy h1{font-size:43px}
+  .hero-instagram{display:inline-block;margin-top:10px}
+  .bloom-categories{grid-template-rows:142px 105px 105px 86px}
+  #catalog .grid{gap:7px}
+  #catalog .bd{padding:8px}
+  #catalog .add{width:31px;height:31px;flex-basis:31px}
+  .home-benefits{gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"><img id="heroSlideImage" alt="Luma Beauty — косметика и уход"><div class="hero-slider-controls"><button type="button" onclick="heroPrev()" aria-label="Предыдущее фото">‹</button><div id="heroSlideDots"></div><button type="button" onclick="heroNext()" aria-label="Следующее фото">›</button></div></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
