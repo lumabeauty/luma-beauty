@@ -509,6 +509,11 @@ async function vClients(){
     <h3>Клиенты (${_cl.length}) <button onclick="csv()">Скачать CSV</button></h3>
     <div class="order-tools">
       <input id="clientSearch" placeholder="Поиск по имени или номеру телефона…" oninput="filterClients()">
+      <select id="clientPurchaseFilter" aria-label="Фильтр по покупкам" onchange="filterClients()">
+        <option value="">Все клиенты</option>
+        <option value="buyers">Покупали хотя бы один раз</option>
+        <option value="registered">Только зарегистрировались</option>
+      </select>
       <label>С даты <input id="clientDateFrom" type="date" aria-label="С даты регистрации" onchange="filterClients()"></label>
       <label>По дату <input id="clientDateTo" type="date" aria-label="По дату регистрации" onchange="filterClients()"></label>
       <button class="g" onclick="clearClientFilters()">Сбросить</button>
@@ -519,7 +524,7 @@ async function vClients(){
       ${_cl.map(c => {
         const stats = purchaseStats[c.id] || {count:0,total:0};
         return `
-        <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}" data-created="${c.created_at ? new Date(c.created_at).getTime() : ''}">
+        <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}" data-created="${c.created_at ? new Date(c.created_at).getTime() : ''}" data-purchases="${stats.count}">
           <td>${esc(c.name)}${c.is_admin?' (админ)':''}</td>
           <td>${esc(c.phone)}</td>
           <td><b>${stats.count}</b></td>
@@ -564,19 +569,25 @@ function filterClients(){
   const q = ($('clientSearch')?.value || '').trim().toLowerCase();
   const fromValue = $('clientDateFrom')?.value || '';
   const toValue = $('clientDateTo')?.value || '';
+  const purchaseFilter = $('clientPurchaseFilter')?.value || '';
   const from = fromValue ? new Date(fromValue+'T00:00:00').getTime() : null;
   const to = toValue ? new Date(toValue+'T23:59:59.999').getTime() : null;
   document.querySelectorAll('#clientsTable tr[data-search]').forEach(row=>{
     const created = Number(row.dataset.created);
     const matchesSearch = (row.dataset.search||'').includes(q);
+    const purchases = Number(row.dataset.purchases || 0);
+    const matchesPurchase = !purchaseFilter ||
+      (purchaseFilter === 'buyers' && purchases >= 1) ||
+      (purchaseFilter === 'registered' && purchases === 0);
     const matchesFrom = from === null || (Number.isFinite(created) && created >= from);
     const matchesTo = to === null || (Number.isFinite(created) && created <= to);
-    row.style.display = matchesSearch && matchesFrom && matchesTo ? '' : 'none';
+    row.style.display = matchesSearch && matchesPurchase && matchesFrom && matchesTo ? '' : 'none';
   });
 }
 
 function clearClientFilters(){
   if($('clientSearch')) $('clientSearch').value='';
+  if($('clientPurchaseFilter')) $('clientPurchaseFilter').value='';
   if($('clientDateFrom')) $('clientDateFrom').value='';
   if($('clientDateTo')) $('clientDateTo').value='';
   filterClients();
