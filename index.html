@@ -520,6 +520,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* Elegant order confirmation */
+.order-success{width:100%;text-align:center;padding:8px 2px 2px;color:var(--ink)}
+.box:has(.order-success){width:min(480px,100%);padding:28px 24px 22px;gap:10px;background:var(--card);border:1px solid color-mix(in srgb,var(--gold) 42%,var(--line));box-shadow:0 24px 70px rgba(45,25,25,.18)}
+.order-check{width:58px;height:58px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#f5ead7,#e9d3ad);color:#80633a;font-size:30px;box-shadow:0 5px 18px rgba(166,132,79,.16)}
+.order-eyebrow{margin:0;color:var(--gold);font-size:10px;letter-spacing:.24em;font-weight:600}
+.order-title{font-size:34px!important;line-height:1.05;margin:5px 0!important}
+.order-subtitle{font-size:13px;line-height:1.55;color:var(--mute);margin:0 auto 8px;max-width:340px}
+.order-subtitle b{color:var(--ink)}
+.order-number{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--bg);border:1px dashed var(--line);border-radius:12px;font-size:13px;color:var(--mute)}
+.order-number b{font-size:17px;color:var(--ink);letter-spacing:.06em}
+.order-section{text-align:left;border-bottom:1px solid var(--line);padding:9px 2px}
+.order-section-title{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:600;margin-bottom:8px}
+.order-line{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:12px;text-align:left}
+.order-line span{min-width:0}.order-line small{color:var(--mute);white-space:nowrap}.order-line b{white-space:nowrap;font-weight:500}
+.order-address{font-size:12px;line-height:1.55;color:var(--mute);margin:0}
+.order-total{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:13px;background:linear-gradient(110deg,#f4ead9,#f8f2e8);color:#59472f}
+.order-total span{font-size:13px}.order-total b{font-size:21px;font-weight:600}
+.order-cashback{font-size:12px;color:#63815c;background:#edf3e9;border-radius:10px;padding:9px 12px}
+.order-success .buy{width:100%;margin-top:2px}.order-success .pay{display:block;width:100%;text-decoration:none;text-align:center;font-size:15px;padding:13px}
+.order-note{font-size:12px;line-height:1.5;color:var(--mute);background:var(--bg);padding:10px 12px;border-radius:10px;margin:0}
+.order-close{width:100%;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:11px 16px;font:inherit;font-size:13px;cursor:pointer;transition:.2s}
+.order-close:hover{border-color:var(--gold);background:var(--bg)}
+.order-footnote{margin:2px 0 0;color:var(--gold);font:italic 15px 'Cormorant Garamond',Georgia,serif}
+@media(max-width:480px){.box:has(.order-success){padding:24px 17px 18px}.order-title{font-size:30px!important}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"><img id="heroSlideImage" alt="Luma Beauty — косметика и уход"><div class="hero-slider-controls"><button type="button" onclick="heroPrev()" aria-label="Предыдущее фото">‹</button><div id="heroSlideDots"></div><button type="button" onclick="heroNext()" aria-label="Следующее фото">›</button></div></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
@@ -646,7 +671,23 @@ const txt=`Новый заказ №${o} — Luma Beauty\\nКлиент: ${user.
 cart={};upd();
 const tg=TG_USER?`<a class="buy" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${encodeURIComponent(txt)}">Сообщить о заказе в Telegram</a>`:'';
 const py=u?`<a class="pay ${m}" style="text-align:center;text-decoration:none" href="${u}">Перейти к оплате ${N}</a>`:`<p class="mu">Оплата ${N} пока не подключена: мы свяжемся с вами по заказу.</p>`;
-modal(`<h3 class="serif">Заказ №${o} создан</h3>${used?`<p class="ok">Использовано кешбэка: ${f(used)}</p>`:''}<pre class="mu" style="white-space:pre-wrap;max-height:170px;overflow:auto;font:inherit">${txt.replace(/</g,'&lt;')}</pre>${tg}${py}`);
+const itemRows=ks.map(k=>`<div class="order-line"><span>${escHTML(P[k].t)} <small>× ${cart[k]||0}</small></span><b>${f(finalPrice(P[k])*(cart[k]||0))}</b></div>`).join('');
+const orderAddress=escHTML(fa()).replace(/\\n/g,'<br>');
+modal(`<div class="order-success">
+<div class="order-check">✓</div>
+<p class="order-eyebrow">LUMA BEAUTY · ВАШ ЗАКАЗ</p>
+<h3 class="serif order-title">Спасибо за покупку!</h3>
+<p class="order-subtitle">Заказ <b>№${o}</b> успешно создан. Мы скоро свяжемся с вами для подтверждения.</p>
+<div class="order-number"><span>Номер заказа</span><b>#${o}</b></div>
+<div class="order-section"><div class="order-section-title">СОСТАВ ЗАКАЗА</div>${itemRows}</div>
+<div class="order-section"><div class="order-section-title">ПОЛУЧЕНИЕ</div><p class="order-address">${orderAddress}</p></div>
+<div class="order-total"><span>К оплате</span><b>${f(T)}</b></div>
+${used?`<div class="order-cashback">✦ Использовано кешбэка: <b>${f(used)}</b></div>`:''}
+${tg}
+${u?py:`<p class="order-note">Заказ принят. Менеджер свяжется с вами и уточнит детали оплаты.</p>`}
+<button class="order-close" onclick="closeM()">Продолжить покупки</button>
+<p class="order-footnote">С любовью, Luma Beauty</p>
+</div>`);
 }
 let au,bus,master,tm,on=false,stp=0;
 const CH=[[130.81,196,261.63,329.63,493.88],[110,164.81,261.63,329.63,392],[87.31,174.61,261.63,329.63,440],[98,196,293.66,329.63,493.88]],BL=[523.25,587.33,659.25,783.99,880];
