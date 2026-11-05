@@ -202,7 +202,10 @@ async function init(){
     <header>
       <b>Luma Beauty · админка</b>
       ${[
-        ['analytics','Аналитика'],
+        ['analytics','Главная аналитика'],
+        ['smartClients','Умные клиенты'],
+        ['smartStock','Умный склад'],
+        ['orderControl','Контроль заказов'],
         ['orders','Заказы'],
         ['products','Товары'],
         ['clients','Клиенты'],
@@ -226,6 +229,9 @@ function go(k){
   $('m').textContent = 'Загрузка…';
   ({
     analytics:vAnalytics,
+    smartClients:vSmartClients,
+    smartStock:vSmartStock,
+    orderControl:vOrderControl,
     orders:vOrders,
     products:vProducts,
     clients:vClients,
@@ -380,43 +386,128 @@ async function vProducts(){
 
 
 async function vAnalytics(){
-  const [{data:orders,error:oe},{data:products,error:pe}] = await Promise.all([
-    sb.from('orders').select('id,total,status,created_at,items,promo,discount,cashback_used'),
-    sb.from('products').select('id,title,stock,active')
+  const [{data:orders,error:oe},{data:products,error:pe},{data:profiles,error:ce}] = await Promise.all([
+    sb.from('orders').select('id,user_id,phone,total,status,created_at,items,promo,discount,cashback_used'),
+    sb.from('products').select('id,title,stock,active'),
+    sb.from('profiles').select('id,created_at')
   ]);
-  if(oe||pe)return $('m').textContent='Не удалось загрузить аналитику: '+(oe||pe).message;
-  const paid=(orders||[]).filter(o=>['paid','shipped','done'].includes(o.status));
+  if(oe||pe||ce)return $('m').textContent='Не удалось загрузить аналитику: '+(oe||pe||ce).message;
+  const all=orders||[], paid=all.filter(o=>['paid','shipped','done'].includes(o.status));
   const revenue=paid.reduce((n,o)=>n+Number(o.total||0)+Number(o.cashback_used||0),0);
   const avg=paid.length?Math.round(revenue/paid.length):0;
-  const today=new Date();const monthStart=new Date(today.getFullYear(),today.getMonth(),1);
+  const now=new Date(), monthStart=new Date(now.getFullYear(),now.getMonth(),1), weekStart=new Date(now);weekStart.setDate(now.getDate()-6);weekStart.setHours(0,0,0,0);
   const monthOrders=paid.filter(o=>new Date(o.created_at)>=monthStart);
   const monthRevenue=monthOrders.reduce((n,o)=>n+Number(o.total||0)+Number(o.cashback_used||0),0);
-  const dayMap={};for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dayMap[d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})]=0;}
-  paid.forEach(o=>{const d=new Date(o.created_at);const key=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});if(key in dayMap)dayMap[key]+=Number(o.total||0)+Number(o.cashback_used||0);});
+  const weekOrders=paid.filter(o=>new Date(o.created_at)>=weekStart);
+  const newClients=(profiles||[]).filter(p=>p.created_at&&new Date(p.created_at)>=monthStart).length;
+  const dayMap={};for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dayMap[d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})]=0;}
+  paid.forEach(o=>{const d=new Date(o.created_at),key=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});if(key in dayMap)dayMap[key]+=Number(o.total||0)+Number(o.cashback_used||0);});
   const max=Math.max(1,...Object.values(dayMap));
   const top={};paid.forEach(o=>(o.items||[]).forEach(i=>{const k=i.title||('Товар '+i.id);top[k]=(top[k]||0)+Number(i.qty||1)}));
   const best=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  const promo={};(orders||[]).filter(o=>o.promo).forEach(o=>{const k=o.promo;promo[k]=(promo[k]||{count:0,total:0});promo[k].count++;promo[k].total+=Number(o.total||0);});
-  const low=(products||[]).filter(p=>p.stock!==null&&p.stock!==undefined&&p.stock<=5);
+  const low=(products||[]).filter(p=>p.active!==false&&p.stock!==null&&p.stock!==undefined&&Number(p.stock)<=5);
+  const newOrders=all.filter(o=>o.status==='new').length;
   $('m').innerHTML=`
-    <h3>Аналитика продаж <button class="g" onclick="vAnalytics()">Обновить</button> <button class="g" onclick="backupData()">Резервная копия</button></h3>
+    <h3>Главная аналитика <button class="g" onclick="vAnalytics()">Обновить</button> <button class="g" onclick="backupData()">Резервная копия</button></h3>
     <div class="admin-stats">
       <div class="admin-stat"><small>Выручка за всё время*</small><b>${fmt(revenue)}</b></div>
-      <div class="admin-stat"><small>Заказов оплачено / отправлено / выполнено</small><b>${paid.length}</b></div>
+      <div class="admin-stat"><small>Оплачено / отправлено / выполнено</small><b>${paid.length}</b></div>
       <div class="admin-stat"><small>Средний чек</small><b>${fmt(avg)}</b></div>
       <div class="admin-stat"><small>Выручка в этом месяце*</small><b>${fmt(monthRevenue)}</b></div>
-      <div class="admin-stat"><small>Заказов в этом месяце</small><b>${monthOrders.length}</b></div>
+      <div class="admin-stat"><small>Заказов за 7 дней</small><b>${weekOrders.length}</b></div>
+      <div class="admin-stat"><small>Новых клиентов в этом месяце</small><b>${newClients}</b></div>
       <div class="admin-stat"><small>Товаров в каталоге</small><b>${products.length}</b></div>
-      <div class="admin-stat"><small>Заканчиваются (остаток ≤ 5)</small><b>${low.length}</b></div>
-      <div class="admin-stat"><small>Новых заказов</small><b>${(orders||[]).filter(o=>o.status==='new').length}</b></div>
+      <div class="admin-stat"><small>Новых заказов</small><b>${newOrders}</b></div>
     </div>
-    <p class="photo-help">* Выручка рассчитана по заказам со статусом «Оплачен», «Отправлен», «Выполнен»; отменённые и новые заказы исключены. Кешбэк, использованный при оплате, прибавлен обратно для отражения полной стоимости заказа.</p>
-    <div class="admin-panel"><h4>Выручка за последние 14 дней</h4><div class="sales-bars">${Object.entries(dayMap).map(([d,v])=>'<div class="sales-col"><b>'+fmt(v)+'</b><i style="height:'+Math.max(v?4:0,Math.round(v/max*130))+'px"></i><small>'+esc(d)+'</small></div>').join('')}</div></div>
+    <p class="photo-help">* Выручка учитывает заказы со статусами «Оплачен», «Отправлен», «Выполнен» и возвращает использованный кешбэк к полной стоимости заказа. Прибыль пока не рассчитывается: в каталоге нет себестоимости товаров.</p>
+    <div class="admin-panel"><h4>Выручка за последние 30 дней</h4><div class="sales-bars">${Object.entries(dayMap).map(([d,v])=>'<div class="sales-col"><b>'+fmt(v)+'</b><i style="height:'+Math.max(v?3:0,Math.round(v/max*130))+'px"></i><small>'+esc(d)+'</small></div>').join('')}</div></div>
     <div class="admin-grid">
-      <section class="admin-panel"><h4>Популярные товары</h4>${best.length?'<ol>'+best.map(([n,q])=>'<li>'+esc(n)+' — <b>'+q+' шт.</b></li>').join('')+'</ol>':'<p>Пока нет завершённых покупок.</p>'}</section>
-      <section class="admin-panel"><h4>Товары с низким остатком</h4>${low.length?'<ul>'+low.map(p=>'<li>'+esc(p.title)+' — <b>'+p.stock+' шт.</b></li>').join('')+'</ul>':'<p>Нет товаров с остатком 5 или меньше. Пустой остаток означает, что учёт не включён.</p>'}</section>
+      <section class="admin-panel"><h4>Популярные товары</h4>${best.length?'<ol>'+best.map(([n,q])=>'<li>'+esc(n)+' — <b>'+q+' шт.</b></li>').join('')+'</ol>':'<p>Пока нет продаж.</p>'}</section>
+      <section class="admin-panel"><h4>Складские предупреждения</h4>${low.length?'<ul>'+low.map(p=>'<li>'+esc(p.title)+' — <b>'+p.stock+' шт.</b></li>').join('')+'</ul>':'<p>Нет активных товаров с остатком 5 или меньше.</p>'}</section>
     </div>
-    <section class="admin-panel"><h4>Использование промокодов</h4><table class="mini-table"><tr><th>Код</th><th>Заказов</th><th>Сумма заказов</th></tr>${Object.entries(promo).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+fmt(v.total)+'</td></tr>').join('')||'<tr><td colspan="3">Пока нет использованных промокодов</td></tr>'}</table></section>`;
+    <section class="admin-panel"><h4>Быстрый контроль</h4><p>Новых заказов: <b>${newOrders}</b> · Требуют внимания по срокам: <button class="g" onclick="go('orderControl')">Открыть контроль заказов</button></p><p>Сегменты клиентов: <button class="g" onclick="go('smartClients')">Открыть умных клиентов</button> · Остатки: <button class="g" onclick="go('smartStock')">Открыть умный склад</button></p></section>`;
+}
+
+async function vSmartClients(){
+  const [{data:profiles,error:pe},{data:orders,error:oe}] = await Promise.all([
+    sb.from('profiles').select('id,name,phone,created_at,cashback_balance,cashback_percent'),
+    sb.from('orders').select('id,user_id,customer_name,phone,total,status,created_at')
+  ]);
+  if(pe||oe)return $('m').textContent='Не удалось загрузить клиентов: '+(pe||oe).message;
+  const rows=(profiles||[]).map(p=>{
+    const os=(orders||[]).filter(o=>o.user_id===p.id);
+    const completed=os.filter(o=>['paid','shipped','done'].includes(o.status));
+    const canceled=os.filter(o=>o.status==='canceled');
+    const last=completed.map(o=>new Date(o.created_at).getTime()).filter(Number.isFinite).sort((a,b)=>b-a)[0]||0;
+    const cancelRate=os.length?canceled.length/os.length:0;
+    const dormant=!!last&&(Date.now()-last)>30*86400000;
+    const repeat=completed.length>=2;
+    const vip=completed.length>=10?'Gold':completed.length>=5?'Silver':completed.length>=1?'Bronze':'—';
+    const segment=cancelRate>=.5&&os.length>=2?'Часто отменяет':dormant?'Давно не покупал':repeat?'Постоянный':vip!=='—'?'Покупатель':'Новый';
+    return {...p,orders:os.length,completed:completed.length,canceled:canceled.length,cancelRate,last,segment,vip,spent:completed.reduce((n,o)=>n+Number(o.total||0),0)};
+  }).sort((a,b)=>b.spent-a.spent);
+  const counts={};rows.forEach(x=>counts[x.segment]=(counts[x.segment]||0)+1);
+  $('m').innerHTML=`<h3>Умные клиенты <button class="g" onclick="vSmartClients()">Обновить</button></h3>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Всего клиентов</small><b>${rows.length}</b></div>
+      <div class="admin-stat"><small>Постоянные</small><b>${counts['Постоянный']||0}</b></div>
+      <div class="admin-stat"><small>Давно не покупали</small><b>${counts['Давно не покупал']||0}</b></div>
+      <div class="admin-stat"><small>Часто отменяют</small><b>${counts['Часто отменяет']||0}</b></div>
+    </div>
+    <p class="photo-help">Постоянный — от 2 оплаченных/отправленных/выполненных заказов. «Давно не покупал» — более 30 дней с последней покупки. Часто отменяет — отменено не менее половины заказов при 2+ заказах. VIP соответствует программе Bronze/Silver/Gold.</p>
+    <div class="order-tools"><input id="smartClientSearch" placeholder="Поиск по имени или телефону" oninput="filterSmartClients()"><select id="smartClientSegment" onchange="filterSmartClients()"><option value="">Все сегменты</option>${opts(Object.fromEntries([...new Set(rows.map(x=>x.segment))].map(x=>[x,x])),'')}</select></div>
+    <table id="smartClientsTable"><tr><th>Клиент</th><th>Телефон</th><th>Сегмент</th><th>VIP</th><th>Заказов</th><th>Отменено</th><th>Покупки, сум</th><th>Последняя покупка</th><th>Кешбэк</th></tr>
+    ${rows.map(x=>'<tr data-q="'+esc((x.name||'')+' '+(x.phone||'')).toLowerCase()+'" data-seg="'+esc(x.segment)+'"><td>'+esc(x.name||'—')+'</td><td>'+esc(x.phone||'—')+'</td><td><b>'+esc(x.segment)+'</b></td><td>'+esc(x.vip)+'</td><td>'+x.orders+'</td><td>'+x.canceled+(x.orders?' ('+Math.round(x.cancelRate*100)+'%)':'')+'</td><td>'+fmt(x.spent)+'</td><td>'+(x.last?dt(new Date(x.last).toISOString()):'—')+'</td><td>'+fmt(x.cashback_balance||0)+'</td></tr>').join('')}</table>`;
+}
+function filterSmartClients(){
+  const q=($('smartClientSearch')?.value||'').toLowerCase(),seg=$('smartClientSegment')?.value||'';
+  document.querySelectorAll('#smartClientsTable tr[data-q]').forEach(r=>r.style.display=(!q||r.dataset.q.includes(q))&&(!seg||r.dataset.seg===seg)?'':'none');
+}
+
+async function vSmartStock(){
+  const [{data:products,error:pe},{data:orders,error:oe}] = await Promise.all([
+    sb.from('products').select('id,title,kind,category,price,stock,active').order('title'),
+    sb.from('orders').select('items,status')
+  ]);
+  if(pe||oe)return $('m').textContent='Не удалось загрузить склад: '+(pe||oe).message;
+  const sold={};(orders||[]).filter(o=>o.status!=='canceled').forEach(o=>(o.items||[]).forEach(i=>{const id=String(i.id??i.product_id??'');if(id)sold[id]=(sold[id]||0)+Number(i.qty||1);}));
+  const list=(products||[]).map(p=>({...p,sold:sold[String(p.id)]||0})).sort((a,b)=>a.stock===null?1:b.stock===null?-1:Number(a.stock)-Number(b.stock));
+  const tracked=list.filter(p=>p.stock!==null&&p.stock!==undefined),low=tracked.filter(p=>p.active&&Number(p.stock)<=5),out=tracked.filter(p=>p.active&&Number(p.stock)===0),best=[...list].sort((a,b)=>b.sold-a.sold).slice(0,10);
+  $('m').innerHTML=`<h3>Умный склад <button class="g" onclick="vSmartStock()">Обновить</button></h3>
+    <div class="admin-stats"><div class="admin-stat"><small>Товаров</small><b>${list.length}</b></div><div class="admin-stat"><small>На учёте</small><b>${tracked.length}</b></div><div class="admin-stat"><small>Заканчиваются (≤ 5)</small><b>${low.length}</b></div><div class="admin-stat"><small>Нет в наличии</small><b>${out.length}</b></div></div>
+    <div class="admin-grid"><section class="admin-panel"><h4>Нужно пополнить</h4>${low.length?'<table class="mini-table"><tr><th>Товар</th><th>Остаток</th><th>Рекомендация</th></tr>'+low.map(p=>'<tr><td>'+esc(p.title)+'</td><td><b>'+p.stock+'</b></td><td>Заказать до 20 шт. (ориентир)</td></tr>').join('')+'</table>':'<p>Нет товаров с остатком 5 или меньше.</p>'}</section>
+    <section class="admin-panel"><h4>Популярные товары</h4>${best.some(p=>p.sold)?'<ol>'+best.filter(p=>p.sold).map(p=>'<li>'+esc(p.title)+' — <b>'+p.sold+' шт.</b></li>').join('')+'</ol>':'<p>Пока недостаточно данных о продажах.</p>'}</section></div>
+    <section class="admin-panel"><h4>Все остатки</h4><div class="order-tools"><input id="stockSearch" placeholder="Поиск товара" oninput="filterStockRows()"><select id="stockFilter" onchange="filterStockRows()"><option value="">Все товары</option><option value="low">Остаток ≤ 5</option><option value="zero">Нет в наличии</option><option value="untracked">Без учёта</option></select></div>
+    <table id="stockTable" class="mini-table"><tr><th>Товар</th><th>Категория</th><th>Остаток</th><th>Продано по заказам</th><th>Статус</th></tr>${list.map(p=>'<tr data-q="'+esc((p.title||'').toLowerCase())+'" data-stock="'+(p.stock===null?'untracked':Number(p.stock)===0?'zero':Number(p.stock)<=5?'low':'ok')+'"><td>'+esc(p.title)+'</td><td>'+esc(p.category||'—')+'</td><td>'+(p.stock??'Не задан')+'</td><td>'+p.sold+'</td><td>'+(!p.active?'Скрыт':p.stock===null?'Не учитывается':p.stock===0?'Нет в наличии':p.stock<=5?'Низкий остаток':'В норме')+'</td></tr>').join('')}</table></section>`;
+}
+function filterStockRows(){
+  const q=($('stockSearch')?.value||'').toLowerCase(),f=$('stockFilter')?.value||'';
+  document.querySelectorAll('#stockTable tr[data-q]').forEach(r=>r.style.display=(!q||r.dataset.q.includes(q))&&(!f||r.dataset.stock===f)?'':'none');
+}
+
+async function vOrderControl(){
+  const {data,error}=await sb.from('orders').select('id,user_id,customer_name,phone,total,status,created_at,items').order('created_at',{ascending:false}).limit(500);
+  if(error)return $('m').textContent='Не удалось проверить заказы: '+error.message;
+  const rows=data||[],now=Date.now(),amounts=rows.filter(o=>o.status!=='canceled').map(o=>Number(o.total||0)).filter(n=>n>0).sort((a,b)=>a-b),median=amounts.length?amounts[Math.floor(amounts.length/2)]:0;
+  const phoneCounts={};rows.forEach(o=>{const p=(o.phone||'').replace(/\D/g,'');if(p)phoneCounts[p]=(phoneCounts[p]||0)+1;});
+  const flagged=rows.map(o=>{
+    const age=(now-new Date(o.created_at).getTime())/3600000;
+    const reasons=[];
+    if(o.status==='new'&&age>24)reasons.push('Новый заказ более 24 часов');
+    if(o.status==='paid'&&age>48)reasons.push('Оплачен более 48 часов назад');
+    if(o.status==='shipped'&&age>72)reasons.push('Отправлен более 72 часов назад');
+    if(o.status!=='canceled'&&median>0&&Number(o.total)>Math.max(1000000,median*3))reasons.push('Необычно большая сумма');
+    const phone=(o.phone||'').replace(/\D/g,'');if(phone&&phoneCounts[phone]>1)reasons.push('Повторный клиент ('+phoneCounts[phone]+' заказов)');
+    return {...o,age,reasons};
+  });
+  const attention=flagged.filter(x=>x.reasons.some(r=>!r.startsWith('Повторный клиент')));
+  $('m').innerHTML=`<h3>Контроль заказов <button class="g" onclick="vOrderControl()">Обновить</button> <button class="g" onclick="go('orders')">Все заказы</button></h3>
+    <div class="admin-stats"><div class="admin-stat"><small>Проверено заказов</small><b>${rows.length}</b></div><div class="admin-stat"><small>Требуют внимания</small><b>${attention.length}</b></div><div class="admin-stat"><small>Новые старше 24 ч.</small><b>${flagged.filter(x=>x.status==='new'&&x.age>24).length}</b></div><div class="admin-stat"><small>Повторные клиенты</small><b>${Object.values(phoneCounts).filter(n=>n>1).length}</b></div></div>
+    <p class="photo-help">Правила: новый заказ — более 24 часов без смены статуса; оплаченный — более 48 часов; отправленный — более 72 часов. Необычная сумма — выше 1 000 000 сум и одновременно выше медианного заказа в 3 раза. Это сигналы для проверки, не доказательство ошибки или мошенничества.</p>
+    <section class="admin-panel"><h4>Заказы, требующие внимания</h4><table class="mini-table"><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Сумма</th><th>Статус</th><th>Причина</th></tr>
+    ${attention.map(o=>'<tr><td>#'+esc(o.id)+'</td><td>'+dt(o.created_at)+'</td><td>'+esc(o.customer_name||'—')+'<br>'+esc(o.phone||'')+'</td><td><b>'+fmt(o.total)+'</b></td><td>'+esc(ST[o.status]||o.status)+'</td><td>'+esc(o.reasons.join('; '))+'</td></tr>').join('')||'<tr><td colspan="6">Нет заказов, требующих внимания по заданным правилам.</td></tr>'}</table></section>
+    <section class="admin-panel"><h4>Повторные клиенты</h4><table class="mini-table"><tr><th>Телефон</th><th>Количество заказов</th></tr>${Object.entries(phoneCounts).filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]).map(([p,n])=>'<tr><td>'+esc(p)+'</td><td>'+n+'</td></tr>').join('')||'<tr><td colspan="2">Повторных заказов пока не найдено.</td></tr>'}</table></section>
+    <p class="photo-help">Ошибки оформления (неуспешные попытки оплаты/создания заказа) сейчас не отображаются: сайт не сохраняет отдельный журнал таких попыток. Для этого понадобится отдельное безопасное логирование.</p>`;
 }
 async function clientHistory(id){
   const c=_cl.find(x=>x.id===id);
