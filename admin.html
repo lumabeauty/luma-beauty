@@ -41,6 +41,52 @@ input,select,textarea{border:1px solid #ead2da;border-radius:8px;padding:8px;bac
 .photo-help{display:block;color:#947c84;font-size:11px;margin:5px 0}
 input[type=file]{max-width:170px;font-size:11px}
 @media(max-width:700px){main{padding:12px}header{gap:7px}header b{width:100%;margin:0}header button{font-size:12px;padding:8px 11px}}
+
+/* Luma Beauty admin refresh */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&display=swap');
+:root{--adm-bg:#f7f3eb;--adm-card:#fffdf9;--adm-ink:#30271e;--adm-muted:#8b7b69;--adm-gold:#b58a50;--adm-gold-dark:#8e6835;--adm-line:#e9dfcf;--adm-shadow:0 12px 34px rgba(75,54,29,.07)}
+*{box-sizing:border-box}
+body{font:14px Jost,system-ui,sans-serif;background:var(--adm-bg);color:var(--adm-ink);min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:rgba(48,39,30,.97);backdrop-filter:blur(12px);padding:13px clamp(14px,3vw,34px);gap:8px;box-shadow:0 8px 24px #30271e18}
+header b{font:700 27px 'Cormorant Garamond',serif;letter-spacing:.04em;margin-right:auto;white-space:nowrap}
+header button{background:transparent;border:1px solid #ffffff30;border-radius:999px;padding:8px 14px;color:#f8f0e4;transition:.2s}
+header button:hover,header button.active{background:var(--adm-gold);border-color:var(--adm-gold);color:#fff}
+header button:last-child{background:#fff1e3;color:#614526;border-color:#fff1e3}
+main{padding:clamp(14px,3vw,34px);max-width:1600px;margin:auto;overflow-x:auto}
+h2,h3{font-family:'Cormorant Garamond',serif;color:var(--adm-ink)}
+h3{font-size:28px;margin:4px 0 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h4{font-size:17px;margin:24px 0 10px}
+button{font:600 13px Jost,system-ui,sans-serif;background:var(--adm-gold);color:#fff;border:1px solid var(--adm-gold);border-radius:9px;padding:9px 15px;cursor:pointer;transition:transform .15s,background .15s}
+button:hover{background:var(--adm-gold-dark);border-color:var(--adm-gold-dark);transform:translateY(-1px)}
+button.g{background:#f2eadc;color:#715a3d;border-color:#e8dcc9}
+button.g:hover{background:#e9ddca}
+button:disabled{opacity:.55;cursor:wait;transform:none}
+input,select,textarea{font:14px Jost,system-ui,sans-serif;border:1px solid var(--adm-line);border-radius:9px;padding:9px 11px;background:#fffefa;color:var(--adm-ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--adm-gold);box-shadow:0 0 0 3px #b58a501c}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--adm-card);border:1px solid var(--adm-line);border-radius:14px;overflow:hidden;min-width:1000px;box-shadow:var(--adm-shadow)}
+td,th{border-bottom:1px solid #eee7dc;padding:11px 12px;text-align:left;vertical-align:middle}
+th{position:sticky;top:0;background:#f1e9dc;color:#6b5437;font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#fcf8f0}
+td input[type=text]{min-width:130px}
+#lg{max-width:390px;margin:13vh auto;padding:30px;background:var(--adm-card);border:1px solid var(--adm-line);border-radius:20px;box-shadow:var(--adm-shadow)}
+#lg h2{font-size:32px;margin:0 0 8px}
+#lg input{width:100%;padding:12px}
+#lg button{padding:12px}
+.photo-stack{display:flex;flex-wrap:wrap;gap:5px;max-width:200px}
+.photo-stack img{width:48px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--adm-line);background:#f4eee4}
+.photo-help{color:var(--adm-muted);font-size:11px}
+input[type=file]{max-width:190px}
+.order-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;align-items:center}
+.order-tools input{min-width:min(320px,100%);flex:1}
+.order-tools select{min-width:170px}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin:0 0 20px}
+.admin-stat{background:var(--adm-card);border:1px solid var(--adm-line);border-radius:14px;padding:15px 17px;box-shadow:var(--adm-shadow)}
+.admin-stat small{display:block;color:var(--adm-muted);font-size:12px}
+.admin-stat b{display:block;font:700 25px 'Cormorant Garamond',serif;margin-top:3px}
+@media(max-width:850px){header{position:static}header b{width:100%;font-size:25px}header button{flex:1}main{padding:12px}.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}h3{font-size:25px}}
+@media(max-width:480px){.admin-stats{gap:8px}.admin-stat{padding:12px}.admin-stat b{font-size:22px}header button{font-size:12px;padding:8px 9px}}
+
 </style>
 </head>
 <body>
@@ -133,7 +179,7 @@ async function init(){
         ['banners','Большой пост'],
         ['hero','Главный баннер']
       ].map(([k,l]) =>
-        `<button class="g" onclick="go('${k}')">${l}</button>`
+        `<button class="g" data-tab="${k}" onclick="go('${k}')">${l}</button>`
       ).join('')}
       <button onclick="out()">Выйти</button>
     </header>
@@ -143,6 +189,7 @@ async function init(){
 }
 
 function go(k){
+  document.querySelectorAll('header [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===k));
   $('m').textContent = 'Загрузка…';
   ({
     orders:vOrders,
