@@ -150,6 +150,22 @@ const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);
 let product=null,qty=1,photos=[],related=[];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number(n).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';
+function setMeta(name,content,property=false){let el=document.head.querySelector((property?'meta[property="':'meta[name="')+name+'"]');if(!el){el=document.createElement('meta');el.setAttribute(property?'property':'name',name);document.head.appendChild(el)}el.setAttribute('content',content)}
+function setProductSEO(p,photo){
+ const title=p.title+' — купить в Luma Beauty, Узбекистан';
+ const desc=[p.title,p.kind,p.volume,p.category,'цена '+(p.price?money(Math.round(p.price*(100-(Number(p.discount_percent)||0))/100)):'уточняйте'),'доставка по Узбекистану'].filter(Boolean).join('. ').slice(0,300);
+ const url='https://lumabeauty.uz/product.html?id='+encodeURIComponent(p.id);
+ document.title=title;
+ setMeta('description',desc);
+ let canonical=document.head.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical)}canonical.href=url;
+ setMeta('og:type','product',true);setMeta('og:title',title,true);setMeta('og:description',desc,true);setMeta('og:url',url,true);
+ if(photo)setMeta('og:image',photo,true);
+ setMeta('twitter:card','summary_large_image');setMeta('twitter:title',title);setMeta('twitter:description',desc);if(photo)setMeta('twitter:image',photo);
+ const old=document.getElementById('product-jsonld');if(old)old.remove();
+ const schema={'@context':'https://schema.org/','@type':'Product',name:p.title,description:desc,sku:String(p.id),url:url,brand:p.kind?{'@type':'Brand',name:p.kind}:undefined,image:photo?[photo]:undefined,category:p.category,offers:p.price?{'@type':'Offer',url:url,priceCurrency:'UZS',price:String(Math.round(p.price*(100-(Number(p.discount_percent)||0))/100)),availability:'https://schema.org/InStock',itemCondition:'https://schema.org/NewCondition',seller:{'@type':'Organization',name:'Luma Beauty'}}:undefined};
+ const ld=document.createElement('script');ld.type='application/ld+json';ld.id='product-jsonld';ld.textContent=JSON.stringify(schema);document.head.appendChild(ld);
+}
+
 function showPhoto(i){if(!photos.length)return;i=(i+photos.length)%photos.length;$('mainPhoto').src=photos[i];document.querySelectorAll('.thumb').forEach((b,n)=>b.classList.toggle('active',n===i));}
 function addToCart(){location.href='index.html?add='+encodeURIComponent(product.id)+'&qty='+qty}
 function toggleFavorite(){if(!product)return;let a=[];try{a=JSON.parse(localStorage.getItem('luma_favorites')||'[]')}catch(e){}const i=a.indexOf(String(product.id));if(i<0)a.push(String(product.id));else a.splice(i,1);localStorage.setItem('luma_favorites',JSON.stringify(a));$('favorite').textContent=i<0?'♥':'♡'}
@@ -158,8 +174,8 @@ function renderRelated(){if(!related.length)return '';return '<section class="re
 async function load(){if(!id){$('content').textContent='Не указан товар. Вернитесь в каталог.';return}
 const {data,error}=await sb.from('products').select('*').eq('id',id).eq('active',true).maybeSingle();
 if(error||!data){$('content').textContent='Товар не найден или больше не доступен.';return}
-product=data;document.title=data.title+' — Luma Beauty';$('crumbName').textContent=data.title;
-photos=[data.image,...(Array.isArray(data.gallery)?data.gallery:[])].filter(Boolean).slice(0,5);
+product=data;$('crumbName').textContent=data.title;
+photos=[data.image,...(Array.isArray(data.gallery)?data.gallery:[])].filter(Boolean).slice(0,5);setProductSEO(data,photos[0]||'');
 let relq=sb.from('products').select('id,title,price,discount_percent,image,category').eq('active',true).neq('id',id).limit(6);if(data.category)relq=relq.eq('category',data.category);const rr=await relq;related=rr.data||[];
 let fav=[];try{fav=JSON.parse(localStorage.getItem('luma_favorites')||'[]')}catch(e){}
 const thumbs=photos.map((u,n)=>'<button class="thumb '+(n===0?'active':'')+'" onclick="showPhoto('+n+')" aria-label="Фото '+(n+1)+'"><img src="'+esc(u)+'" alt=""></button>').join('');
