@@ -202,17 +202,17 @@ async function init(){
     <header>
       <b>Luma Beauty · админка</b>
       ${[
-        ['analytics','Главная аналитика'],
-        ['smartClients','Умные клиенты'],
-        ['smartStock','Умный склад'],
-        ['orderControl','Контроль заказов'],
+        ['analytics','Главная'],
         ['orders','Заказы'],
+        ['orderControl','Контроль заказов'],
         ['products','Товары'],
+        ['smartStock','Умный склад'],
         ['clients','Клиенты'],
+        ['smartClients','Умные клиенты'],
         ['cashback','Кешбэк / VIP'],
         ['promos','Промокоды'],
-        ['banners','Большой пост'],
         ['hero','Главный баннер'],
+        ['banners','Большой пост'],
         ['audit','История действий']
       ].map(([k,l]) =>
         `<button class="g" data-tab="${k}" onclick="go('${k}')">${l}</button>`
