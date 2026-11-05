@@ -497,7 +497,7 @@ async function finishAuth(){signupPending=null;await loadUser();closeM();toast('
 async function logout(){await sb.auth.signOut();await loadUser();closeM()}
 async function promo(){const c=$('pc').value.trim().toUpperCase(),m=$('pm');const {data}=await sb.rpc('check_promo',{c});
 if(data>0){disc=data/100;pcode=c;m.textContent='Промокод применён: скидка '+data+'% на все товары';m.className='ok'}else{disc=0;pcode='';m.textContent='Промокод не найден';m.className='err'}render();upd()}
-function buy(){const T=Object.keys(cart).reduce((s,k)=>s+np(P[k].p)*cart[k],0);if(!T)return toast('Корзина пуста');dr.classList.remove('open');
+function buy(){const T=Object.keys(cart).reduce((s,k)=>s+finalPrice(P[k])*cart[k],0);if(!T)return toast('Корзина пуста');dr.classList.remove('open');
 if(!user){pend=true;toast('Войдите, чтобы оформить заказ');return acct('in')}
 addrStep()}
 async function pay(m){const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart);
