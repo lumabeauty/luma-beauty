@@ -492,10 +492,14 @@ async function vClients(){
 
   $('m').innerHTML = `
     <h3>Клиенты (${_cl.length}) <button onclick="csv()">Скачать CSV</button></h3>
-    <table>
+    <div class="order-tools">
+      <input id="clientSearch" placeholder="Поиск по имени или номеру телефона…" oninput="filterClients()">
+      <button class="g" onclick="vClients()">Обновить</button>
+    </div>
+    <table id="clientsTable">
       <tr><th>Имя</th><th>Телефон</th><th>E-mail</th><th>Регистрация</th></tr>
       ${_cl.map(c => `
-        <tr>
+        <tr data-search="${esc([c.name,c.phone].join(' ').toLowerCase())}">
           <td>${esc(c.name)}${c.is_admin?' (админ)':''}</td>
           <td>${esc(c.phone)}</td>
           <td>${esc(c.email)}</td>
@@ -503,6 +507,13 @@ async function vClients(){
         </tr>
       `).join('')}
     </table>`;
+}
+
+function filterClients(){
+  const q = ($('clientSearch')?.value || '').trim().toLowerCase();
+  document.querySelectorAll('#clientsTable tr[data-search]').forEach(row=>{
+    row.style.display = (row.dataset.search||'').includes(q) ? '' : 'none';
+  });
 }
 
 function csv(){
