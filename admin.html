@@ -203,6 +203,7 @@ async function init(){
       <b>Luma Beauty · Центр управления</b>
       ${[
         ['analytics','Главная'],
+        ['blog','Блог'],
         ['orders','Заказы'],
         ['orderControl','Контроль заказов'],
         ['products','Товары'],
@@ -229,6 +230,7 @@ function go(k){
   $('m').textContent = 'Загрузка…';
   ({
     analytics:vAnalytics,
+    blog:vBlog,
     smartClients:vSmartClients,
     smartStock:vSmartStock,
     orderControl:vOrderControl,
@@ -986,6 +988,38 @@ async function addPr(){
   if(error) alert(error.message);
   else await vPromos();
 }
+
+
+let blogEditingId=null;
+async function vBlog(){
+ const {data,error}=await sb.from('blog_posts').select('*').order('updated_at',{ascending:false});
+ if(error)return $('m').textContent='Ошибка загрузки блога: '+error.message;
+ $('m').innerHTML=`
+ <h2>Блог Luma Beauty</h2>
+ <p>Создавай статьи, сохраняй черновики и публикуй их на сайте. Текст статьи можно вводить обычными абзацами.</p>
+ <section style="background:#fffdfd;border:1px solid #efd9e0;border-radius:16px;padding:18px;max-width:850px;margin-bottom:24px">
+ <h3 id="blogFormTitle">Новая статья</h3>
+ <input id="bpTitle" placeholder="Заголовок статьи" style="width:min(100%,600px);display:block;margin:8px 0">
+ <input id="bpSlug" placeholder="url-адрес: naprimer-uhod-za-kozhey" style="width:min(100%,600px);display:block;margin:8px 0">
+ <select id="bpCategory" style="display:block;margin:8px 0"><option>Уход за кожей</option><option>Уход за волосами</option><option>Кудрявый метод</option><option>Dessi Cosmetica</option><option>Uazan</option></select>
+ <input id="bpExcerpt" placeholder="Краткое описание" style="width:min(100%,600px);display:block;margin:8px 0">
+ <input id="bpImage" placeholder="Ссылка на обложку (URL изображения)" style="width:min(100%,600px);display:block;margin:8px 0">
+ <input id="bpSeoTitle" placeholder="SEO-заголовок (необязательно)" style="width:min(100%,600px);display:block;margin:8px 0">
+ <input id="bpSeoDesc" placeholder="SEO-описание (необязательно)" style="width:min(100%,600px);display:block;margin:8px 0">
+ <textarea id="bpContent" placeholder="Полный текст статьи. Разделяй абзацы пустой строкой." style="width:min(100%,800px);height:260px;display:block;margin:8px 0"></textarea>
+ <label><input type="checkbox" id="bpPublished"> Опубликовать сразу</label><br><br>
+ <button onclick="saveBlogPost()">Сохранить статью</button> <button class="g" onclick="resetBlogForm()">Очистить форму</button>
+ <p style="color:#947c84;font-size:12px">Для адреса используй латинские буквы, цифры и дефисы. Фото пока добавляется по прямой ссылке.</p>
+ </section>
+ <h3>Статьи</h3><table><tr><th>Заголовок</th><th>Категория</th><th>Статус</th><th>Действия</th></tr>
+ ${(data||[]).map(p=>`<tr data-id="${p.id}"><td><b>${esc(p.title)}</b><br><small>${esc(p.slug)}</small></td><td>${esc(p.category)}</td><td>${p.published?'Опубликована':'Черновик'}</td><td><button onclick="editBlogPost(${p.id})">Изменить</button> <button class="g" onclick="toggleBlogPost(${p.id},${!p.published})">${p.published?'Снять':'Опубликовать'}</button> <button class="g" onclick="deleteBlogPost(${p.id})">Удалить</button></td></tr>`).join('')}
+ </table>`;
+}
+function resetBlogForm(){blogEditingId=null;['bpTitle','bpSlug','bpExcerpt','bpImage','bpSeoTitle','bpSeoDesc','bpContent'].forEach(id=>$(id).value='');$('bpCategory').value='Уход за кожей';$('bpPublished').checked=false;$('blogFormTitle').textContent='Новая статья';}
+async function editBlogPost(id){const {data,error}=await sb.from('blog_posts').select('*').eq('id',id).single();if(error)return alert(error.message);blogEditingId=id;$('bpTitle').value=data.title;$('bpSlug').value=data.slug;$('bpCategory').value=data.category;$('bpExcerpt').value=data.excerpt;$('bpImage').value=data.cover_image;$('bpSeoTitle').value=data.seo_title;$('bpSeoDesc').value=data.seo_description;$('bpContent').value=data.content;$('bpPublished').checked=data.published;$('blogFormTitle').textContent='Редактирование статьи №'+id;window.scrollTo({top:0,behavior:'smooth'});}
+async function saveBlogPost(){const title=$('bpTitle').value.trim(),slug=$('bpSlug').value.trim().toLowerCase(),published=$('bpPublished').checked;if(!title)return alert('Введи заголовок.');if(!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug))return alert('Проверь URL: только латинские буквы, цифры и дефисы.');const payload={title,slug,category:$('bpCategory').value,excerpt:$('bpExcerpt').value.trim(),cover_image:$('bpImage').value.trim(),seo_title:$('bpSeoTitle').value.trim(),seo_description:$('bpSeoDesc').value.trim(),content:$('bpContent').value.trim(),published,published_at:published?new Date().toISOString():null,updated_at:new Date().toISOString()};const q=blogEditingId?sb.from('blog_posts').update(payload).eq('id',blogEditingId):sb.from('blog_posts').insert(payload);const {error}=await q;if(error)return alert('Не удалось сохранить: '+error.message);alert('Статья сохранена.');await vBlog();}
+async function toggleBlogPost(id,published){const {error}=await sb.from('blog_posts').update({published,published_at:published?new Date().toISOString():null,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await vBlog();}
+async function deleteBlogPost(id){if(!confirm('Удалить статью без возможности восстановления?'))return;const {error}=await sb.from('blog_posts').delete().eq('id',id);if(error)return alert(error.message);await vBlog();}
 
 if(!CFG.SUPABASE_URL || !CFG.SUPABASE_KEY){
   showConfigError();
