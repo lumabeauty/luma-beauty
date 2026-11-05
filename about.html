@@ -21,7 +21,7 @@
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 Jost,Arial,sans-serif}
     a{color:inherit}header{display:flex;justify-content:space-between;align-items:center;padding:18px 6vw;border-bottom:1px solid var(--line);background:rgba(248,244,236,.94)}
     .logo{font:600 30px 'Cormorant Garamond',Georgia,serif;text-decoration:none;letter-spacing:.04em}.logo i{color:var(--gold);font-style:normal}
-    nav{display:flex;gap:24px;flex-wrap:wrap}nav a{text-decoration:none;color:var(--muted);font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+    nav{display:flex;gap:24px;flex-wrap:wrap}.language{font:14px Jost,Arial,sans-serif;padding:7px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}nav a{text-decoration:none;color:var(--muted);font-size:14px;letter-spacing:.08em;text-transform:uppercase}
     main{max-width:1000px;margin:auto;padding:70px 24px 90px}.eyebrow{text-transform:uppercase;letter-spacing:.3em;color:var(--gold);font-size:12px}
     h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height:1.08}h1{font-size:clamp(48px,8vw,82px);margin:12px 0 20px}h2{font-size:38px;margin:0 0 12px}
     .intro{font-size:20px;color:var(--muted);max-width:760px}.panel{background:var(--paper);border:1px solid var(--line);padding:30px;margin:28px 0}
@@ -50,36 +50,70 @@
     <nav aria-label="Основная навигация">
       <a href="index.html">Магазин</a>
       <a href="blog.html">Блог</a>
-      <a href="about.html" aria-current="page">О бренде</a>
+      <a href="about.html" aria-current="page" id="navAbout">О бренде</a>
     </nav>
+    <select class="language" id="languageSelect" aria-label="Choose language"><option value="ru">Русский</option><option value="uz">O‘zbekcha</option><option value="en">English</option><option value="kk">Қазақша</option><option value="tr">Türkçe</option><option value="zh">中文</option><option value="ko">한국어</option></select>
   </header>
   <main>
-    <span class="eyebrow">Знакомьтесь с нами</span>
-    <h1>О Luma Beauty</h1>
-    <p class="intro"><strong>Luma Beauty</strong> — интернет-магазин косметики и средств ухода в Узбекистане. Здесь можно знакомиться с товарами для ежедневного ухода и находить идеи для своей бьюти-рутины.</p>
+    <span class="eyebrow" id="eyebrow">Знакомьтесь с нами</span>
+    <h1 id="pageTitle">О Luma Beauty</h1>
+    <p class="intro" id="intro"><strong>Luma Beauty</strong> — интернет-магазин косметики и средств ухода в Узбекистане. Здесь можно знакомиться с товарами для ежедневного ухода и находить идеи для своей бьюти-рутины.</p>
     <section class="panel">
-      <h2>Красота начинается с заботы</h2>
-      <p>Мы собрали онлайн-каталог косметики и средств ухода, чтобы вам было удобнее изучать ассортимент и выбирать продукты. На сайте также публикуются материалы о коже, волосах, составах косметики и способах ухода.</p>
-      <p>Наша цель — сделать знакомство с косметикой понятным и удобным: от просмотра каталога до изучения полезных советов в блоге.</p>
+      <h2 id="careTitle">Красота начинается с заботы</h2>
+      <p id="careText1">Мы собрали онлайн-каталог косметики и средств ухода, чтобы вам было удобнее изучать ассортимент и выбирать продукты. На сайте также публикуются материалы о коже, волосах, составах косметики и способах ухода.</p>
+      <p id="careText2">Наша цель — сделать знакомство с косметикой понятным и удобным: от просмотра каталога до изучения полезных советов в блоге.</p>
     </section>
-    <h2>Что вы найдёте на Luma Beauty</h2>
+    <h2 id="featuresTitle">Что вы найдёте на Luma Beauty</h2>
     <div class="grid">
-      <article class="tile"><h3>Каталог косметики</h3><p>Онлайн-каталог товаров для красоты и ежедневного ухода.</p></article>
-      <article class="tile"><h3>Уход за кожей</h3><p>Материалы о базовом уходе, косметических ингредиентах и привычках.</p></article>
-      <article class="tile"><h3>Уход за волосами</h3><p>Статьи о волосах, включая кудрявый метод и уход за разными типами волос.</p></article>
-      <article class="tile"><h3>Бьюти-бренды</h3><p>Знакомство с ассортиментом и материалами о Dessi Cosmetica и Uazan.</p></article>
+      <article class="tile"><h3 id="tile1Title">Каталог косметики</h3><p id="tile1Text">Онлайн-каталог товаров для красоты и ежедневного ухода.</p></article>
+      <article class="tile"><h3 id="tile2Title">Уход за кожей</h3><p id="tile2Text">Материалы о базовом уходе, косметических ингредиентах и привычках.</p></article>
+      <article class="tile"><h3 id="tile3Title">Уход за волосами</h3><p id="tile3Text">Статьи о волосах, включая кудрявый метод и уход за разными типами волос.</p></article>
+      <article class="tile"><h3 id="tile4Title">Бьюти-бренды</h3><p id="tile4Text">Знакомство с ассортиментом и материалами о Dessi Cosmetica и Uazan.</p></article>
     </div>
     <section class="panel">
-      <h2>Связаться с Luma Beauty</h2>
-      <p>По вопросам о магазине и товарах свяжитесь с нами по телефону или через Instagram.</p>
-      <p><strong>Телефон:</strong> <a href="tel:+998910010184">+998 91 001 01 84</a><br>
-      <strong>Instagram:</strong> <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">@lumabeautyuz</a></p>
+      <h2 id="contactTitle">Связаться с Luma Beauty</h2>
+      <p id="contactText">По вопросам о магазине и товарах свяжитесь с нами по телефону или через Instagram.</p>
+      <p><strong id="phoneLabel">Телефон:</strong> <a href="tel:+998910010184">+998 91 001 01 84</a><br>
+      <strong id="instagramLabel">Instagram:</strong> <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">@lumabeautyuz</a></p>
       <div class="actions">
-        <a class="btn" href="index.html">Перейти в магазин</a>
-        <a class="btn alt" href="blog.html">Читать блог</a>
+        <a class="btn" href="index.html" id="shopButton">Перейти в магазин</a>
+        <a class="btn alt" href="blog.html" id="blogButton">Читать блог</a>
       </div>
     </section>
   </main>
-  <footer><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><p>Красота. Уход. Вдохновение.</p><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
+  <footer><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><p id="footerTagline">Красота. Уход. Вдохновение.</p><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
+
+<script>
+const aboutTranslations = {
+ru:{description:"Luma Beauty — интернет-магазин косметики и средств ухода в Узбекистане. Знакомьтесь с каталогом, изучайте статьи о коже, волосах и уходе.",navShop:"Магазин",navBlog:"Блог",navAbout:"О бренде",eyebrow:"Знакомьтесь с нами",title:"О Luma Beauty",intro:" — интернет-магазин косметики и средств ухода в Узбекистане. Здесь можно знакомиться с товарами для ежедневного ухода и находить идеи для своей бьюти-рутины.",careTitle:"Красота начинается с заботы",care1:"Мы собрали онлайн-каталог косметики и средств ухода, чтобы вам было удобнее изучать ассортимент и выбирать продукты. На сайте также публикуются материалы о коже, волосах, составах косметики и способах ухода.",care2:"Наша цель — сделать знакомство с косметикой понятным и удобным: от просмотра каталога до изучения полезных советов в блоге.",features:"Что вы найдёте на Luma Beauty",t1:"Каталог косметики",p1:"Онлайн-каталог товаров для красоты и ежедневного ухода.",t2:"Уход за кожей",p2:"Материалы о базовом уходе, косметических ингредиентах и привычках.",t3:"Уход за волосами",p3:"Статьи о волосах, включая кудрявый метод и уход за разными типами волос.",t4:"Бьюти-бренды",p4:"Знакомство с ассортиментом и материалами о Dessi Cosmetica и Uazan.",contact:"Связаться с Luma Beauty",contactText:"По вопросам о магазине и товарах свяжитесь с нами по телефону или через Instagram.",phone:"Телефон:",instagram:"Instagram:",shop:"Перейти в магазин",blog:"Читать блог",tagline:"Красота. Уход. Вдохновение."},
+uz:{description:"Luma Beauty — O‘zbekistondagi kosmetika va parvarish vositalari internet-do‘koni. Katalog bilan tanishing, teri, soch va parvarish haqidagi maqolalarni o‘qing.",navShop:"Do‘kon",navBlog:"Blog",navAbout:"Brend haqida",eyebrow:"Biz bilan tanishing",title:"Luma Beauty haqida",intro:" — O‘zbekistondagi kosmetika va parvarish vositalari internet-do‘koni. Bu yerda kundalik parvarish mahsulotlarini ko‘rib, go‘zallik tartibingiz uchun g‘oyalar topishingiz mumkin.",careTitle:"Go‘zallik g‘amxo‘rlikdan boshlanadi",care1:"Biz kosmetika va parvarish vositalarining onlayn katalogini jamladik, shunda assortimentni o‘rganish va mahsulot tanlash qulay bo‘ladi. Saytda teri, soch, kosmetika tarkibi va parvarish usullari haqida maqolalar ham bor.",care2:"Maqsadimiz — katalogni ko‘rishdan tortib blogdagi foydali maslahatlargacha kosmetika bilan tanishishni oson va qulay qilish.",features:"Luma Beauty’da nimalarni topasiz",t1:"Kosmetika katalogi",p1:"Go‘zallik va kundalik parvarish mahsulotlarining onlayn katalogi.",t2:"Teri parvarishi",p2:"Asosiy parvarish, kosmetik ingredientlar va foydali odatlar haqida materiallar.",t3:"Soch parvarishi",p3:"Soch, jingalak soch usuli va turli soch turlarini parvarishlash haqidagi maqolalar.",t4:"Go‘zallik brendlari",p4:"Dessi Cosmetica va Uazan mahsulotlari hamda ular haqidagi materiallar.",contact:"Luma Beauty bilan bog‘lanish",contactText:"Do‘kon va mahsulotlar haqida savollar bo‘lsa, telefon yoki Instagram orqali bog‘laning.",phone:"Telefon:",instagram:"Instagram:",shop:"Do‘konga o‘tish",blog:"Blogni o‘qish",tagline:"Go‘zallik. Parvarish. Ilhom."},
+en:{description:"Luma Beauty is an online cosmetics and personal care store in Uzbekistan. Explore the catalog and read articles about skin, hair and care.",navShop:"Shop",navBlog:"Blog",navAbout:"About",eyebrow:"Get to know us",title:"About Luma Beauty",intro:" is an online cosmetics and personal care store in Uzbekistan. Explore products for everyday care and find ideas for your beauty routine.",careTitle:"Beauty begins with care",care1:"We bring together an online catalog of cosmetics and personal care products to make it easier to explore the range and choose products. The site also features articles about skin, hair, cosmetic ingredients and care routines.",care2:"Our goal is to make discovering beauty products simple and convenient, from browsing the catalog to reading helpful tips on our blog.",features:"What you’ll find at Luma Beauty",t1:"Cosmetics catalog",p1:"An online catalog of beauty and everyday care products.",t2:"Skincare",p2:"Guides to basic skincare, cosmetic ingredients and healthy routines.",t3:"Haircare",p3:"Articles about hair, the curly girl method and care for different hair types.",t4:"Beauty brands",p4:"Explore products and helpful information about Dessi Cosmetica and Uazan.",contact:"Contact Luma Beauty",contactText:"For questions about the store and products, contact us by phone or on Instagram.",phone:"Phone:",instagram:"Instagram:",shop:"Visit the shop",blog:"Read the blog",tagline:"Beauty. Care. Inspiration."},
+kk:{description:"Luma Beauty — Өзбекстандағы косметика және күтім құралдарының интернет-дүкені. Каталогты қарап, тері мен шаш күтімі туралы мақалаларды оқыңыз.",navShop:"Дүкен",navBlog:"Блог",navAbout:"Бренд туралы",eyebrow:"Бізбен танысыңыз",title:"Luma Beauty туралы",intro:" — Өзбекстандағы косметика және күтім құралдарының интернет-дүкені. Күнделікті күтім өнімдерін қарап, сұлулық күтіміңізге идея табыңыз.",careTitle:"Сұлулық күтімнен басталады",care1:"Біз косметика мен күтім құралдарының онлайн каталогын жинадық, ассортиментті қарап, өнім таңдауды жеңілдеттік. Сайтта тері, шаш, косметика құрамдары және күтім тәсілдері туралы мақалалар да жарияланады.",care2:"Мақсатымыз — каталогты қараудан бастап блогтағы пайдалы кеңестерге дейін косметикамен танысуды түсінікті әрі ыңғайлы ету.",features:"Luma Beauty сайтынан не табасыз",t1:"Косметика каталогы",p1:"Сұлулық пен күнделікті күтім өнімдерінің онлайн каталогы.",t2:"Тері күтімі",p2:"Негізгі күтім, косметикалық ингредиенттер және пайдалы әдеттер туралы материалдар.",t3:"Шаш күтімі",p3:"Шаш, бұйра шаш әдісі және әртүрлі шаш түрлерін күту туралы мақалалар.",t4:"Сұлулық брендтері",p4:"Dessi Cosmetica және Uazan өнімдері мен материалдарымен танысу.",contact:"Luma Beauty байланысы",contactText:"Дүкен мен өнімдер туралы сұрақтарыңыз болса, телефон немесе Instagram арқылы хабарласыңыз.",phone:"Телефон:",instagram:"Instagram:",shop:"Дүкенге өту",blog:"Блогты оқу",tagline:"Сұлулық. Күтім. Шабыт."},
+tr:{description:"Luma Beauty, Özbekistan’da kozmetik ve kişisel bakım ürünleri sunan çevrim içi mağazadır. Kataloğu keşfedin; cilt, saç ve bakım yazılarını okuyun.",navShop:"Mağaza",navBlog:"Blog",navAbout:"Hakkımızda",eyebrow:"Bizi tanıyın",title:"Luma Beauty hakkında",intro:" — Özbekistan’da kozmetik ve kişisel bakım ürünleri sunan çevrim içi mağazadır. Günlük bakım ürünlerini keşfedin ve güzellik rutininiz için fikirler bulun.",careTitle:"Güzellik özenle başlar",care1:"Kozmetik ve bakım ürünlerinden oluşan çevrim içi kataloğumuzu, ürünleri incelemenizi ve seçim yapmanızı kolaylaştırmak için hazırladık. Sitede cilt, saç, kozmetik içerikleri ve bakım yöntemleri hakkında yazılar da yer alır.",care2:"Amacımız, katalogdan blogdaki yararlı önerilere kadar kozmetik dünyasını anlaşılır ve kolay keşfedilir kılmaktır.",features:"Luma Beauty’de sizi neler bekliyor",t1:"Kozmetik kataloğu",p1:"Güzellik ve günlük bakım ürünlerinin çevrim içi kataloğu.",t2:"Cilt bakımı",p2:"Temel bakım, kozmetik içerikleri ve bakım alışkanlıkları hakkında yazılar.",t3:"Saç bakımı",p3:"Saç, kıvırcık saç yöntemi ve farklı saç tiplerinin bakımı hakkında yazılar.",t4:"Güzellik markaları",p4:"Dessi Cosmetica ve Uazan ürünlerini ve içeriklerini keşfedin.",contact:"Luma Beauty ile iletişim",contactText:"Mağaza ve ürünlerle ilgili sorularınız için telefon veya Instagram üzerinden bize ulaşın.",phone:"Telefon:",instagram:"Instagram:",shop:"Mağazaya git",blog:"Blogu oku",tagline:"Güzellik. Bakım. İlham."},
+zh:{description:"Luma Beauty 是一家位于乌兹别克斯坦的化妆品与个人护理用品网上商店。浏览商品目录，阅读护肤、护发和护理文章。",navShop:"商店",navBlog:"博客",navAbout:"关于品牌",eyebrow:"认识我们",title:"关于 Luma Beauty",intro:" 是一家位于乌兹别克斯坦的化妆品与个人护理用品网上商店。您可以浏览日常护理产品，并寻找适合自己的美容护理灵感。",careTitle:"美丽始于用心呵护",care1:"我们汇集了化妆品和个人护理用品的在线目录，方便您了解商品并挑选产品。网站还分享有关皮肤、头发、化妆品成分和护理方法的文章。",care2:"我们的目标是让您轻松了解美容产品，从浏览商品目录到阅读博客中的实用建议。",features:"您可以在 Luma Beauty 找到",t1:"化妆品目录",p1:"美容及日常护理产品的在线目录。",t2:"皮肤护理",p2:"基础护肤、化妆品成分和护理习惯相关文章。",t3:"头发护理",p3:"关于头发、卷发护理方法以及不同发质护理的文章。",t4:"美容品牌",p4:"了解 Dessi Cosmetica 和 Uazan 的产品及相关内容。",contact:"联系 Luma Beauty",contactText:"如有关于商店或商品的问题，请通过电话或 Instagram 联系我们。",phone:"电话：",instagram:"Instagram：",shop:"进入商店",blog:"阅读博客",tagline:"美丽。呵护。灵感。"},
+ko:{description:"Luma Beauty는 우즈베키스탄의 화장품 및 퍼스널 케어 온라인 스토어입니다. 상품을 둘러보고 피부와 헤어 관리 정보를 확인해 보세요.",navShop:"쇼핑",navBlog:"블로그",navAbout:"브랜드 소개",eyebrow:"Luma Beauty를 만나보세요",title:"Luma Beauty 소개",intro:" 는 우즈베키스탄의 화장품 및 퍼스널 케어 온라인 스토어입니다. 데일리 케어 제품을 둘러보고 나만의 뷰티 루틴에 대한 아이디어를 찾아보세요.",careTitle:"아름다움은 забота에서 시작됩니다",care1:"화장품과 케어 제품을 편리하게 살펴보고 선택할 수 있도록 온라인 카탈로그를 준비했습니다. 사이트에서는 피부, 헤어, 화장품 성분 및 관리 방법에 관한 글도 소개합니다.",care2:"카탈로그 탐색부터 블로그의 유용한 팁까지, 뷰티 제품을 쉽고 편리하게 알아볼 수 있도록 하는 것이 우리의 목표입니다.",features:"Luma Beauty에서 만날 수 있는 것",t1:"화장품 카탈로그",p1:"뷰티 및 데일리 케어 제품 온라인 카탈로그.",t2:"스킨케어",p2:"기초 피부 관리, 화장품 성분 및 관리 습관에 관한 정보.",t3:"헤어케어",p3:"헤어, 컬리 메소드 및 다양한 모발 유형 관리에 관한 글.",t4:"뷰티 브랜드",p4:"Dessi Cosmetica와 Uazan 제품 및 관련 정보를 만나보세요.",contact:"Luma Beauty 문의",contactText:"매장과 제품에 관한 문의는 전화 또는 Instagram으로 연락해 주세요.",phone:"전화:",instagram:"Instagram:",shop:"스토어 방문",blog:"블로그 읽기",tagline:"아름다움. 케어. 영감."}
+};
+function setAboutLanguage(lang){
+ const t=aboutTranslations[lang]||aboutTranslations.ru;
+ const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+ document.documentElement.lang=lang;
+ document.title=t.title+" — Luma Beauty";
+ document.querySelector('meta[name="description"]').content=t.description;
+ document.querySelector('meta[property="og:title"]').content=document.title;
+ document.querySelector('meta[property="og:description"]').content=t.description;
+ set("navShop",t.navShop);set("navBlog",t.navBlog);set("navAbout",t.navAbout);
+ set("eyebrow",t.eyebrow);set("pageTitle",t.title);
+ const intro=document.getElementById("intro");intro.innerHTML="<strong>Luma Beauty</strong>"+t.intro;
+ set("careTitle",t.careTitle);set("careText1",t.care1);set("careText2",t.care2);set("featuresTitle",t.features);
+ ["t1","t2","t3","t4"].forEach((k,i)=>set("tile"+(i+1)+"Title",t[k]));
+ ["p1","p2","p3","p4"].forEach((k,i)=>set("tile"+(i+1)+"Text",t[k]));
+ set("contactTitle",t.contact);set("contactText",t.contactText);set("phoneLabel",t.phone);set("instagramLabel",t.instagram);
+ set("shopButton",t.shop);set("blogButton",t.blog);set("footerTagline",t.tagline);
+}
+const languageSelect=document.getElementById("languageSelect");
+const savedLanguage=localStorage.getItem("luma_about_language")||"ru";
+languageSelect.value=savedLanguage;setAboutLanguage(savedLanguage);
+languageSelect.addEventListener("change",()=>{localStorage.setItem("luma_about_language",languageSelect.value);setAboutLanguage(languageSelect.value)});
+</script>
 </body>
 </html>
