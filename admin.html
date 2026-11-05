@@ -106,6 +106,17 @@ input[type=file]{max-width:190px}
 @media(max-width:850px){header{position:static}header b{width:100%;font-size:25px}header button{flex:1}main{padding:12px}.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}h3{font-size:25px}}
 @media(max-width:480px){.admin-stats{gap:8px}.admin-stat{padding:12px}.admin-stat b{font-size:22px}header button{font-size:12px;padding:8px 9px}}
 
+
+.admin-panel{background:var(--adm-card);border:1px solid var(--adm-line);border-radius:14px;padding:16px;margin:14px 0;box-shadow:var(--adm-shadow)}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sales-bars{display:flex;gap:8px;align-items:end;min-height:180px;overflow-x:auto;padding:10px 2px}
+.sales-col{min-width:48px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;color:var(--adm-muted)}
+.sales-col b{font-size:9px;font-weight:500;writing-mode:vertical-rl;transform:rotate(180deg);height:42px;white-space:nowrap}
+.sales-col i{display:block;width:22px;background:linear-gradient(#d7bd91,#a77d43);border-radius:5px 5px 0 0;min-height:0}
+.admin-modal{position:fixed;inset:0;background:#21190dcc;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
+.admin-modal-card{background:var(--adm-card);border-radius:18px;padding:22px;max-width:1000px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0004}
+.modal-close{float:right}.mini-table{min-width:0!important;font-size:13px}.mini-table td,.mini-table th{padding:8px}
+@media(max-width:700px){.admin-grid{grid-template-columns:1fr}.sales-col{min-width:42px}}
 </style>
 </head>
 <body>
@@ -191,12 +202,14 @@ async function init(){
     <header>
       <b>Luma Beauty · админка</b>
       ${[
+        ['analytics','Аналитика'],
         ['orders','Заказы'],
         ['products','Товары'],
         ['clients','Клиенты'],
         ['promos','Промокоды'],
         ['banners','Большой пост'],
-        ['hero','Главный баннер']
+        ['hero','Главный баннер'],
+        ['audit','История действий']
       ].map(([k,l]) =>
         `<button class="g" data-tab="${k}" onclick="go('${k}')">${l}</button>`
       ).join('')}
@@ -211,12 +224,14 @@ function go(k){
   document.querySelectorAll('header [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===k));
   $('m').textContent = 'Загрузка…';
   ({
+    analytics:vAnalytics,
     orders:vOrders,
     products:vProducts,
     clients:vClients,
     promos:vPromos,
     banners:vBanners,
-    hero:vHero
+    hero:vHero,
+    audit:vAudit
   })[k]();
 }
 
@@ -234,7 +249,7 @@ async function vOrders(){
   const sumTotal = _orders.filter(o=>o.status!=='canceled').reduce((n,o)=>n+Number(o.total||0),0);
 
   $('m').innerHTML = `
-    <h3>Заказы <span style="font:500 13px Jost;color:var(--adm-muted)">Последние ${data.length}</span></h3>
+    <h3>Заказы <span style="font:500 13px Jost;color:var(--adm-muted)">Последние ${data.length}</span> <button class="g" onclick="exportOrders()">Excel / CSV</button> <button class="g" onclick="backupData()">Резервная копия</button></h3>
     <div class="admin-stats">
       <div class="admin-stat"><small>Всего заказов</small><b>${data.length}</b></div>
       <div class="admin-stat"><small>Новые</small><b>${newCount}</b></div>
@@ -250,7 +265,7 @@ async function vOrders(){
       <tr>
         <th>№</th><th>Дата</th><th>Клиент</th>
         <th>Адрес доставки</th><th>Товары</th>
-        <th>Сумма</th><th>Оплата</th><th>Статус</th>
+        <th>Сумма</th><th>Оплата</th><th>Статус</th><th>Чек</th>
       </tr>
       ${data.map(o => `
         <tr data-status="${esc(o.status)}" data-search="${esc([o.id,o.customer_name,o.phone,o.address,o.payment].join(' ').toLowerCase())}">
@@ -275,6 +290,7 @@ async function vOrders(){
               ${opts(ST,o.status)}
             </select>
           </td>
+          <td><button class="g" onclick="printOrder(${JSON.stringify(o.id)})">Печать</button></td>
         </tr>
       `).join('')}
     </table>`;
@@ -327,7 +343,7 @@ async function vProducts(){
         <th>Фото</th><th>Название</th><th>Тип / бренд</th>
         <th>Категория</th><th>Объём</th><th>Состав</th>
         <th>Подходит</th><th>Не подходит</th>
-        <th>Цена, сум</th><th>Скидка, %</th><th>Виден</th><th></th>
+        <th>Цена, сум</th><th>Скидка, %</th><th>Остаток</th><th>Виден</th><th></th>
       </tr>
       ${data.map(p => `
         <tr id="r${esc(p.id)}"
@@ -352,11 +368,91 @@ async function vProducts(){
           <td><textarea name="suits" rows="3">${esc(p.suits)}</textarea></td>
           <td><textarea name="avoid" rows="3">${esc(p.avoid)}</textarea></td>
           <td><input type="number" name="price" value="${esc(p.price)}" style="width:100px"></td><td><input type="number" name="discount_percent" min="0" max="100" step="1" value="${esc(p.discount_percent||0)}" style="width:70px"></td>
+          <td><input type="number" name="stock" min="0" step="1" placeholder="—" value="${p.stock===null||p.stock===undefined?'':esc(p.stock)}" style="width:75px" title="Пусто — учёт остатков выключен"></td>
           <td><input type="checkbox" name="active"${p.active?' checked':''}></td>
           <td><button onclick="saveP(${JSON.stringify(p.id)},this)">Сохранить</button></td>
         </tr>
       `).join('')}
     </table>`;
+}
+
+
+async function vAnalytics(){
+  const [{data:orders,error:oe},{data:products,error:pe}] = await Promise.all([
+    sb.from('orders').select('id,total,status,created_at,items,promo,discount,cashback_used'),
+    sb.from('products').select('id,title,stock,active')
+  ]);
+  if(oe||pe)return $('m').textContent='Не удалось загрузить аналитику: '+(oe||pe).message;
+  const paid=(orders||[]).filter(o=>['paid','shipped','done'].includes(o.status));
+  const revenue=paid.reduce((n,o)=>n+Number(o.total||0)+Number(o.cashback_used||0),0);
+  const avg=paid.length?Math.round(revenue/paid.length):0;
+  const today=new Date();const monthStart=new Date(today.getFullYear(),today.getMonth(),1);
+  const monthOrders=paid.filter(o=>new Date(o.created_at)>=monthStart);
+  const monthRevenue=monthOrders.reduce((n,o)=>n+Number(o.total||0)+Number(o.cashback_used||0),0);
+  const dayMap={};for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dayMap[d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})]=0;}
+  paid.forEach(o=>{const d=new Date(o.created_at);const key=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});if(key in dayMap)dayMap[key]+=Number(o.total||0)+Number(o.cashback_used||0);});
+  const max=Math.max(1,...Object.values(dayMap));
+  const top={};paid.forEach(o=>(o.items||[]).forEach(i=>{const k=i.title||('Товар '+i.id);top[k]=(top[k]||0)+Number(i.qty||1)}));
+  const best=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const promo={};(orders||[]).filter(o=>o.promo).forEach(o=>{const k=o.promo;promo[k]=(promo[k]||{count:0,total:0});promo[k].count++;promo[k].total+=Number(o.total||0);});
+  const low=(products||[]).filter(p=>p.stock!==null&&p.stock!==undefined&&p.stock<=5);
+  $('m').innerHTML=`
+    <h3>Аналитика продаж <button class="g" onclick="vAnalytics()">Обновить</button> <button class="g" onclick="backupData()">Резервная копия</button></h3>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Выручка за всё время*</small><b>${fmt(revenue)}</b></div>
+      <div class="admin-stat"><small>Заказов оплачено / отправлено / выполнено</small><b>${paid.length}</b></div>
+      <div class="admin-stat"><small>Средний чек</small><b>${fmt(avg)}</b></div>
+      <div class="admin-stat"><small>Выручка в этом месяце*</small><b>${fmt(monthRevenue)}</b></div>
+      <div class="admin-stat"><small>Заказов в этом месяце</small><b>${monthOrders.length}</b></div>
+      <div class="admin-stat"><small>Товаров в каталоге</small><b>${products.length}</b></div>
+      <div class="admin-stat"><small>Заканчиваются (остаток ≤ 5)</small><b>${low.length}</b></div>
+      <div class="admin-stat"><small>Новых заказов</small><b>${(orders||[]).filter(o=>o.status==='new').length}</b></div>
+    </div>
+    <p class="photo-help">* Выручка рассчитана по заказам со статусом «Оплачен», «Отправлен», «Выполнен»; отменённые и новые заказы исключены. Кешбэк, использованный при оплате, прибавлен обратно для отражения полной стоимости заказа.</p>
+    <div class="admin-panel"><h4>Выручка за последние 14 дней</h4><div class="sales-bars">${Object.entries(dayMap).map(([d,v])=>'<div class="sales-col"><b>'+fmt(v)+'</b><i style="height:'+Math.max(v?4:0,Math.round(v/max*130))+'px"></i><small>'+esc(d)+'</small></div>').join('')}</div></div>
+    <div class="admin-grid">
+      <section class="admin-panel"><h4>Популярные товары</h4>${best.length?'<ol>'+best.map(([n,q])=>'<li>'+esc(n)+' — <b>'+q+' шт.</b></li>').join('')+'</ol>':'<p>Пока нет завершённых покупок.</p>'}</section>
+      <section class="admin-panel"><h4>Товары с низким остатком</h4>${low.length?'<ul>'+low.map(p=>'<li>'+esc(p.title)+' — <b>'+p.stock+' шт.</b></li>').join('')+'</ul>':'<p>Нет товаров с остатком 5 или меньше. Пустой остаток означает, что учёт не включён.</p>'}</section>
+    </div>
+    <section class="admin-panel"><h4>Использование промокодов</h4><table class="mini-table"><tr><th>Код</th><th>Заказов</th><th>Сумма заказов</th></tr>${Object.entries(promo).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+fmt(v.total)+'</td></tr>').join('')||'<tr><td colspan="3">Пока нет использованных промокодов</td></tr>'}</table></section>`;
+}
+async function clientHistory(id){
+  const c=_cl.find(x=>x.id===id);
+  const {data,error}=await sb.from('orders').select('*').eq('user_id',id).order('created_at',{ascending:false});
+  if(error)return alert('Не удалось загрузить историю: '+error.message);
+  const rows=data||[];
+  const spend=rows.filter(o=>o.status!=='canceled').reduce((n,o)=>n+Number(o.total||0),0);
+  const modal=document.createElement('div');modal.className='admin-modal';
+  modal.innerHTML='<div class="admin-modal-card"><button class="modal-close" onclick="this.closest(\'.admin-modal\').remove()">Закрыть</button><h3>'+esc(c?.name||'Клиент')+'</h3><p>'+esc(c?.phone||'')+' · Заказов: '+rows.length+' · Сумма неотменённых: '+fmt(spend)+'</p><table class="mini-table"><tr><th>№</th><th>Дата</th><th>Статус</th><th>Сумма</th><th>Товары</th></tr>'+rows.map(o=>'<tr><td>#'+esc(o.id)+'</td><td>'+dt(o.created_at)+'</td><td>'+esc(ST[o.status]||o.status)+'</td><td>'+fmt(o.total)+'</td><td>'+esc((o.items||[]).map(i=>(i.title||'Товар')+' × '+(i.qty||1)).join(', '))+'</td></tr>').join('')+'</table></div>';
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});document.body.appendChild(modal);
+}
+function exportOrders(){
+  const rows=[['Номер','Дата','Клиент','Телефон','Адрес','Товары','Сумма','Оплата','Статус','Промокод','Кешбэк']];
+  (_orders||[]).forEach(o=>rows.push([o.id,o.created_at,o.customer_name,o.phone,o.address,(o.items||[]).map(i=>(i.title||'')+' x '+(i.qty||1)).join('; '),o.total,o.payment,ST[o.status]||o.status,o.promo,o.cashback_used]));
+  downloadCSV(rows,'luma-orders.csv');
+}
+function downloadCSV(rows,name){
+  const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a');const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+async function printOrder(id){
+  const {data:o,error}=await sb.from('orders').select('*').eq('id',id).single();
+  if(error)return alert('Не удалось загрузить заказ: '+error.message);
+  const w=window.open('','_blank');if(!w)return alert('Разреши всплывающие окна для печати чека.');
+  w.document.write('<!doctype html><html lang="ru"><meta charset="utf-8"><title>Заказ #'+esc(o.id)+'</title><style>body{font:14px Arial;padding:28px;color:#30271e}h1{font-family:Georgia;color:#9b7846}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:left}.sum{text-align:right;font-size:20px;margin-top:20px}</style><h1>Luma Beauty</h1><h2>Заказ #'+esc(o.id)+'</h2><p>'+dt(o.created_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><table><tr><th>Товар</th><th>Кол-во</th><th>Цена</th></tr>'+(o.items||[]).map(i=>'<tr><td>'+esc(i.title)+'</td><td>'+esc(i.qty)+'</td><td>'+fmt(i.price)+'</td></tr>').join('')+'</table><p>Статус: '+esc(ST[o.status]||o.status)+'</p><p class="sum">Итого: <b>'+fmt(o.total)+'</b></p><script>window.onload=()=>window.print()<\/script></html>');
+  w.document.close();
+}
+async function backupData(){
+  if(!confirm('Скачать резервную копию каталога, заказов, клиентов и промокодов на этот компьютер? Файл содержит персональные данные клиентов. Храни его в безопасном месте.'))return;
+  const tables=['products','orders','profiles','promos','cashback_transactions','cashback_redemptions'];
+  const backup={created_at:new Date().toISOString(),project:'Luma Beauty',tables:{}};
+  for(const t of tables){const {data,error}=await sb.from(t).select('*');if(error)return alert('Не удалось создать копию ('+t+'): '+error.message);backup.tables[t]=data||[];}
+  const a=document.createElement('a');const u=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));a.href=u;a.download='luma-beauty-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+async function vAudit(){
+  const {data,error}=await sb.from('admin_audit_logs').select('*').order('created_at',{ascending:false}).limit(200);
+  if(error)return $('m').textContent='Не удалось загрузить журнал: '+error.message;
+  $('m').innerHTML='<h3>История действий <button class="g" onclick="vAudit()">Обновить</button></h3><p>Последние 200 изменений товаров, заказов и промокодов.</p><table class="mini-table"><tr><th>Дата</th><th>Раздел</th><th>ID записи</th><th>Действие</th><th>Администратор</th><th>Изменения</th></tr>'+(data||[]).map(x=>'<tr><td>'+dt(x.created_at)+'</td><td>'+esc(x.table_name)+'</td><td>'+esc(x.record_id)+'</td><td>'+esc(x.action)+'</td><td>'+esc(x.actor_id||'системное действие')+'</td><td><details><summary>Посмотреть</summary><pre>'+esc(JSON.stringify({до:x.old_data,после:x.new_data},null,2))+'</pre></details></td></tr>').join('')+'</table>';
 }
 
 function filt(q){
@@ -375,6 +471,8 @@ async function saveP(id,button){
   const title = g('title').value.trim();
 
   if(!title) return alert('Название товара не может быть пустым.');
+  const stockRaw=g('stock').value.trim();
+  if(stockRaw!==''&&(!Number.isInteger(Number(stockRaw))||Number(stockRaw)<0))return alert('Остаток должен быть целым числом от 0.');
   const discountPercent = Number(g('discount_percent').value);
   if(!Number.isInteger(discountPercent) || discountPercent < 0 || discountPercent > 100) return alert('Скидка должна быть целым числом от 0 до 100.');
 
@@ -388,6 +486,7 @@ async function saveP(id,button){
     avoid:g('avoid').value,
     price:Number(g('price').value)||0,
     discount_percent:discountPercent,
+    stock:g('stock').value.trim()===''?null:Number(g('stock').value),
     active:g('active').checked
   };
 
@@ -520,7 +619,7 @@ async function vClients(){
       <button class="g" onclick="vClients()">Обновить</button>
     </div>
     <table id="clientsTable">
-      <tr><th>Имя</th><th>Телефон</th><th>Покупок</th><th>Сумма покупок</th><th>Баланс кешбэка</th><th>Кешбэк, %</th><th>E-mail</th><th>Регистрация</th></tr>
+      <tr><th>Имя</th><th>Телефон</th><th>Покупок</th><th>Сумма покупок</th><th>Баланс кешбэка</th><th>Кешбэк, %</th><th>E-mail</th><th>Регистрация</th><th>Детали</th></tr>
       ${_cl.map(c => {
         const stats = purchaseStats[c.id] || {count:0,total:0};
         return `
@@ -538,6 +637,7 @@ async function vClients(){
           </td>
           <td>${esc(c.email)}</td>
           <td>${dt(c.created_at)}</td>
+          <td><button class="g" onclick="clientHistory(${JSON.stringify(c.id)})">История</button></td>
         </tr>
         `;
       }).join('')}
