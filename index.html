@@ -501,7 +501,7 @@ function buy(){const T=Object.keys(cart).reduce((s,k)=>s+finalPrice(P[k])*cart[k
 if(!user){pend=true;toast('Войдите, чтобы оформить заказ');return acct('in')}
 addrStep()}
 async function pay(m){const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart);
-const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''} × ${cart[k]} — ${f(np(P[k].p)*cart[k])}`).join('\n');
+const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''} × ${cart[k]} — ${f(finalPrice(P[k])*cart[k])}`).join('\n');
 const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa()});
 if(error)return toast('Не удалось создать заказ, попробуйте ещё раз');
 const o=data.id,T=data.total;let u='';
