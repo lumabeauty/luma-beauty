@@ -209,18 +209,33 @@ async function vOrders(){
     .limit(300);
 
   if(error) return $('m').textContent = error.message;
+  _orders = data || [];
+  const newCount = _orders.filter(o=>o.status==='new').length;
+  const paidCount = _orders.filter(o=>o.status==='paid').length;
+  const sumTotal = _orders.filter(o=>o.status!=='canceled').reduce((n,o)=>n+Number(o.total||0),0);
 
   $('m').innerHTML = `
-    <h3>Заказы (${data.length})</h3>
-    <table>
+    <h3>Заказы <span style="font:500 13px Jost;color:var(--adm-muted)">Последние ${data.length}</span></h3>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Всего заказов</small><b>${data.length}</b></div>
+      <div class="admin-stat"><small>Новые</small><b>${newCount}</b></div>
+      <div class="admin-stat"><small>Оплачены</small><b>${paidCount}</b></div>
+      <div class="admin-stat"><small>Сумма неотменённых</small><b style="font-size:20px">${fmt(sumTotal)}</b></div>
+    </div>
+    <div class="order-tools">
+      <input id="orderSearch" placeholder="Поиск: номер, имя, телефон, адрес…" oninput="filterOrderRows()">
+      <select id="orderStatusFilter" onchange="filterOrderRows()"><option value="">Все статусы</option>${opts(ST,'')}</select>
+      <button class="g" onclick="vOrders()">Обновить</button>
+    </div>
+    <table id="ordersTable">
       <tr>
         <th>№</th><th>Дата</th><th>Клиент</th>
         <th>Адрес доставки</th><th>Товары</th>
         <th>Сумма</th><th>Оплата</th><th>Статус</th>
       </tr>
       ${data.map(o => `
-        <tr>
-          <td>${esc(o.id)}</td>
+        <tr data-status="${esc(o.status)}" data-search="${esc([o.id,o.customer_name,o.phone,o.address,o.payment].join(' ').toLowerCase())}">
+          <td><b>#${esc(o.id)}</b></td>
           <td>${dt(o.created_at)}</td>
           <td>${esc(o.customer_name)}<br>${esc(o.phone)}</td>
           <td>${esc(o.address)
@@ -244,6 +259,16 @@ async function vOrders(){
         </tr>
       `).join('')}
     </table>`;
+  filterOrderRows();
+}
+
+let _orders = [];
+function filterOrderRows(){
+  const q = ($('orderSearch')?.value || '').trim().toLowerCase();
+  const status = $('orderStatusFilter')?.value || '';
+  document.querySelectorAll('#ordersTable tr[data-status]').forEach(row=>{
+    row.style.display = (!q || (row.dataset.search||'').includes(q)) && (!status || row.dataset.status===status) ? '' : 'none';
+  });
 }
 
 async function setSt(id,s){
