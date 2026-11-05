@@ -206,6 +206,7 @@ async function init(){
         ['orders','Заказы'],
         ['products','Товары'],
         ['clients','Клиенты'],
+        ['cashback','Кешбэк / VIP'],
         ['promos','Промокоды'],
         ['banners','Большой пост'],
         ['hero','Главный баннер'],
@@ -228,6 +229,7 @@ function go(k){
     orders:vOrders,
     products:vProducts,
     clients:vClients,
+    cashback:vCashback,
     promos:vPromos,
     banners:vBanners,
     hero:vHero,
@@ -446,7 +448,7 @@ async function printOrder(id){
 }
 async function backupData(){
   if(!confirm('Скачать резервную копию каталога, заказов, клиентов и промокодов на этот компьютер? Файл содержит персональные данные клиентов. Храни его в безопасном месте.'))return;
-  const tables=['products','orders','profiles','promos','home_hero','site_banners','cashback_transactions','cashback_redemptions','admin_audit_logs'];
+  const tables=['products','orders','profiles','promos','home_hero','site_banners','cashback_transactions','cashback_redemptions','cashback_admin_adjustments','admin_audit_logs'];
   const backup={created_at:new Date().toISOString(),project:'Luma Beauty',tables:{}};
   for(const t of tables){const {data,error}=await sb.from(t).select('*');if(error)return alert('Не удалось создать копию ('+t+'): '+error.message);backup.tables[t]=data||[];}
   const a=document.createElement('a');const u=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));a.href=u;a.download='luma-beauty-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
@@ -580,6 +582,79 @@ async function addP(){
 
   if(error) return alert('Не удалось добавить товар: '+error.message);
   await vProducts();
+}
+
+
+async function vCashback(){
+  const [{data:clients,error:ce},{data:orders,error:oe},{data:earned,error:ee},{data:adjustments,error:ae}] = await Promise.all([
+    sb.from('profiles').select('id,name,phone,cashback_percent,cashback_percent_override,cashback_balance').order('created_at',{ascending:false}),
+    sb.from('orders').select('user_id,status').eq('status','done'),
+    sb.from('cashback_transactions').select('id,user_id,order_id,amount,cashback_percent,created_at,reversed_at').order('created_at',{ascending:false}).limit(100),
+    sb.from('cashback_admin_adjustments').select('id,user_id,amount,reason,admin_id,created_at').order('created_at',{ascending:false}).limit(100)
+  ]);
+  if(ce||oe||ee||ae)return $('m').textContent='Не удалось загрузить кешбэк: '+(ce||oe||ee||ae).message;
+  const counts={};(orders||[]).forEach(o=>{if(o.user_id)counts[o.user_id]=(counts[o.user_id]||0)+1;});
+  const tier=n=>n>=10?'Gold':n>=5?'Silver':'Bronze';
+  const rate=n=>n>=10?3:n>=5?2:1;
+  const totalBalance=(clients||[]).reduce((s,c)=>s+Number(c.cashback_balance||0),0);
+  const totalEarned=(earned||[]).filter(x=>!x.reversed_at).reduce((s,x)=>s+Number(x.amount||0),0);
+  const totalAdjust=(adjustments||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+  $('m').innerHTML=`
+    <h3>Кешбэк и VIP-клуб Luma Beauty <button class="g" onclick="vCashback()">Обновить</button></h3>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Клиентов</small><b>${clients.length}</b></div>
+      <div class="admin-stat"><small>Текущие балансы</small><b>${fmt(totalBalance)}</b></div>
+      <div class="admin-stat"><small>Активные начисления</small><b>${fmt(totalEarned)}</b></div>
+      <div class="admin-stat"><small>Ручные корректировки (нетто)</small><b>${fmt(totalAdjust)}</b></div>
+    </div>
+    <section class="admin-panel"><h4>Уровни клуба</h4>
+      <p>Bronze — 1%; Silver — 2% после 5 выполненных заказов; Gold — 3% после 10. Ручной процент имеет приоритет.</p>
+      <table class="mini-table"><tr><th>Клиент</th><th>Телефон</th><th>Выполнено заказов</th><th>Уровень</th><th>Ставка</th><th>Баланс</th><th>Действия</th></tr>
+      ${(clients||[]).map(c=>{
+        const n=counts[c.id]||0, manual=c.cashback_percent_override!==null&&c.cashback_percent_override!==undefined;
+        const pct=Number(c.cashback_percent??rate(n)).toFixed(2).replace(/0+$/,'').replace(/\\.$/,'');
+        return '<tr><td>'+esc(c.name||'Без имени')+'</td><td>'+esc(c.phone||'—')+'</td><td>'+n+'</td><td><b>'+tier(n)+'</b></td><td>'+pct+'% '+(manual?'(ручная)':'(авто)')+'</td><td><b>'+fmt(c.cashback_balance||0)+'</b></td><td><button class="g" onclick="adjustClientCashback('+JSON.stringify(c.id)+')">Изменить баланс</button> '+(manual?'<button class="g" onclick="resetClientCashback('+JSON.stringify(c.id)+')">Автоставка</button>':'')+' <button class="g" onclick="showCashbackHistory('+JSON.stringify(c.id)+')">История</button></td></tr>';
+      }).join('')}
+      </table>
+    </section>
+    <section class="admin-panel"><h4>Последние начисления</h4>
+      <table class="mini-table"><tr><th>Дата</th><th>Клиент</th><th>Заказ</th><th>Сумма</th><th>Ставка</th><th>Состояние</th></tr>
+      ${(earned||[]).map(x=>'<tr><td>'+dt(x.created_at)+'</td><td>'+esc((clients||[]).find(c=>c.id===x.user_id)?.name||x.user_id)+'</td><td>#'+esc(x.order_id)+'</td><td>'+fmt(x.amount)+'</td><td>'+Number(x.cashback_percent||0)+'%</td><td>'+(x.reversed_at?'Отменено':'Активно')+'</td></tr>').join('')||'<tr><td colspan="6">Начислений пока нет</td></tr>'}
+      </table>
+    </section>
+    <section class="admin-panel"><h4>Ручные корректировки</h4>
+      <table class="mini-table"><tr><th>Дата</th><th>Клиент</th><th>Изменение</th><th>Причина</th><th>Администратор</th></tr>
+      ${(adjustments||[]).map(x=>'<tr><td>'+dt(x.created_at)+'</td><td>'+esc((clients||[]).find(c=>c.id===x.user_id)?.name||x.user_id)+'</td><td><b>'+(x.amount>0?'+':'')+fmt(x.amount)+'</b></td><td>'+esc(x.reason)+'</td><td>'+esc(x.admin_id)+'</td></tr>').join('')||'<tr><td colspan="5">Корректировок пока нет</td></tr>'}
+      </table>
+    </section>`;
+}
+async function adjustClientCashback(userId){
+  const raw=prompt('Сумма в сумах: положительное число — начислить, отрицательное — списать:');
+  if(raw===null)return;
+  if(!/^-?\d+$/.test(raw.trim())||Number(raw)===0||!Number.isSafeInteger(Number(raw)))return alert('Введи целое ненулевое число.');
+  const reason=prompt('Причина корректировки (обязательно):');
+  if(reason===null)return;
+  if(reason.trim().length<3)return alert('Причина должна содержать минимум 3 символа.');
+  const {error}=await sb.rpc('admin_adjust_cashback',{p_user_id:userId,p_amount:Number(raw),p_reason:reason.trim()});
+  if(error)return alert('Не удалось изменить баланс: '+error.message);
+  alert('Баланс обновлён, операция записана в историю.');await vCashback();
+}
+async function resetClientCashback(userId){
+  if(!confirm('Убрать ручной процент и вернуть автоматическую VIP-ставку? Баланс не изменится.'))return;
+  const {error}=await sb.rpc('admin_clear_cashback_override',{p_user_id:userId});
+  if(error)return alert('Не удалось включить автоставку: '+error.message);
+  alert('Автоматическая VIP-ставка включена.');await vCashback();
+}
+async function showCashbackHistory(userId){
+  const [{data:earned,error:ee},{data:adjustments,error:ae}]=await Promise.all([
+    sb.from('cashback_transactions').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
+    sb.from('cashback_admin_adjustments').select('*').eq('user_id',userId).order('created_at',{ascending:false})
+  ]);
+  if(ee||ae)return alert('Не удалось загрузить историю: '+(ee||ae).message);
+  const rows=[...(earned||[]).map(x=>({date:x.created_at,type:'Начисление за заказ #'+x.order_id,amount:x.amount,reason:x.reversed_at?'Отменено':'Ставка '+x.cashback_percent+'%'})),...(adjustments||[]).map(x=>({date:x.created_at,type:'Ручная корректировка',amount:x.amount,reason:x.reason}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const modal=document.createElement('div');modal.className='admin-modal';
+  modal.innerHTML='<div class="admin-modal-card"><button class="modal-close" onclick="this.closest(\'.admin-modal\').remove()">Закрыть</button><h3>История кешбэка</h3><table class="mini-table"><tr><th>Дата</th><th>Операция</th><th>Сумма</th><th>Комментарий</th></tr>'+rows.map(x=>'<tr><td>'+dt(x.date)+'</td><td>'+esc(x.type)+'</td><td>'+fmt(x.amount)+'</td><td>'+esc(x.reason)+'</td></tr>').join('')+'</table></div>';
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});document.body.appendChild(modal);
 }
 
 async function vClients(){
