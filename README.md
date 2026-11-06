@@ -30,9 +30,9 @@
 Статьи пишутся в админке (редактор блога): заголовок, категория, обложка, текст. Опубликованные статьи появляются на `blog.html`. Категории: уход за кожей, уход за волосами, кудрявый метод, Dessi Cosmetica, Uazan.
 
 ## База данных
-Файлы в `sql/` выполняются по порядку в **SQL Editor** Supabase: `1_schema.sql` … `6_product_discounts.sql`.
+Файлы в `sql/` выполняются по порядку в **SQL Editor** Supabase: `1_schema.sql` … `7_cashback_blog_audit.sql`. Каждый следующий файл дополняет базу, запускать их нужно все.
 
-> ⚠️ Таблицы блога и кэшбэка (`blog_posts`, `cashback_transactions`, `cashback_admin_adjustments`, `admin_audit_logs` и функции `admin_*_cashback`) созданы прямо в Supabase и пока **не сохранены** в `sql/`. Их стоит выгрузить и добавить отдельным файлом, чтобы базу можно было восстановить.
+`7_cashback_blog_audit.sql` добавляет кэшбэк, списание остатков, блог, журнал действий админов и уведомления о заказах в Telegram. Для уведомлений нужны ещё Edge Function `super-handler` и секрет `order_webhook_secret` в Vault: токен бота хранится только в Supabase, в репозитории его нет.
 
 ## Шаг 1. Выложить сайт на GitHub (бесплатно)
 1. Зарегистрируйтесь на github.com.
@@ -50,7 +50,7 @@
 
 ## Шаг 3. Админ-панель и база клиентов (Supabase)
 1. На supabase.com создайте проект (бесплатно).
-2. **SQL Editor → New query**: вставьте текст из `sql/1_schema.sql` → Run. Затем так же по порядку остальные файлы из `sql/` (`2_products.sql` … `6_product_discounts.sql`).
+2. **SQL Editor → New query**: вставьте текст из `sql/1_schema.sql` → Run. Затем так же по порядку остальные файлы из `sql/` (`2_products.sql` … `7_cashback_blog_audit.sql`).
 3. **Authentication → Providers → Email**: выключите **Confirm email**.
 4. **Project Settings → API**: скопируйте **Project URL** и ключ **anon public**.
 5. На GitHub откройте файл `config.js`, нажмите значок карандаша, впишите `SUPABASE_URL` и `SUPABASE_KEY`, нажмите **Commit changes**. Через минуту `index.html` перейдёт на полную версию.
