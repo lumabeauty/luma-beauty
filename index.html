@@ -549,6 +549,77 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* Skin finder + beauty consultant */
 .skin-help{max-width:1180px;margin:10px auto 54px;padding:34px 5vw;background:linear-gradient(115deg,#f1e5d2,#fbf5ec 58%,#ead8c2);border:1px solid #e5d2b8;border-radius:18px}.skin-help-head{text-align:center;max-width:650px;margin:0 auto 24px}.skin-help-head .eyebrow{color:#9a713d}.skin-help-head h2{font:600 42px 'Cormorant Garamond',serif;color:#352719;margin:8px 0}.skin-help-head p{color:#806b5c;margin:0}.skin-help-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:22px 0}.skin-help-actions a,.skin-help-actions button{border:1px solid #b99a68;border-radius:99px;padding:12px 22px;background:#302a20;color:#fffaf2;text-decoration:none;font:500 14px Jost,sans-serif;cursor:pointer}.skin-help-actions a.secondary{background:transparent;color:#4a3826}.skin-quiz{max-width:700px;margin:0 auto;background:#fffaf4;border:1px solid #e8d8c3;border-radius:14px;padding:22px}.skin-quiz h3{font:600 28px 'Cormorant Garamond',serif;margin:0 0 6px;color:#352719}.skin-quiz p{color:#806b5c;margin:0 0 14px}.skin-quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.skin-quiz-options button{padding:12px;border:1px solid #e6d8c6;border-radius:9px;background:#fbf5ec;color:#3b2b20;font:14px Jost,sans-serif;text-align:left;cursor:pointer}.skin-quiz-options button:hover{border-color:#b99a68;background:#f3e8d8}.skin-quiz-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-top:14px}.skin-quiz-product{border:1px solid #eadcc9;background:#fff;border-radius:10px;overflow:hidden;color:#352719;text-decoration:none;padding:10px}.skin-quiz-product img{width:100%;height:125px;object-fit:contain;background:#f7f0e6}.skin-quiz-product b{display:block;font-size:13px;margin:7px 0}.skin-quiz-product small{color:#8b704c}.skin-quiz-note{font-size:12px!important;margin-top:14px!important}.skin-quiz-back{border:0;background:none;color:#8b704c;text-decoration:underline;padding:10px 0;cursor:pointer;font:13px Jost,sans-serif}@media(max-width:560px){.skin-help{margin:0 12px 36px;padding:24px 15px}.skin-help-head h2{font-size:34px}.skin-quiz{padding:16px}.skin-quiz-options{grid-template-columns:1fr 1fr}.skin-help-actions a,.skin-help-actions button{flex:1;text-align:center}}
+
+/* ===== Luma Auth ===== */
+#md .box:has(.la){width:min(420px,100%);padding:32px 26px 24px;border-radius:26px;gap:0}
+.la{display:flex;flex-direction:column;gap:16px;animation:laIn .35s cubic-bezier(.2,.7,.2,1)}
+.la-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 18px}
+.la-brand{font-size:11px;letter-spacing:.3em;font-weight:700;color:#ef5265}
+.la-t{margin:0;font:700 26px/1.15 Arial,sans-serif;letter-spacing:-.03em;color:#29282b}
+.la-s{margin:0;color:#77777e;font-size:14px;line-height:1.45}
+.la-s b,.la-nb{color:#29282b;white-space:nowrap}
+.la-info{margin:0;background:#fff4e5;color:#8a5a14;border-radius:12px;padding:10px 12px;font-size:13px;text-align:center}
+.la-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;background:#f2f2f5;border-radius:99px;padding:4px}
+.la-tabs button{position:relative;z-index:1;border:0;background:none;padding:10px 8px;font:inherit;font-size:14px;font-weight:600;color:#77777e;cursor:pointer;border-radius:99px;transition:color .25s}
+.la-tabs button.on{color:#29282b}
+.la-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:99px;box-shadow:0 2px 10px #17171a17}
+.la-ind.r{transform:translateX(100%)}
+.la-form{display:flex;flex-direction:column;gap:14px}
+.la-f{display:flex;flex-direction:column;gap:6px}
+.la-l{font-size:13px;font-weight:600;color:#45454a}
+#md .la input{margin:0;width:100%;min-width:0;font:inherit;font-size:16px;padding:13px 14px;border:1.5px solid #e6e6ea;border-radius:14px;background:#fafafb;color:#29282b;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+#md .la input::placeholder{color:#a9a9b0}
+#md .la input:focus{border-color:#ef5265;background:#fff;box-shadow:0 0 0 4px #ef52651f}
+#md .la input.bad{border-color:#d94055;box-shadow:0 0 0 4px #d940551a}
+.la-ph,.la-pw{display:flex;align-items:stretch;border:1.5px solid #e6e6ea;border-radius:14px;background:#fafafb;transition:border-color .2s,box-shadow .2s,background .2s;overflow:hidden}
+.la-ph:focus-within,.la-pw:focus-within{border-color:#ef5265;background:#fff;box-shadow:0 0 0 4px #ef52651f}
+.la-ph.bad,.la-pw.bad,.la-otp.bad .la-cells span{border-color:#d94055;box-shadow:0 0 0 4px #d940551a}
+#md .la .la-ph input,#md .la .la-pw input{border:0;background:none;box-shadow:none;border-radius:0}
+#md .la .la-ph input{padding-left:12px;letter-spacing:.03em}
+.la-cc{display:flex;align-items:center;padding:0 12px 0 14px;font-weight:600;font-size:16px;color:#29282b;border-right:1px solid #e6e6ea}
+.la-eye{border:0;background:none;color:#8d8d94;padding:0 14px;cursor:pointer;display:flex;align-items:center}
+.la-eye:hover{color:#29282b}
+.la-str{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.la-str i{height:4px;border-radius:4px;background:#ececf0;transition:background .3s}
+.la-str[data-s="1"] i:nth-child(1){background:#f0a04b}
+.la-str[data-s="2"] i:nth-child(-n+2){background:#e2b93b}
+.la-str[data-s="3"] i{background:#3fa66a}
+.la-hint{font-size:12px;color:#8d8d94}
+.la-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:-4px}
+.la-link{border:0;background:none;padding:0;font:inherit;font-size:13px;font-weight:600;color:#ef5265;cursor:pointer}
+.la-link:hover{text-decoration:underline}
+.la-center{align-self:center}
+.la-err:empty{display:none}
+.la-err{background:#fdecef;border-radius:12px;padding:10px 12px;font-size:13px!important;line-height:1.45;color:#b8324a!important}
+.la-err .la-link{font-size:13px;color:#b8324a;text-decoration:underline}
+#md .la .la-btn{width:100%;padding:15px;font:inherit;font-size:15px;font-weight:600;letter-spacing:.01em;text-transform:none;position:relative;background:#ef5265;color:#fff;border-radius:99px;box-shadow:0 8px 22px #ef526540;transition:transform .15s,opacity .2s,box-shadow .2s}
+#md .la .la-btn:hover{box-shadow:0 10px 26px #ef526555}
+#md .la .la-btn:active{transform:scale(.98)}
+#md .la .la-btn:disabled{cursor:wait;opacity:.9}
+#md .la .la-btn.is-busy{color:transparent}
+#md .la .la-btn.is-busy:after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2.5px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:laSpin .7s linear infinite}
+.la-note{font-size:12px;color:#8d8d94;text-align:center;line-height:1.4}
+.la-foot{margin:0;text-align:center;font-size:14px;color:#77777e}
+.la-foot .la-link{font-size:14px}
+.la-otp{position:relative}
+.la-cells{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.la-cells span{height:58px;border:1.5px solid #e6e6ea;border-radius:14px;background:#fafafb;display:flex;align-items:center;justify-content:center;font:600 24px/1 Arial,sans-serif;color:#29282b;transition:border-color .2s,box-shadow .2s,background .2s}
+.la-cells span.fill{border-color:#d4d4da;background:#fff;animation:laPop .18s}
+.la-cells span.cur{border-color:#ef5265;background:#fff;box-shadow:0 0 0 4px #ef52651f}
+.la-cells span.cur:empty:after{content:"";width:2px;height:26px;background:#ef5265;animation:laBlink 1s steps(1) infinite}
+#md .la .la-otp input{position:absolute;inset:0;z-index:2;width:100%;height:100%;opacity:.01;padding:0;border:0;background:none;box-shadow:none;color:transparent;caret-color:transparent;font-size:16px;letter-spacing:0}
+.la-resend{margin:-4px 0 0;min-height:20px;text-align:center;font-size:13px;color:#8d8d94;font-variant-numeric:tabular-nums}
+.la-me{align-items:center;text-align:center;padding-top:6px}
+.la-ava{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#ff8d9c,#ef5265);color:#fff;font:700 28px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px #ef526540}
+.la-me .la-btn{margin-top:6px}
+.la-shake{animation:laShake .4s}
+@keyframes laIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes laSpin{to{transform:rotate(360deg)}}
+@keyframes laBlink{50%{opacity:0}}
+@keyframes laPop{from{transform:scale(.9)}to{transform:scale(1)}}
+@keyframes laShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@media(max-width:480px){#md .box:has(.la){padding:28px 18px 20px;border-radius:22px}.la-t{font-size:23px}.la-cells{gap:6px}.la-cells span{height:52px;font-size:22px}.la-head{padding:0 22px}}
+@media(prefers-reduced-motion:reduce){.la,.la-cells span,.la-shake,#md .la .la-btn.is-busy:after{animation:none!important}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="blog.html">Блог</a><a href="about.html">О бренде</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><button class="cartbtn fav-head" onclick="showFavorites()" aria-label="Избранное">♡ <span id="favCount">0</span></button><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"><img id="heroSlideImage" alt="Luma Beauty — косметика и уход"><div class="hero-slider-controls"><button type="button" onclick="heroPrev()" aria-label="Предыдущее фото">‹</button><div id="heroSlideDots"></div><button type="button" onclick="heroNext()" aria-label="Следующее фото">›</button></div></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
@@ -641,24 +712,215 @@ modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Сам
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
 async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,d:Number(r.discount_percent)||0,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));cart=LS.get('luma_cart')||{};render();const addId=new URLSearchParams(location.search).get('add');if(addId){const i=P.findIndex(p=>String(p.id)===addId);if(i>=0){const count=Math.max(1,Math.min(99,Number(new URLSearchParams(location.search).get('qty'))||1));cart[i]=(cart[i]||0)+count;LS.set('luma_cart',cart);upd();toast('Добавлено в корзину')}history.replaceState(null,'',location.pathname)}}
 async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={id:session.user.id,name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
+window.LUMA_AUTH_I18N=[
+["Вход","Log in","Kirish","Кіру","로그인"],["Регистрация","Sign up","Ro‘yxatdan o‘tish","Тіркелу","회원가입"],["Войти","Log in","Kirish","Кіру","로그인"],["Выйти","Log out","Chiqish","Шығу","로그아웃"],
+["С возвращением","Welcome back","Qaytganingizdan xursandmiz","Қайта оралуыңызбен","다시 오신 것을 환영합니다"],
+["Войдите, чтобы видеть заказы и копить кэшбэк","Log in to see your orders and earn cashback","Buyurtmalaringizni ko‘rish va keshbek yig‘ish uchun kiring","Тапсырыстарды көру және кэшбэк жинау үшін кіріңіз","주문 내역 확인과 캐시백 적립을 위해 로그인하세요"],
+["Номер телефона","Phone number","Telefon raqami","Телефон нөмірі","전화번호"],["Пароль","Password","Parol","Құпиясөз","비밀번호"],["Ваш пароль","Your password","Parolingiz","Құпиясөзіңіз","비밀번호 입력"],
+["Войти по e-mail","Log in with e-mail","E-mail orqali kirish","E-mail арқылы кіру","이메일로 로그인"],["Войти по номеру телефона","Log in with phone number","Telefon raqami orqali kirish","Телефон нөмірі арқылы кіру","전화번호로 로그인"],
+["Забыли пароль?","Forgot password?","Parolni unutdingizmi?","Құпиясөзді ұмыттыңыз ба?","비밀번호를 잊으셨나요?"],["Нет аккаунта?","No account?","Akkauntingiz yo‘qmi?","Аккаунтыңыз жоқ па?","계정이 없으신가요?"],
+["Зарегистрироваться","Sign up","Ro‘yxatdan o‘tish","Тіркелу","가입하기"],["Создать аккаунт","Create an account","Akkaunt yaratish","Аккаунт ашу","계정 만들기"],
+["Кэшбэк с каждого заказа и история покупок в одном месте","Cashback on every order and your purchase history in one place","Har bir buyurtmadan keshbek va xaridlar tarixi bir joyda","Әр тапсырыстан кэшбэк және сатып алу тарихы бір жерде","모든 주문 캐시백과 구매 내역을 한곳에서"],
+["Ваше имя","Your name","Ismingiz","Атыңыз","이름"],["Например, Мадина","e.g. Madina","Masalan, Madina","Мысалы, Мадина","예: 마디나"],
+["Придумайте пароль","Create a password","Parol o‘ylab toping","Құпиясөз ойлап табыңыз","비밀번호 만들기"],["Минимум 6 символов","At least 6 characters","Kamida 6 ta belgi","Кемінде 6 таңба","최소 6자"],
+["Получить код по SMS","Get SMS code","SMS orqali kod olish","SMS арқылы код алу","SMS로 인증번호 받기"],
+["Нажимая кнопку, вы соглашаетесь на обработку персональных данных.","By tapping the button, you agree to the processing of your personal data.","Tugmani bosish orqali shaxsiy ma’lumotlaringizni qayta ishlashga rozilik bildirasiz.","Батырманы басу арқылы жеке деректеріңізді өңдеуге келісім бересіз.","버튼을 누르면 개인정보 처리에 동의하게 됩니다."],
+["Уже есть аккаунт?","Already have an account?","Akkauntingiz bormi?","Аккаунтыңыз бар ма?","이미 계정이 있으신가요?"],
+["Слабый пароль","Weak password","Zaif parol","Әлсіз құпиясөз","약한 비밀번호"],["Хороший пароль","Good password","Yaxshi parol","Жақсы құпиясөз","괜찮은 비밀번호"],["Надёжный пароль","Strong password","Ishonchli parol","Сенімді құпиясөз","강력한 비밀번호"],
+["Введите код","Enter the code","Kodni kiriting","Кодты енгізіңіз","인증번호 입력"],["Отправили SMS на","We sent an SMS to","SMS yuborildi:","SMS жіберілді:","SMS 발송 번호:"],
+["Подтвердить","Confirm","Tasdiqlash","Растау","확인"],["Изменить номер","Change number","Raqamni o‘zgartirish","Нөмірді өзгерту","번호 변경"],
+["Отправить код ещё раз","Resend code","Kodni qayta yuborish","Кодты қайта жіберу","인증번호 재전송"],
+["Номер ещё не подтверждён — отправили новый код","Your number is not confirmed yet — we sent a new code","Raqam hali tasdiqlanmagan — yangi kod yubordik","Нөмір әлі расталмаған — жаңа код жібердік","번호가 아직 인증되지 않아 새 인증번호를 보냈습니다"],
+["Новый код отправлен","New code sent","Yangi kod yuborildi","Жаңа код жіберілді","새 인증번호를 보냈습니다"],
+["Восстановить пароль","Reset password","Parolni tiklash","Құпиясөзді қалпына келтіру","비밀번호 재설정"],
+["Пришлём SMS-код, после него вы зададите новый пароль","We’ll send an SMS code, then you’ll set a new password","SMS-kod yuboramiz, so‘ng yangi parol o‘rnatasiz","SMS-код жібереміз, содан кейін жаңа құпиясөз орнатасыз","SMS 인증 후 새 비밀번호를 설정합니다"],
+["Получить код","Get code","Kod olish","Код алу","인증번호 받기"],["Вспомнили пароль?","Remembered your password?","Parolni esladingizmi?","Құпиясөз есіңізге түсті ме?","비밀번호가 기억나셨나요?"],
+["Новый пароль","New password","Yangi parol","Жаңа құпиясөз","새 비밀번호"],
+["Номер подтверждён. Придумайте новый пароль для входа","Number confirmed. Create a new password to log in","Raqam tasdiqlandi. Kirish uchun yangi parol o‘ylab toping","Нөмір расталды. Кіру үшін жаңа құпиясөз ойлап табыңыз","번호가 인증되었습니다. 새 비밀번호를 만드세요"],
+["Сохранить и войти","Save and log in","Saqlash va kirish","Сақтау және кіру","저장 후 로그인"],
+["Введите ваше имя","Enter your name","Ismingizni kiriting","Атыңызды енгізіңіз","이름을 입력하세요"],
+["Введите номер полностью: +998 XX XXX XX XX","Enter the full number: +998 XX XXX XX XX","Raqamni to‘liq kiriting: +998 XX XXX XX XX","Нөмірді толық енгізіңіз: +998 XX XXX XX XX","전체 번호를 입력하세요: +998 XX XXX XX XX"],
+["Пароль должен быть не короче 6 символов","Password must be at least 6 characters","Parol kamida 6 ta belgidan iborat bo‘lishi kerak","Құпиясөз кемінде 6 таңбадан тұруы керек","비밀번호는 6자 이상이어야 합니다"],
+["Введите пароль","Enter your password","Parolni kiriting","Құпиясөзді енгізіңіз","비밀번호를 입력하세요"],["Введите корректный e-mail","Enter a valid e-mail","To‘g‘ri e-mail kiriting","Дұрыс e-mail енгізіңіз","올바른 이메일을 입력하세요"],
+["Введите 6 цифр из SMS","Enter the 6 digits from the SMS","SMS’dagi 6 ta raqamni kiriting","SMS-тегі 6 цифрды енгізіңіз","SMS의 6자리 숫자를 입력하세요"],
+["Неверный номер или пароль","Wrong number or password","Raqam yoki parol noto‘g‘ri","Нөмір немесе құпиясөз қате","번호 또는 비밀번호가 올바르지 않습니다"],
+["Неверный e-mail или пароль","Wrong e-mail or password","E-mail yoki parol noto‘g‘ri","E-mail немесе құпиясөз қате","이메일 또는 비밀번호가 올바르지 않습니다"],
+["Этот номер уже зарегистрирован.","This number is already registered.","Bu raqam allaqachon ro‘yxatdan o‘tgan.","Бұл нөмір бұрын тіркелген.","이미 가입된 번호입니다."],
+["Неверный или устаревший код. Проверьте SMS или запросите новый.","Wrong or expired code. Check the SMS or request a new one.","Kod noto‘g‘ri yoki eskirgan. SMS’ni tekshiring yoki yangisini so‘rang.","Код қате немесе ескірген. SMS-ті тексеріңіз немесе жаңасын сұраңыз.","인증번호가 틀렸거나 만료되었습니다. 다시 요청하세요."],
+["Слишком много попыток. Повторите чуть позже.","Too many attempts. Please try again a bit later.","Urinishlar juda ko‘p. Birozdan so‘ng qayta urining.","Әрекет тым көп. Сәл кейінірек қайталаңыз.","시도 횟수가 너무 많습니다. 잠시 후 다시 시도하세요."],
+["Не удалось отправить SMS. Проверьте номер или попробуйте позже.","Could not send the SMS. Check the number or try later.","SMS yuborib bo‘lmadi. Raqamni tekshiring yoki keyinroq urining.","SMS жіберілмеді. Нөмірді тексеріңіз немесе кейінірек көріңіз.","SMS를 보내지 못했습니다. 번호를 확인하거나 나중에 다시 시도하세요."],
+["Вход по SMS скоро заработает. Пока напишите нам в Telegram.","SMS sign-in is coming soon. For now, message us on Telegram.","SMS orqali kirish tez orada ishga tushadi. Hozircha bizga Telegram’da yozing.","SMS арқылы кіру жақында іске қосылады. Әзірге бізге Telegram-да жазыңыз.","SMS 로그인은 곧 제공됩니다. 지금은 텔레그램으로 문의하세요."],
+["Аккаунт с этим номером не найден.","No account with this number.","Bu raqam bilan akkaunt topilmadi.","Бұл нөмірмен аккаунт табылмады.","이 번호로 가입된 계정이 없습니다."],
+["Регистрация временно закрыта. Напишите нам в Telegram.","Sign-up is temporarily closed. Message us on Telegram.","Ro‘yxatdan o‘tish vaqtincha yopiq. Bizga Telegram’da yozing.","Тіркелу уақытша жабық. Бізге Telegram-да жазыңыз.","회원가입이 일시 중단되었습니다. 텔레그램으로 문의하세요."],
+["Новый пароль совпадает со старым.","The new password matches the old one.","Yangi parol eskisi bilan bir xil.","Жаңа құпиясөз ескісімен бірдей.","새 비밀번호가 기존 비밀번호와 같습니다."],
+["Слишком простой пароль. Придумайте пароль посложнее.","Password is too simple. Choose a stronger one.","Parol juda oddiy. Murakkabroq parol o‘ylab toping.","Құпиясөз тым қарапайым. Күрделірек құпиясөз ойлап табыңыз.","비밀번호가 너무 단순합니다. 더 복잡하게 만드세요."],
+["Проверьте номер телефона.","Check the phone number.","Telefon raqamini tekshiring.","Телефон нөмірін тексеріңіз.","전화번호를 확인하세요."],
+["Нет соединения с интернетом. Проверьте сеть и попробуйте снова.","No internet connection. Check your network and try again.","Internet aloqasi yo‘q. Tarmoqni tekshirib, qayta urining.","Интернет байланысы жоқ. Желіні тексеріп, қайталаңыз.","인터넷에 연결되어 있지 않습니다. 네트워크를 확인하고 다시 시도하세요."],
+["Что-то пошло не так. Попробуйте ещё раз.","Something went wrong. Please try again.","Nimadir xato ketdi. Qayta urinib ko‘ring.","Бірдеңе дұрыс болмады. Қайта көріңіз.","문제가 발생했습니다. 다시 시도하세요."],
+["Для восстановления доступа к аккаунту с e-mail напишите нам в Telegram.","To restore access to an e-mail account, message us on Telegram.","E-mail akkauntiga kirishni tiklash uchun bizga Telegram’da yozing.","E-mail аккаунтына кіруді қалпына келтіру үшін бізге Telegram-да жазыңыз.","이메일 계정 복구는 텔레그램으로 문의하세요."],
+["Написать в Telegram","Message us on Telegram","Telegram’da yozish","Telegram-да жазу","텔레그램으로 문의"],["Клиент","Customer","Mijoz","Клиент","고객"]
+];
+window.LUMA_AUTH_PT=[
+[/^Отправить код повторно через (\d+:\d\d)$/,["Resend code in $1","Kodni $1 dan so‘ng qayta yuborish","Кодты $1 кейін қайта жіберу","$1 후 재전송"]],
+[/^Слишком много попыток\. Повторите через (\d+) сек\.$/,["Too many attempts. Try again in $1 s.","Urinishlar juda ko‘p. $1 soniyadan so‘ng qayta urining.","Әрекет тым көп. $1 сек. кейін қайталаңыз.","시도 횟수가 너무 많습니다. $1초 후 다시 시도하세요."]]
+];
+/* ===== Luma Auth: регистрация по SMS, вход по номеру и паролю ===== */
 let signupPending=null;
+const LA={mode:'in',phone:'',name:'',flow:'',otpPhone:'',timer:null,left:0,emailMode:false,busy:false,otpAbort:null};
 function cleanPhone(v){let n=String(v||'').replace(/[^0-9+]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(n.startsWith('998'))n='+'+n;if(n.startsWith('0'))n='+998'+n.slice(1);if(!n.startsWith('+'))n='+998'+n;return n}
+function fmtPhone(d){d=String(d||'').replace(/\D/g,'').slice(0,9);return [d.slice(0,2),d.slice(2,5),d.slice(5,7),d.slice(7,9)].filter(Boolean).join(' ')}
+function prettyPhone(ph){const d=String(ph||'').replace(/\D/g,'');return /^998\d{9}$/.test(d)?'+998 '+fmtPhone(d.slice(3)):String(ph||'')}
+function phoneDigits(id){return (($(id)||{}).value||'').replace(/\D/g,'')}
+function laMask(e){const el=e.target;let d=el.value.replace(/\D/g,'');if(d.length>9&&d.startsWith('998'))d=d.slice(3);el.value=fmtPhone(d)}
+const LA_EYE='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const LA_EYE_OFF='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.7 0 3.2-.5 4.5-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+function laHead(t,s){return '<div class="la-head"><span class="la-brand">LUMA · BEAUTY</span><h3 class="serif la-t">'+t+'</h3>'+(s?'<p class="la-s">'+s+'</p>':'')+'</div>'}
+function laTabs(m){return '<div class="la-tabs" role="tablist"><span class="la-ind'+(m==='up'?' r':'')+'"></span><button type="button" role="tab" class="'+(m==='in'?'on':'')+'" onclick="acct(\'in\')">Вход</button><button type="button" role="tab" class="'+(m==='up'?'on':'')+'" onclick="acct(\'up\')">Регистрация</button></div>'}
+function laPhoneField(){return '<div class="la-f"><label class="la-l" for="laPhone">Номер телефона</label><div class="la-ph"><span class="la-cc">+998</span><input id="laPhone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="90 123 45 67" value="'+fmtPhone(LA.phone)+'" oninput="laMask(event)"></div></div>'}
+function laPassField(id,label,isNew){return '<div class="la-f"><label class="la-l" for="'+id+'">'+label+'</label><div class="la-pw"><input id="'+id+'" type="password" autocomplete="'+(isNew?'new-password':'current-password')+'" placeholder="'+(isNew?'Минимум 6 символов':'Ваш пароль')+'"'+(isNew?' oninput="laStrength(this)"':'')+'><button type="button" class="la-eye" onclick="laEye(\''+id+'\',this)" aria-label="Show password">'+LA_EYE+'</button></div>'+(isNew?'<div class="la-str" data-s="0"><i></i><i></i><i></i></div><small class="la-hint" id="'+id+'Hint">Минимум 6 символов</small>':'')+'</div>'}
+function laErrBox(){return '<p class="err la-err" id="laErr" role="alert"></p>'}
+function laFocus(id,always){setTimeout(()=>{const e=$(id);if(e&&(always||matchMedia('(pointer:fine)').matches))e.focus()},90)}
+function laStop(){clearInterval(LA.timer);LA.timer=null;LA.left=0;try{if(LA.otpAbort)LA.otpAbort.abort()}catch(e){}LA.otpAbort=null}
+
 function acct(m='in'){
-if(user)return modal('<h3 class="serif">Здравствуйте, '+user.name+'!</h3><p class="mu">'+(user.phone||'')+'</p><button class="buy" onclick="logout()">Выйти</button>');
-modal('<h3 class="serif">'+(m==='in'?'Вход':'Регистрация')+'</h3><div class="tabs"><button class="'+(m==='in'?'on':'')+'" onclick="acct(\'in\')">Вход</button><button class="'+(m==='up'?'on':'')+'" onclick="acct(\'up\')">Регистрация</button></div>'+(m==='up'?'<input id="fn" placeholder="Ваше имя" autocomplete="name">':'')+'<input id="fph" type="tel" placeholder="'+(m==='in'?'Телефон или e-mail':'Номер телефона +998…')+'" autocomplete="tel"><input id="fw" type="password" placeholder="Пароль (минимум 6 символов)" autocomplete="'+(m==='in'?'current-password':'new-password')+'"><p class="err" id="er"></p><button class="buy" onclick="auth(\''+m+'\')">'+(m==='in'?'Войти':'Получить SMS-код')+'</button>'+(m==='in'?'<small class="mu">Для старых аккаунтов доступен вход по e-mail.</small>':'<small class="mu">Код придёт по SMS. При следующих входах SMS не требуется.</small>'));
+ if(user)return laProfile();
+ laStop();LA.mode=m;LA.flow='';
+ if(m==='up')return laSignup();
+ laLogin();
 }
-async function auth(m){const raw=$('fph').value.trim(),w=$('fw').value,er=$('er');if(!raw||w.length<6)return er.textContent='Введите телефон и пароль от 6 символов';
-try{
- if(m==='up'){const n=$('fn').value.trim(),ph=cleanPhone(raw);if(!n)return er.textContent='Введите имя';if(!/^\+998\d{9}$/.test(ph))return er.textContent='Введите номер Узбекистана в формате +998 XX XXX XX XX';
- signupPending={phone:ph,password:w,name:n};const r=await sb.auth.signUp({phone:ph,password:w,options:{data:{name:n,phone:ph}}});if(r.error)return er.textContent=r.error.message;
- if(r.data.session){await sb.auth.signOut();return er.textContent='SMS-подтверждение выключено в Supabase. Включите подтверждение телефона и настройте SMS-провайдера.'}
- modal('<h3 class="serif">Подтвердите номер</h3><p>Мы отправили SMS на <b>'+ph+'</b>.</p><input id="smsCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Код из SMS"><p class="err" id="smsErr"></p><button class="buy" onclick="verifySignup()">Подтвердить номер</button><button class="cartbtn" onclick="acct(\'up\')">Изменить номер</button>');return;
- }
- let r;if(raw.includes('@'))r=await sb.auth.signInWithPassword({email:raw,password:w});else r=await sb.auth.signInWithPassword({phone:cleanPhone(raw),password:w});
- if(r.error)return er.textContent=r.error.message;await finishAuth();
-}catch(e){er.textContent=e.message||'Не удалось выполнить вход'}}
-async function verifySignup(){const token=$('smsCode').value.trim(),err=$('smsErr');if(!token)return err.textContent='Введите код из SMS';const r=await sb.auth.verifyOtp({phone:signupPending.phone,token,type:'sms'});if(r.error)return err.textContent=r.error.message;await finishAuth()}
-async function finishAuth(){signupPending=null;await loadUser();closeM();toast('Добро пожаловать, '+(user?.name||'в Luma Beauty')+'!');if(pend){pend=false;buy()}}
+function laProfile(){const n=String(user.name||'Клиент').trim(),ini=(n.charAt(0)||'L').toUpperCase(),sub=user.phone?prettyPhone(user.phone):(user.email||'');
+ modal('<div class="la la-me"><div class="la-ava">'+escHTML(ini)+'</div><h3 class="serif la-t">Здравствуйте, '+escHTML(n)+'!</h3>'+(sub?'<p class="la-s">'+escHTML(sub)+'</p>':'')+'<button class="buy la-btn" type="button" onclick="logout()">Выйти</button></div>')}
+function laLogin(){const em=LA.emailMode;
+ modal('<div class="la">'+laHead('С возвращением','Войдите, чтобы видеть заказы и копить кэшбэк')+laTabs('in')+
+ '<form class="la-form" onsubmit="event.preventDefault();laDoLogin()" novalidate>'+
+ (em?'<div class="la-f"><label class="la-l" for="laEmail">E-mail</label><input id="laEmail" type="email" inputmode="email" autocomplete="username" placeholder="name@mail.com"></div>':laPhoneField())+
+ laPassField('laPass','Пароль',false)+
+ '<div class="la-row"><button type="button" class="la-link" onclick="laSwitchEmail()">'+(em?'Войти по номеру телефона':'Войти по e-mail')+'</button><button type="button" class="la-link" onclick="laForgot()">Забыли пароль?</button></div>'+
+ laErrBox()+'<button class="buy la-btn" id="laBtn" type="submit">Войти</button></form>'+
+ '<p class="la-foot"><span>Нет аккаунта?</span> <button type="button" class="la-link" onclick="acct(\'up\')">Зарегистрироваться</button></p></div>');
+ laFocus(em?'laEmail':'laPhone');
+}
+function laSignup(){
+ modal('<div class="la">'+laHead('Создать аккаунт','Кэшбэк с каждого заказа и история покупок в одном месте')+laTabs('up')+
+ '<form class="la-form" onsubmit="event.preventDefault();laDoSignup()" novalidate>'+
+ '<div class="la-f"><label class="la-l" for="laName">Ваше имя</label><input id="laName" autocomplete="given-name" autocapitalize="words" maxlength="60" placeholder="Например, Мадина" value="'+escHTML(LA.name)+'"></div>'+
+ laPhoneField()+laPassField('laPass','Придумайте пароль',true)+
+ laErrBox()+'<button class="buy la-btn" id="laBtn" type="submit">Получить код по SMS</button>'+
+ '<small class="la-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</small></form>'+
+ '<p class="la-foot"><span>Уже есть аккаунт?</span> <button type="button" class="la-link" onclick="acct(\'in\')">Войти</button></p></div>');
+ laFocus('laName');
+}
+function laSwitchEmail(){LA.emailMode=!LA.emailMode;laLogin()}
+function laForgot(){
+ if(LA.emailMode)return laErr('Для восстановления доступа к аккаунту с e-mail напишите нам в Telegram.',null,['Написать в Telegram',laTg]);
+ const d=phoneDigits('laPhone');if(d)LA.phone=d;laStop();
+ modal('<div class="la">'+laHead('Восстановить пароль','Пришлём SMS-код, после него вы зададите новый пароль')+
+ '<form class="la-form" onsubmit="event.preventDefault();laDoForgot()" novalidate>'+laPhoneField()+laErrBox()+
+ '<button class="buy la-btn" id="laBtn" type="submit">Получить код</button></form>'+
+ '<p class="la-foot"><span>Вспомнили пароль?</span> <button type="button" class="la-link" onclick="acct(\'in\')">Войти</button></p></div>');
+ laFocus('laPhone');
+}
+function laNewPass(){
+ modal('<div class="la">'+laHead('Новый пароль','Номер подтверждён. Придумайте новый пароль для входа')+
+ '<form class="la-form" onsubmit="event.preventDefault();laSaveNewPass()" novalidate>'+laPassField('laPass','Новый пароль',true)+laErrBox()+
+ '<button class="buy la-btn" id="laBtn" type="submit">Сохранить и войти</button></form></div>');
+ laFocus('laPass',true);
+}
+function laOtp(ph,note){LA.otpPhone=ph;
+ modal('<div class="la">'+laHead('Введите код','<span>Отправили SMS на</span> <b class="la-nb">'+prettyPhone(ph)+'</b>')+(note?'<p class="la-info">'+note+'</p>':'')+
+ '<form class="la-form" onsubmit="event.preventDefault();laVerify()" novalidate><div class="la-otp" id="laOtpBox"><input id="laCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" aria-label="SMS code" oninput="laCodeInput(this)" onfocus="laCells()" onblur="laCells()"><div class="la-cells" aria-hidden="true">'+'<span></span>'.repeat(6)+'</div></div>'+
+ laErrBox()+'<button class="buy la-btn" id="laBtn" type="submit">Подтвердить</button><p class="la-resend" id="laResend"></p>'+
+ '<button type="button" class="la-link la-center" onclick="laBack()">Изменить номер</button></form></div>');
+ laTimer(60);laCells();laFocus('laCode',true);laWebOtp();
+}
+function laBack(){laStop();if(LA.flow==='reset')return laForgot();if(LA.mode==='in')return laLogin();laSignup()}
+
+function laEye(id,b){const i=$(id);if(!i)return;const show=i.type==='password';i.type=show?'text':'password';b.innerHTML=show?LA_EYE_OFF:LA_EYE;b.setAttribute('aria-label',show?'Hide password':'Show password');i.focus()}
+function laStrength(i){const v=i.value,L=/[a-zа-яё]/i.test(v),D=/\d/.test(v),X=/[^a-zа-яё0-9]/i.test(v)||/[A-ZА-ЯЁ]/.test(v)&&/[a-zа-яё]/.test(v);let s=0,t='Минимум 6 символов';
+ if(v.length){s=1;if(v.length>=6)t='Слабый пароль'}
+ if(v.length>=8&&L&&D||v.length>=10){s=2;t='Хороший пароль'}
+ if(v.length>=10&&L&&D&&X){s=3;t='Надёжный пароль'}
+ const bar=i.closest('.la-f').querySelector('.la-str'),h=$(i.id+'Hint');if(bar)bar.dataset.s=s;if(h)h.textContent=t}
+function laCodeInput(el,noSubmit){const v=el.value.replace(/\D/g,'').slice(0,6);if(v!==el.value)el.value=v;laCells();if(!noSubmit&&v.length===6)laVerify()}
+function laCells(){const i=$('laCode');if(!i)return;const v=i.value,f=document.activeElement===i;document.querySelectorAll('#laOtpBox .la-cells span').forEach((s,n)=>{s.textContent=v[n]||'';s.classList.toggle('fill',!!v[n]);s.classList.toggle('cur',f&&(n===v.length||(v.length===6&&n===5)))})}
+function laTimer(sec){clearInterval(LA.timer);LA.left=sec;const tick=()=>{const el=$('laResend');if(!el){clearInterval(LA.timer);return}
+ if(LA.left<=0){clearInterval(LA.timer);el.innerHTML='<button type="button" class="la-link" onclick="laResend()">Отправить код ещё раз</button>';return}
+ el.textContent='Отправить код повторно через '+Math.floor(LA.left/60)+':'+String(LA.left%60).padStart(2,'0');LA.left--};tick();LA.timer=setInterval(tick,1000)}
+function laWebOtp(){try{if(!('OTPCredential' in window))return;if(LA.otpAbort)LA.otpAbort.abort();const ac=new AbortController();LA.otpAbort=ac;
+ navigator.credentials.get({otp:{transport:['sms']},signal:ac.signal}).then(o=>{const i=$('laCode');if(o&&o.code&&i){i.value=String(o.code).replace(/\D/g,'').slice(0,6);laCodeInput(i)}}).catch(()=>{})}catch(e){}}
+function laBusy(on){LA.busy=on;const b=$('laBtn');if(!b)return;b.disabled=on;b.classList.toggle('is-busy',on);b.setAttribute('aria-busy',on?'true':'false')}
+function laTg(){window.open('https://t.me/'+TG_USER,'_blank','noopener')}
+
+function laErr(msg,field,action){const el=$('laErr');if(!el){toast(msg);return}
+ el.textContent='';const s=document.createElement('span');s.textContent=msg;el.appendChild(s);
+ if(action){const b=document.createElement('button');b.type='button';b.className='la-link';b.textContent=action[0];b.onclick=action[1];el.append(' ',b)}
+ const fm=el.closest('form');if(fm)fm.addEventListener('input',()=>{el.textContent=''},{once:true});
+ document.querySelectorAll('#mb .bad').forEach(x=>x.classList.remove('bad'));
+ if(field){const f=$(field);if(f){const w=f.closest('.la-ph,.la-pw,.la-otp')||f;w.classList.add('bad');f.setAttribute('aria-invalid','true');f.focus();f.addEventListener('input',()=>{w.classList.remove('bad');f.removeAttribute('aria-invalid')},{once:true})}}
+ const box=$('mb');box.classList.remove('la-shake');void box.offsetWidth;box.classList.add('la-shake');
+}
+function laCode(e){return String((e&&(e.code||e.error_code))||'')}
+function laFail(e){try{console.warn('[auth]',e)}catch(x){}
+ const c=laCode(e),m=String((e&&e.message)||e||'').toLowerCase();
+ if(c==='invalid_credentials'||m.includes('invalid login'))return laErr(LA.emailMode?'Неверный e-mail или пароль':'Неверный номер или пароль','laPass',LA.emailMode?null:['Забыли пароль?',laForgot]);
+ if(c==='user_already_exists'||c==='phone_exists'||m.includes('already registered')||m.includes('already exists'))return laErr('Этот номер уже зарегистрирован.',null,['Войти',()=>{LA.emailMode=false;acct('in')}]);
+ if(c==='otp_expired'||c==='invalid_otp'||m.includes('expired')||m.includes('token'))return laErr('Неверный или устаревший код. Проверьте SMS или запросите новый.','laCode');
+ if(c.startsWith('over_')||m.includes('security purposes')||m.includes('rate limit')){const s=(m.match(/(\d+)\s*sec/)||[])[1];return laErr(s?'Слишком много попыток. Повторите через '+s+' сек.':'Слишком много попыток. Повторите чуть позже.')}
+ if(c==='phone_provider_disabled'||c==='sms_provider_disabled'||m.includes('phone provider')||m.includes('phone signups are disabled'))return laErr('Вход по SMS скоро заработает. Пока напишите нам в Telegram.',null,['Написать в Telegram',laTg]);
+ if(c==='sms_send_failed'||m.includes('sms')||m.includes('sending'))return laErr('Не удалось отправить SMS. Проверьте номер или попробуйте позже.','laPhone');
+ if(c==='otp_disabled'||c==='user_not_found'||m.includes('signups not allowed for otp')||m.includes('user not found'))return laErr('Аккаунт с этим номером не найден.','laPhone',['Зарегистрироваться',()=>acct('up')]);
+ if(c==='signup_disabled'||m.includes('signups not allowed'))return laErr('Регистрация временно закрыта. Напишите нам в Telegram.',null,['Написать в Telegram',laTg]);
+ if(c==='same_password'||m.includes('different from the old'))return laErr('Новый пароль совпадает со старым.','laPass');
+ if(c==='weak_password'||m.includes('password should'))return laErr('Слишком простой пароль. Придумайте пароль посложнее.','laPass');
+ if(m.includes('phone'))return laErr('Проверьте номер телефона.','laPhone');
+ if(m.includes('failed to fetch')||m.includes('network')||m.includes('load failed'))return laErr('Нет соединения с интернетом. Проверьте сеть и попробуйте снова.');
+ laErr('Что-то пошло не так. Попробуйте ещё раз.');
+}
+
+async function laDoSignup(){if(LA.busy)return;
+ const n=$('laName').value.trim().replace(/\s+/g,' '),d=phoneDigits('laPhone'),w=$('laPass').value;LA.name=n;LA.phone=d;
+ if(n.length<2)return laErr('Введите ваше имя','laName');
+ if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');
+ if(w.length<6)return laErr('Пароль должен быть не короче 6 символов','laPass');
+ const ph='+998'+d;laBusy(true);
+ try{const r=await sb.auth.signUp({phone:ph,password:w,options:{data:{name:n,phone:ph}}});if(r.error)throw r.error;
+  const u=r.data&&r.data.user;if(u&&Array.isArray(u.identities)&&!u.identities.length)throw {code:'user_already_exists'};
+  if(r.data.session)return await finishAuth();
+  signupPending={phone:ph,name:n};LA.flow='signup';LA.mode='up';laOtp(ph);
+ }catch(e){laFail(e)}finally{laBusy(false)}}
+async function laDoLogin(){if(LA.busy)return;const w=$('laPass').value;let cred;
+ if(LA.emailMode){const e=$('laEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(e))return laErr('Введите корректный e-mail','laEmail');cred={email:e,password:w}}
+ else{const d=phoneDigits('laPhone');LA.phone=d;if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');cred={phone:'+998'+d,password:w}}
+ if(!w)return laErr('Введите пароль','laPass');
+ laBusy(true);
+ try{const r=await sb.auth.signInWithPassword(cred);if(r.error)throw r.error;await finishAuth()}
+ catch(e){const m=String((e&&e.message)||'').toLowerCase();
+  if(!LA.emailMode&&(laCode(e)==='phone_not_confirmed'||m.includes('not confirmed'))){
+   try{const rr=await sb.auth.resend({type:'sms',phone:cred.phone});if(rr.error)throw rr.error;signupPending={phone:cred.phone};LA.flow='signup';LA.mode='in';laOtp(cred.phone,'Номер ещё не подтверждён — отправили новый код')}catch(x){laFail(x)}
+  }else laFail(e)}
+ finally{laBusy(false)}}
+async function laDoForgot(){if(LA.busy)return;const d=phoneDigits('laPhone');LA.phone=d;
+ if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');
+ const ph='+998'+d;laBusy(true);
+ try{const r=await sb.auth.signInWithOtp({phone:ph,options:{shouldCreateUser:false}});if(r.error)throw r.error;LA.flow='reset';laOtp(ph)}
+ catch(e){laFail(e)}finally{laBusy(false)}}
+async function laVerify(){if(LA.busy)return;const i=$('laCode'),c=i?i.value:'';
+ if(c.length!==6)return laErr('Введите 6 цифр из SMS','laCode');
+ laBusy(true);
+ try{const r=await sb.auth.verifyOtp({phone:LA.otpPhone,token:c,type:'sms'});if(r.error)throw r.error;laStop();
+  if(LA.flow==='reset')return laNewPass();
+  await finishAuth()}
+ catch(e){laFail(e);if(i&&document.body.contains(i)){i.value='';laCodeInput(i,true);i.focus()}}
+ finally{laBusy(false)}}
+async function laResend(){if(LA.left>0||LA.busy)return;LA.busy=true;
+ try{const r=LA.flow==='reset'?await sb.auth.signInWithOtp({phone:LA.otpPhone,options:{shouldCreateUser:false}}):await sb.auth.resend({type:'sms',phone:LA.otpPhone});if(r.error)throw r.error;toast('Новый код отправлен');laTimer(60);laWebOtp()}
+ catch(e){laFail(e)}finally{LA.busy=false}}
+async function laSaveNewPass(){if(LA.busy)return;const w=$('laPass').value;
+ if(w.length<6)return laErr('Пароль должен быть не короче 6 символов','laPass');
+ laBusy(true);
+ try{const r=await sb.auth.updateUser({password:w});if(r.error)throw r.error;await finishAuth()}
+ catch(e){laFail(e)}finally{laBusy(false)}}
+async function finishAuth(){signupPending=null;laStop();LA.flow='';await loadUser();closeM();toast('Добро пожаловать, '+(user?.name||'в Luma Beauty')+'!');if(pend){pend=false;buy()}}
 async function logout(){await sb.auth.signOut();await loadUser();closeM()}
 async function promo(){const c=$('pc').value.trim().toUpperCase(),m=$('pm');const {data}=await sb.rpc('check_promo',{c});
 if(data>0){disc=data/100;pcode=c;m.textContent='Промокод применён: скидка '+data+'% на все товары';m.className='ok'}else{disc=0;pcode='';m.textContent='Промокод не найден';m.className='err'}render();upd()}
@@ -773,7 +1035,7 @@ R.push(...[["Парфюмированный гель для душа", "Perfumed
 ["Сохраняйте понравившиеся товары на странице товара — они появятся здесь.","Save products you like on their product pages and they will appear here.","Yoqtirgan mahsulotlaringizni saqlang — ular shu yerda ko‘rinadi.","Ұнаған тауарларды сақтаңыз — олар осында көрсетіледі.","마음에 드는 상품을 저장하면 여기에 표시됩니다."],
 ["Поиск по товарам","Search products","Mahsulotlarni qidirish","Тауарларды іздеу","상품 검색"],["Смотреть каталог","View collection","Katalogni ko‘rish","Каталогты қарау","컬렉션 보기"]
 );
-R.push(["Красота. Уход. Вдохновение.","Beauty. Care. Inspiration.","Go‘zallik. Parvarish. Ilhom.","Сұлулық. Күтім. Шабыт.","아름다움. 케어. 영감."],["Подписаться в Instagram ↗","Follow us on Instagram ↗","Instagram’da kuzatib boring ↗","Instagram-ға жазылыңыз ↗","Instagram 팔로우하기 ↗"],["Откройте мир красоты","Discover the world of beauty","Go‘zallik olamini kashf eting","Сұлулық әлемін ашыңыз","아름다움의 세계를 만나보세요"]);R.forEach(r=>E[r[0]]=r);
+R.push(["Красота. Уход. Вдохновение.","Beauty. Care. Inspiration.","Go‘zallik. Parvarish. Ilhom.","Сұлулық. Күтім. Шабыт.","아름다움. 케어. 영감."],["Подписаться в Instagram ↗","Follow us on Instagram ↗","Instagram’da kuzatib boring ↗","Instagram-ға жазылыңыз ↗","Instagram 팔로우하기 ↗"],["Откройте мир красоты","Discover the world of beauty","Go‘zallik olamini kashf eting","Сұлулық әлемін ашыңыз","아름다움의 세계를 만나보세요"]);R.push(...(window.LUMA_AUTH_I18N||[]));R.forEach(r=>E[r[0]]=r);
 const P=[
 ["Общие рекомендации по типу средства. Точный состав (INCI) смотрите на упаковке. При чувствительной коже сделайте тест на запястье, при аллергии посоветуйтесь с врачом.","General advice by product type. See the packaging for the exact ingredients (INCI). For sensitive skin do a patch test on your wrist; if you have allergies, consult a doctor.","Vositaning turiga oid umumiy tavsiyalar. Aniq tarkib (INCI) qadoqda. Sezgir teri uchun bilakda sinab ko‘ring, allergiyada shifokorga murojaat qiling.","Құрал түріне байланысты жалпы кеңестер. Нақты құрамы (INCI) қаптамада. Сезімтал теріде білекте сынап көріңіз, аллергия болса дәрігермен кеңесіңіз.","제품 유형에 따른 일반 안내입니다. 정확한 성분(INCI)은 포장을 확인하세요. 민감성 피부는 손목에 먼저 테스트하고, 알레르기가 있으면 의사와 상담하세요."],
 ["Большинство типов кожи; уход на солнце.","Most skin types; sun care.","Teri turlarining ko‘pchiligi; quyoshda parvarish.","Тері түрлерінің көбі; күнде күтім.","대부분의 피부 타입, 자외선 케어."],["Повреждённая кожа и ожоги; детям — только после консультации врача.","Damaged skin and burns; for children only after a doctor’s advice.","Shikastlangan teri va kuyish; bolalarga faqat shifokor maslahatidan so‘ng.","Зақымдалған тері және күйік; балаларға тек дәрігер кеңесінен кейін.","손상된 피부와 화상, 어린이는 의사 상담 후 사용."],
@@ -791,7 +1053,7 @@ const PT=[[/^(\d+) товаров$/,["$1 products","$1 ta mahsulot","$1 тауа
 [/^Заказ №(\d+) создан$/,["Order #$1 created","Buyurtma №$1 yaratildi","№$1 тапсырыс жасалды","주문 #$1 생성됨"]],[/^Промокод применён: скидка (\d+)% на все товары$/,["Promo code applied: $1% off all products","Promo kod qo‘llandi: barcha mahsulotlarga $1% chegirma","Промокод қолданылды: барлық тауарға $1% жеңілдік","프로모션 코드 적용: 전 상품 $1% 할인"]],
 [/^В корзину — ([\s\S]*)$/,["Add to cart — $1","Savatga — $1","Себетке — $1","장바구니 담기 — $1"]],[/^В названии указано: «([\s\S]*)»\. Полный список компонентов — на упаковке\.$/,["Name mentions: “$1”. The full ingredient list is on the packaging.","Nomida ko‘rsatilgan: «$1». To‘liq tarkib qadoqda.","Атауында көрсетілген: «$1». Толық құрамы қаптамада.","상품명 표기: «$1». 전체 성분은 포장에 있습니다."]],
 [/^Оплата (Payme|Click) пока не подключена к кассе\.$/,["$1 payment is not connected yet.","$1 to‘lovi hali ulanmagan.","$1 төлемі әлі қосылмаған.","$1 결제는 아직 연결되지 않았습니다."]],[/^Оплата (Payme|Click) пока не подключена: мы свяжемся с вами по заказу\.$/,["$1 payment is not connected yet: we will contact you about your order.","$1 to‘lovi hali ulanmagan: buyurtma bo‘yicha siz bilan bog‘lanamiz.","$1 төлемі әлі қосылмаған: тапсырыс бойынша сізбен хабарласамыз.","$1 결제는 아직 연결되지 않았습니다. 주문 관련하여 연락드리겠습니다."]]];
-let lang='ru',k=0;const orig=new WeakMap(),last=new WeakMap();
+PT.push(...(window.LUMA_AUTH_PT||[]));let lang='ru',k=0;const orig=new WeakMap(),last=new WeakMap();
 const U=s=>k?s.replace(/(\d) сум(?![а-яё])/g,'$1 '+["UZS","so‘m","сум","UZS"][k-1]).replace(/(\d) мл(?![а-яё])/g,'$1 '+["ml","ml","мл","ml"][k-1]).replace(/(\d) г(?![а-яё])/g,'$1 '+["g","g","г","g"][k-1]):s;
 function tx(s){if(!k||!CY.test(s))return U(s);const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2];if(!c)return s;let r=null;
 if(E[c])r=E[c][k];else{for(const [re,t] of PT)if(re.test(c)){r=c.replace(re,t[k-1]);break}
