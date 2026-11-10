@@ -621,7 +621,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:480px){#md .box:has(.la){padding:28px 18px 20px;border-radius:22px}.la-t{font-size:23px}.la-cells{gap:6px}.la-cells span{height:52px;font-size:22px}.la-head{padding:0 22px}}
 @media(prefers-reduced-motion:reduce){.la,.la-cells span,.la-shake,#md .la .la-btn.is-busy:after{animation:none!important}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script>if(!CFG.SUPABASE_URL)location.replace('demo.html')</script></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
-<header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="blog.html">Блог</a><a href="about.html">О бренде</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><button class="cartbtn fav-head" onclick="showFavorites()" aria-label="Избранное">♡ <span id="favCount">0</span></button><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
+<header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center;gap:8px"><nav><a href="#catalog">Каталог</a><a href="blog.html">Блог</a><a href="about.html">О бренде</a><a href="account.html">Аккаунт</a><a href="#favorites" onclick="showFavorites()">Мне нравится ♡</a></nav><button class="cartbtn fav-head" onclick="showFavorites()" aria-label="Избранное">♡ <span id="favCount">0</span></button><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="luma-hero" id="top"><div class="hero-visual"><img id="heroSlideImage" alt="Luma Beauty — косметика и уход"><div class="hero-slider-controls"><button type="button" onclick="heroPrev()" aria-label="Предыдущее фото">‹</button><div id="heroSlideDots"></div><button type="button" onclick="heroNext()" aria-label="Следующее фото">›</button></div></div><div class="hero-copy"><div class="eyebrow">LUMA BEAUTY · BEAUTY BOUTIQUE</div><h1>Искусство<br>быть <em>собой</em></h1><p>Премиальная косметика и заботливый уход для вашей естественной красоты. Найдите средства, которые станут частью любимого ритуала.</p><a class="cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hero-instagram" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div><div class="hero-stamp">BEAUTY<br>IS A<br>RITUAL</div></div>
 
 <section class="bloom-categories" aria-label="Категории косметики">
@@ -713,6 +713,7 @@ const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
 async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,d:Number(r.discount_percent)||0,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));cart=LS.get('luma_cart')||{};render();const addId=new URLSearchParams(location.search).get('add');if(addId){const i=P.findIndex(p=>String(p.id)===addId);if(i>=0){const count=Math.max(1,Math.min(99,Number(new URLSearchParams(location.search).get('qty'))||1));cart[i]=(cart[i]||0)+count;LS.set('luma_cart',cart);upd();toast('Добавлено в корзину')}history.replaceState(null,'',location.pathname)}}
 async function loadUser(){const {data:{session}}=await sb.auth.getSession();user=null;if(session){const {data}=await sb.from('profiles').select('name,phone').eq('id',session.user.id).single();user={id:session.user.id,name:data?.name||'Клиент',phone:data?.phone||'',email:session.user.email}}$('acc').textContent=user?user.name:'Войти'}
 window.LUMA_AUTH_I18N=[
+["Аккаунт","Account","Akkaunt","Аккаунт","내 계정"],
 ["Вход","Log in","Kirish","Кіру","로그인"],["Регистрация","Sign up","Ro‘yxatdan o‘tish","Тіркелу","회원가입"],["Войти","Log in","Kirish","Кіру","로그인"],["Выйти","Log out","Chiqish","Шығу","로그아웃"],
 ["С возвращением","Welcome back","Qaytganingizdan xursandmiz","Қайта оралуыңызбен","다시 오신 것을 환영합니다"],
 ["Войдите, чтобы видеть заказы и копить кэшбэк","Log in to see your orders and earn cashback","Buyurtmalaringizni ko‘rish va keshbek yig‘ish uchun kiring","Тапсырыстарды көру және кэшбэк жинау үшін кіріңіз","주문 내역 확인과 캐시백 적립을 위해 로그인하세요"],
@@ -766,7 +767,7 @@ window.LUMA_AUTH_PT=[
 ];
 /* ===== Luma Auth: регистрация по SMS, вход по номеру и паролю ===== */
 let signupPending=null;
-const LA={mode:'in',phone:'',name:'',flow:'',otpPhone:'',timer:null,left:0,emailMode:false,busy:false,otpAbort:null};
+const LA={after:'',mode:'in',phone:'',name:'',flow:'',otpPhone:'',timer:null,left:0,emailMode:false,busy:false,otpAbort:null};
 function cleanPhone(v){let n=String(v||'').replace(/[^0-9+]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(n.startsWith('998'))n='+'+n;if(n.startsWith('0'))n='+998'+n.slice(1);if(!n.startsWith('+'))n='+998'+n;return n}
 function fmtPhone(d){d=String(d||'').replace(/\D/g,'').slice(0,9);return [d.slice(0,2),d.slice(2,5),d.slice(5,7),d.slice(7,9)].filter(Boolean).join(' ')}
 function prettyPhone(ph){const d=String(ph||'').replace(/\D/g,'');return /^998\d{9}$/.test(d)?'+998 '+fmtPhone(d.slice(3)):String(ph||'')}
@@ -783,7 +784,7 @@ function laFocus(id,always){setTimeout(()=>{const e=$(id);if(e&&(always||matchMe
 function laStop(){clearInterval(LA.timer);LA.timer=null;LA.left=0;try{if(LA.otpAbort)LA.otpAbort.abort()}catch(e){}LA.otpAbort=null}
 
 function acct(m='in'){
- if(user)return laProfile();
+ if(user){location.href='account.html';return}
  laStop();LA.mode=m;LA.flow='';
  if(m==='up')return laSignup();
  laLogin();
@@ -920,7 +921,7 @@ async function laSaveNewPass(){if(LA.busy)return;const w=$('laPass').value;
  laBusy(true);
  try{const r=await sb.auth.updateUser({password:w});if(r.error)throw r.error;await finishAuth()}
  catch(e){laFail(e)}finally{laBusy(false)}}
-async function finishAuth(){signupPending=null;laStop();LA.flow='';await loadUser();closeM();toast('Добро пожаловать, '+(user?.name||'в Luma Beauty')+'!');if(pend){pend=false;buy()}}
+async function finishAuth(){signupPending=null;laStop();LA.flow='';await loadUser();closeM();if(LA.after){const a=LA.after;LA.after='';location.href=a;return}toast('Добро пожаловать, '+(user?.name||'в Luma Beauty')+'!');if(pend){pend=false;buy()}}
 async function logout(){await sb.auth.signOut();await loadUser();closeM()}
 async function promo(){const c=$('pc').value.trim().toUpperCase(),m=$('pm');const {data}=await sb.rpc('check_promo',{c});
 if(data>0){disc=data/100;pcode=c;m.textContent='Промокод применён: скидка '+data+'% на все товары';m.className='ok'}else{disc=0;pcode='';m.textContent='Промокод не найден';m.className='err'}render();upd()}
@@ -1110,5 +1111,5 @@ function skinQuizPrev(){skinQuizStep=Math.max(0,skinQuizStep-1);skinQuizRender()
 function skinQuizChoose(value){skinQuizAnswers[skinQuizStep]=value;skinQuizStep++;if(skinQuizStep<skinQuizQuestions.length){skinQuizRender();return}skinQuizShowResults()}
 function skinQuizShowResults(){const [type,goal,sensitive]=skinQuizAnswers;const words={dry:['сух','увлаж','питат','крем'],oily:['жирн','матир','очищ','себум'],combo:['комбин','баланс','увлаж','очищ'],normal:['ежеднев','универс','увлаж','уход'],sensitive:['чувств','нежн','успока','без отдуш'],hydrate:['увлаж','гиалур','крем','питат'],blemish:['акне','прыщ','проблем','очищ','салиц'],glow:['сиян','витамин c','осветл','тон'],spf:['spf','солнц','солнцезащ'],basic:['очищ','тоник','крем','уход']};const terms=[...(words[type]||[]),...(words[goal]||[]),...(sensitive==='yes'?words.sensitive:[])];const ranked=P.map(p=>{const text=(p.t+' '+p.k+' '+p.c+' '+(p.su||'')).toLowerCase();let score=0;terms.forEach(w=>{if(text.includes(w))score+=2});if((p.c||'').toLowerCase().includes('лицо'))score++;return {p,score}}).sort((a,b)=>b.score-a.score);let picks=ranked.filter(x=>x.score>0).slice(0,4);if(!picks.length)picks=ranked.slice(0,4);const cards=picks.map(({p})=>'<a class="skin-quiz-product" href="product.html?id='+encodeURIComponent(p.id)+'">'+(p.i?'<img loading="lazy" src="'+safeImage(p.i)+'" alt="'+escHTML(p.t)+'">':'')+'<b>'+escHTML(p.t)+'</b><small>'+(p.p?f(p.p):'Цена по запросу')+'</small></a>').join('');$('skinQuizBody').innerHTML='<h3>Варианты для знакомства с уходом</h3><p>Подбор сделан по словам в названии и категории товаров каталога.</p><div class="skin-quiz-results">'+cards+'</div><p class="skin-quiz-note">Это ориентировочная подборка, а не медицинская рекомендация. Проверяйте состав и инструкцию на упаковке. При аллергии или выраженном раздражении обратитесь к специалисту.</p><button class="skin-quiz-back" type="button" onclick="skinQuizStart()">Пройти тест заново</button>'}
 
-upd();loadUser();loadP();initHeroSlider();loadHomeStory();
+upd();loadUser().then(()=>{const hs=location.hash;if(hs!=='#login'&&hs!=='#signup')return;history.replaceState(null,'',location.pathname);if(user){location.href='account.html';return}LA.after='account.html';acct(hs==='#signup'?'up':'in')});loadP();initHeroSlider();loadHomeStory();
 </script></body></html>

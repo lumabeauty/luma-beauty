@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Мой аккаунт — Luma Beauty</title><meta name="robots" content="noindex"><link rel="icon" href="./favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#29282b;--ink2:#45454a;--mute:#77777e;--soft:#a3a3aa;--rose:#ef5265;--rose2:#ffe6e9;--line:#ececf0;--ok:#2f8f5b;--okbg:#e6f5ec}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--ink);font-family:Jost,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}button{font:inherit}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:62px;padding:8px max(22px,calc((100% - 1120px)/2));padding-top:max(8px,env(safe-area-inset-top));background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid #e9e9ec}
+.logo{font:800 30px/.95 Arial,sans-serif;letter-spacing:-.075em;color:var(--rose)}.logo i{color:var(--rose)}
+.top nav{display:flex;align-items:center;gap:6px}.top nav a{padding:8px 12px;border-radius:99px;font-size:14px;font-weight:500;color:var(--ink2)}.top nav a:hover{color:var(--rose)}.top nav a.on{background:var(--rose2);color:var(--rose)}
+.langsel{background:#fff;border:1px solid #ededf0;color:#343439;border-radius:24px;padding:8px 10px;font:inherit;font-size:13px}
+main{flex:1;width:100%;max-width:1120px;margin:0 auto;padding:28px 22px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 2px 14px #17171a08}
+.hero{position:relative;overflow:hidden;padding:30px;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:linear-gradient(120deg,#fff 0%,#fff 46%,#ffe9ec 100%)}
+.hero:after{content:"";position:absolute;right:-80px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#ef526522,transparent 70%);pointer-events:none}
+.ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#ff8d9c,#ef5265);color:#fff;font:700 34px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px #ef526544}
+.eyebrow{font-size:11px;letter-spacing:.26em;font-weight:700;color:var(--rose);text-transform:uppercase}
+.hero h1{margin:6px 0 4px;font:700 clamp(28px,4vw,38px)/1.08 Arial,sans-serif;letter-spacing:-.04em}
+.since{margin:0;color:var(--mute);font-size:14px}
+.tier{position:relative;z-index:1;min-width:250px;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line)}
+.tier-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.b-bronze{background:#f7e8de;color:#9a5b31}.b-silver{background:#eef0f4;color:#5b6170}.b-gold{background:#fbf0d4;color:#9b7213}
+.tier-pct{font:700 22px/1 Arial,sans-serif}
+.bar{height:6px;border-radius:6px;background:#f0f0f3;margin:12px 0 8px;overflow:hidden}.bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#ff8d9c,#ef5265);transition:width .8s cubic-bezier(.2,.7,.2,1)}
+.tier small{color:var(--mute);font-size:12.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}
+.stat{padding:20px 22px}.stat small{display:block;color:var(--mute);font-size:13px;margin-bottom:8px}.stat b{font:700 26px/1.1 Arial,sans-serif;letter-spacing:-.03em}.stat span{display:block;color:var(--soft);font-size:12.5px;margin-top:6px}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:start}
+.sec{padding:24px}.sec h2{margin:0 0 16px;font:700 20px/1.2 Arial,sans-serif;letter-spacing:-.02em;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0;padding-top:4px}
+.ico{flex:none;width:40px;height:40px;border-radius:12px;background:#f6f6f8;color:var(--ink2);display:flex;align-items:center;justify-content:center}
+.rv{flex:1;min-width:0}.rv small{display:block;color:var(--mute);font-size:12.5px;margin-bottom:2px}.rv div{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rv .none{color:var(--soft);font-weight:400}
+.ver{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:2px 8px;border-radius:99px;background:var(--okbg);color:var(--ok);font-size:11.5px;font-weight:600;vertical-align:2px}
+.lnk{border:0;background:none;padding:6px 2px;color:var(--rose);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}.lnk:hover{text-decoration:underline}
+.edit{display:flex;flex-direction:column;gap:10px;width:100%}
+.edit input{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid #e6e6ea;border-radius:14px;background:#fafafb;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.edit input:focus{border-color:var(--rose);background:#fff;box-shadow:0 0 0 4px #ef52651f}
+.acts{display:flex;gap:10px}
+.btn{border:0;border-radius:99px;padding:12px 20px;font-weight:600;font-size:14px;cursor:pointer;transition:transform .15s,box-shadow .2s,opacity .2s}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.6;cursor:wait}
+.btn-p{background:var(--rose);color:#fff;box-shadow:0 8px 20px #ef52653d}.btn-g{background:#f2f2f5;color:var(--ink)}
+.btn-o{width:100%;background:#fff;border:1.5px solid #e6e6ea;color:var(--ink);margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px}.btn-o:hover{border-color:#d9d9de}
+.msg{margin:0;font-size:13px;border-radius:12px;padding:9px 12px}.msg:empty{display:none}.msg.err{background:#fdecef;color:#b8324a}.msg.ok{background:var(--okbg);color:var(--ok)}
+.orders{margin-top:18px}
+.ord{border:1px solid var(--line);border-radius:18px;margin-top:12px;overflow:hidden;transition:box-shadow .2s}.ord:hover{box-shadow:0 6px 22px #17171a0d}
+.ord-h{width:100%;display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:16px 18px;background:none;border:0;text-align:left;cursor:pointer;color:inherit}
+.ord-h b{font-size:16px}.ord-h small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+.sum{font:700 16px/1 Arial,sans-serif;white-space:nowrap}
+.chip{display:inline-block;padding:5px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-new{background:#eef3ff;color:#3f5fbf}.s-paid{background:#e9f7f7;color:#1f7f80}.s-shipped{background:#fff3e2;color:#a2631a}.s-done{background:var(--okbg);color:var(--ok)}.s-canceled{background:#f2f2f4;color:#8a8a92}
+.chev{transition:transform .25s;color:var(--soft)}.ord.open .chev{transform:rotate(180deg)}
+.ord-b{display:none;padding:0 18px 18px}.ord.open .ord-b{display:block}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 16px}.steps div{text-align:center;font-size:11.5px;color:var(--soft)}.steps div:before{content:"";display:block;height:4px;border-radius:4px;background:#efeff2;margin-bottom:6px}.steps .on{color:var(--ink2);font-weight:600}.steps .on:before{background:var(--rose)}
+.it{display:flex;align-items:center;gap:12px;padding:8px 0}.it img,.it .ph{width:52px;height:52px;border-radius:12px;object-fit:cover;background:#f3f3f5;flex:none}
+.it .nm{flex:1;min-width:0;font-size:14px;line-height:1.35}.it .nm small{display:block;color:var(--mute)}.it .pr{font-weight:600;font-size:14px;white-space:nowrap}
+.meta{display:grid;gap:6px;margin-top:10px;padding-top:12px;border-top:1px dashed #e4e4e8;font-size:13.5px;color:var(--ink2)}.meta div{display:flex;justify-content:space-between;gap:12px}.meta span{color:var(--mute)}.meta .addr{white-space:pre-line;text-align:right}
+.empty{text-align:center;padding:34px 10px 18px;color:var(--mute)}.empty .ico{margin:0 auto 12px;width:56px;height:56px;border-radius:18px;background:var(--rose2);color:var(--rose)}.empty p{margin:0 0 16px}
+.guest{max-width:460px;margin:40px auto;padding:38px 30px;text-align:center}.guest .ava{margin:0 auto 18px;background:linear-gradient(135deg,#ffb2bc,#ef5265)}.guest h1{margin:8px 0;font:700 30px/1.1 Arial,sans-serif;letter-spacing:-.04em}.guest p{color:var(--mute);line-height:1.55;margin:0 0 22px}.guest .acts{flex-direction:column}.guest .btn{padding:15px}
+.perks{display:grid;gap:10px;margin:0 0 24px;text-align:left}.perks div{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink2)}.perks i{flex:none;width:28px;height:28px;border-radius:9px;background:var(--rose2);color:var(--rose);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
+.sk{background:linear-gradient(90deg,#ececf0 25%,#f6f6f8 50%,#ececf0 75%);background-size:300% 100%;animation:sk 1.3s infinite;border-radius:14px}
+@keyframes sk{to{background-position:-150% 0}}
+.fade{animation:fade .4s cubic-bezier(.2,.7,.2,1)}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));border-top:1px solid #e9e9ec;background:#fff}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#29282b;color:#fff;padding:12px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;z-index:20}#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.hero{grid-template-columns:auto 1fr}.tier{grid-column:1/-1}.grid2{grid-template-columns:1fr}}
+@media(max-width:640px){.top{padding-left:16px;padding-right:16px}.logo{font-size:24px}.top nav a{padding:7px 9px;font-size:13px}.top nav a.hide-m{display:none}main{padding:18px 14px 46px}.hero{padding:22px 18px;gap:16px}.ava{width:64px;height:64px;font-size:26px}.stats{grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.stat{padding:16px}.stat b{font-size:21px}.stat:last-child{grid-column:1/-1}.sec{padding:18px}.ord-h{grid-template-columns:1fr auto;padding:14px}.ord-h .chev{display:none}.ord-b{padding:0 14px 14px}.card{border-radius:20px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header class="top"><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><nav><a class="hide-m" href="index.html#catalog" data-t>Каталог</a><a class="hide-m" href="blog.html" data-t>Блог</a><a class="on" href="account.html" data-t>Аккаунт</a><select class="langsel" id="lang" aria-label="Language" onchange="setLang(this.value)"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select></nav></header>
+<main id="app"><div class="card hero"><div class="sk" style="width:84px;height:84px;border-radius:50%"></div><div><div class="sk" style="height:14px;width:120px"></div><div class="sk" style="height:34px;width:260px;margin:12px 0"></div><div class="sk" style="height:14px;width:160px"></div></div></div><div class="stats"><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div></div></main>
+<footer><span data-t>Luma Beauty · Красота в деталях</span></footer>
+<div id="toast"></div>
+<script>
+const sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LN=['ru','en','uz','kk','ko'];let lang='ru';try{lang=localStorage.getItem('luma_lang')||'ru'}catch(e){}if(!LN.includes(lang))lang='ru';
+const D={
+'Каталог':['Catalog','Katalog','Каталог','카탈로그'],'Блог':['Blog','Blog','Блог','블로그'],'Аккаунт':['Account','Akkaunt','Аккаунт','내 계정'],
+'Luma Beauty · Красота в деталях':['Luma Beauty · Beauty in the details','Luma Beauty · Go‘zallik tafsilotlarda','Luma Beauty · Сұлулық — ұсақ-түйекте','Luma Beauty · 디테일 속의 아름다움'],
+'Личный кабинет':['My account','Shaxsiy kabinet','Жеке кабинет','마이 페이지'],'Здравствуйте,':['Hello,','Salom,','Сәлем,','안녕하세요,'],
+'С нами с':['Member since','Biz bilan:','Бізбен бірге:','가입일'],'Уровень':['Level','Daraja','Деңгей','등급'],
+'Максимальный уровень — спасибо, что вы с нами!':['Top level — thank you for being with us!','Eng yuqori daraja — biz bilan ekaningiz uchun rahmat!','Ең жоғары деңгей — бізбен бірге болғаныңызға рахмет!','최고 등급 — 함께해 주셔서 감사합니다!'],
+'до':['to','gacha','дейін','까지'],'Ещё':['Orders left:','Yana','Тағы','남은 주문'],'заказ(ов)':['','ta buyurtma','тапсырыс','건'],
+'Баланс кэшбэка':['Cashback balance','Keshbek balansi','Кэшбэк балансы','캐시백 잔액'],'Можно оплатить до 50% заказа':['Can cover up to 50% of an order','Buyurtmaning 50% gacha to‘lash mumkin','Тапсырыстың 50%-на дейін төлеуге болады','주문 금액의 최대 50%까지 사용 가능'],
+'Ваш кэшбэк':['Your cashback','Sizning keshbekingiz','Сіздің кэшбэгіңіз','내 캐시백'],'с каждого выполненного заказа':['on every completed order','har bir bajarilgan buyurtmadan','әр орындалған тапсырыстан','완료된 주문마다 적립'],
+'Заказов':['Orders','Buyurtmalar','Тапсырыстар','주문'],'выполнено':['completed','bajarildi','орындалды','완료'],
+'Личные данные':['Personal details','Shaxsiy ma’lumotlar','Жеке деректер','개인 정보'],'Имя':['Name','Ism','Аты','이름'],'Телефон':['Phone','Telefon','Телефон','전화번호'],'E-mail':['E-mail','E-mail','E-mail','이메일'],
+'Не указан':['Not set','Ko‘rsatilmagan','Көрсетілмеген','미등록'],'Подтверждён':['Verified','Tasdiqlangan','Расталған','인증됨'],'Изменить':['Edit','O‘zgartirish','Өзгерту','변경'],
+'Сохранить':['Save','Saqlash','Сақтау','저장'],'Отмена':['Cancel','Bekor qilish','Болдырмау','취소'],
+'Безопасность':['Security','Xavfsizlik','Қауіпсіздік','보안'],'Пароль':['Password','Parol','Құпиясөз','비밀번호'],
+'Новый пароль':['New password','Yangi parol','Жаңа құпиясөз','새 비밀번호'],'Повторите пароль':['Repeat password','Parolni takrorlang','Құпиясөзді қайталаңыз','비밀번호 확인'],
+'Выйти из аккаунта':['Log out','Akkauntdan chiqish','Аккаунттан шығу','로그아웃'],
+'Мои заказы':['My orders','Buyurtmalarim','Менің тапсырыстарым','내 주문'],'Заказ №':['Order #','Buyurtma №','Тапсырыс №','주문 #'],
+'Заказов пока нет':['No orders yet','Hozircha buyurtmalar yo‘q','Әзірге тапсырыс жоқ','아직 주문이 없습니다'],'Выберите уход в каталоге — первый заказ уже даст кэшбэк.':['Pick something from the catalog — your first order already earns cashback.','Katalogdan tanlang — birinchi buyurtmadan keshbek olasiz.','Каталогтан таңдаңыз — бірінші тапсырыстан-ақ кэшбэк аласыз.','카탈로그에서 골라 보세요 — 첫 주문부터 캐시백이 적립됩니다.'],
+'Перейти в каталог':['Go to catalog','Katalogga o‘tish','Каталогқа өту','카탈로그로 이동'],
+'Принят':['Received','Qabul qilindi','Қабылданды','접수됨'],'Оплачен':['Paid','To‘landi','Төленді','결제 완료'],'В пути':['On the way','Yo‘lda','Жолда','배송 중'],'Доставлен':['Delivered','Yetkazildi','Жеткізілді','배송 완료'],'Отменён':['Canceled','Bekor qilindi','Бас тартылды','취소됨'],
+'Оплата':['Payment','To‘lov','Төлем','결제'],'Наличными':['Cash','Naqd','Қолма-қол','현금'],'Доставка и время':['Delivery','Yetkazib berish','Жеткізу','배송'],'Скидка':['Discount','Chegirma','Жеңілдік','할인'],'Оплачено кэшбэком':['Paid with cashback','Keshbek bilan to‘landi','Кэшбэкпен төленді','캐시백 사용'],'Итого':['Total','Jami','Барлығы','합계'],
+'Войдите в аккаунт':['Log in to your account','Akkauntingizga kiring','Аккаунтқа кіріңіз','로그인하세요'],
+'Здесь будут ваши заказы, кэшбэк и личные данные.':['Your orders, cashback and personal details will be here.','Bu yerda buyurtmalaringiz, keshbek va shaxsiy ma’lumotlaringiz bo‘ladi.','Мұнда тапсырыстарыңыз, кэшбэк және жеке деректеріңіз болады.','주문, 캐시백, 개인 정보를 여기서 확인할 수 있습니다.'],
+'Кэшбэк до 3% с каждого заказа':['Up to 3% cashback on every order','Har bir buyurtmadan 3% gacha keshbek','Әр тапсырыстан 3%-ға дейін кэшбэк','모든 주문 최대 3% 캐시백'],'История и статус заказов':['Order history and status','Buyurtmalar tarixi va holati','Тапсырыстар тарихы мен күйі','주문 내역 및 상태'],'Быстрое оформление покупок':['Faster checkout','Tez rasmiylashtirish','Жылдам рәсімдеу','빠른 결제'],
+'Войти':['Log in','Kirish','Кіру','로그인'],'Создать аккаунт':['Create an account','Akkaunt yaratish','Аккаунт ашу','계정 만들기'],
+'Имя сохранено':['Name saved','Ism saqlandi','Аты сақталды','이름이 저장되었습니다'],'Пароль изменён':['Password changed','Parol o‘zgartirildi','Құпиясөз өзгертілді','비밀번호가 변경되었습니다'],
+'Введите имя от 2 до 60 символов':['Enter a name of 2–60 characters','2–60 belgidan iborat ism kiriting','2–60 таңбадан тұратын ат енгізіңіз','2~60자의 이름을 입력하세요'],
+'Пароль должен быть не короче 6 символов':['Password must be at least 6 characters','Parol kamida 6 ta belgidan iborat bo‘lishi kerak','Құпиясөз кемінде 6 таңбадан тұруы керек','비밀번호는 6자 이상이어야 합니다'],
+'Пароли не совпадают':['Passwords do not match','Parollar mos emas','Құпиясөздер сәйкес емес','비밀번호가 일치하지 않습니다'],'Новый пароль совпадает со старым':['The new password matches the old one','Yangi parol eskisi bilan bir xil','Жаңа құпиясөз ескісімен бірдей','새 비밀번호가 기존과 같습니다'],
+'Для смены пароля войдите заново':['Please log in again to change your password','Parolni o‘zgartirish uchun qayta kiring','Құпиясөзді өзгерту үшін қайта кіріңіз','비밀번호를 변경하려면 다시 로그인하세요'],
+'Не удалось сохранить. Попробуйте ещё раз.':['Could not save. Please try again.','Saqlab bo‘lmadi. Qayta urinib ko‘ring.','Сақтау мүмкін болмады. Қайта көріңіз.','저장하지 못했습니다. 다시 시도하세요.'],
+'Не удалось загрузить данные. Обновите страницу.':['Could not load your data. Please refresh the page.','Ma’lumotlarni yuklab bo‘lmadi. Sahifani yangilang.','Деректер жүктелмеді. Бетті жаңартыңыз.','데이터를 불러오지 못했습니다. 새로고침하세요.'],
+'Клиент':['Customer','Mijoz','Клиент','고객'],'шт.':['pcs','dona','дана','개'],'Показать':['Show','Ko‘rsatish','Көрсету','보기']
+};
+const t=s=>{const k=LN.indexOf(lang);return k>0&&D[s]&&D[s][k-1]!==undefined?D[s][k-1]:s};
+const LOC={ru:'ru-RU',en:'en-GB',uz:'uz-UZ',kk:'kk-KZ',ko:'ko-KR'};
+const CUR={ru:'сум',en:'UZS',uz:'so‘m',kk:'сум',ko:'UZS'};
+const money=n=>Math.round(Number(n)||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' '+CUR[lang];
+const date=(d,o)=>{try{return new Date(d).toLocaleDateString(LOC[lang],o||{day:'numeric',month:'long',year:'numeric'})}catch(e){return ''}};
+function prettyPhone(ph){const d=String(ph||'').replace(/\D/g,'');if(!/^998\d{9}$/.test(d))return String(ph||'');const x=d.slice(3);return '+998 '+x.slice(0,2)+' '+x.slice(2,5)+' '+x.slice(5,7)+' '+x.slice(7,9)}
+function toast(m){const e=$('toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
+const I={user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+phone:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18.5h2"/></svg>',
+mail:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg>',
+lock:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>',
+out:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg>',
+bag:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+chev:'<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'};
+const ST={new:['Принят','s-new',0],paid:['Оплачен','s-paid',1],shipped:['В пути','s-shipped',2],done:['Доставлен','s-done',3],canceled:['Отменён','s-canceled',-1]};
+const PAY={cash:'Наличными',payme:'Payme',click:'Click'};
+const TIERS=[{n:'Bronze',c:'b-bronze',from:0,pct:1},{n:'Silver',c:'b-silver',from:5,pct:2},{n:'Gold',c:'b-gold',from:10,pct:3}];
+let S={session:null,profile:null,orders:[],products:{},editName:false,editPass:false,open:{}};
+
+function setLang(l){lang=LN.includes(l)?l:'ru';try{localStorage.setItem('luma_lang',lang)}catch(e){}document.documentElement.lang=lang;$('lang').value=lang;document.querySelectorAll('[data-t]').forEach(e=>{if(!e.dataset.ru)e.dataset.ru=e.textContent;e.textContent=t(e.dataset.ru)});render()}
+
+function guest(){$('app').innerHTML='<div class="card guest fade"><div class="ava">'+I.user.replace(/20/g,'34')+'</div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Войдите в аккаунт')+'</h1><p>'+t('Здесь будут ваши заказы, кэшбэк и личные данные.')+'</p><div class="perks"><div><i>%</i>'+t('Кэшбэк до 3% с каждого заказа')+'</div><div><i>✓</i>'+t('История и статус заказов')+'</div><div><i>⚡</i>'+t('Быстрое оформление покупок')+'</div></div><div class="acts"><a class="btn btn-p" href="index.html#login">'+t('Войти')+'</a><a class="btn btn-g" href="index.html#signup">'+t('Создать аккаунт')+'</a></div></div>'}
+
+function tierLine(n,lv){const ru=n%10==1&&n%100!=11?'заказ':[2,3,4].includes(n%10)&&![12,13,14].includes(n%100)?'заказа':'заказов';
+ return {ru:'Ещё '+n+' '+ru+' до '+lv,en:n+' more order'+(n>1?'s':'')+' to '+lv,uz:lv+' gacha yana '+n+' ta buyurtma',kk:lv+' деңгейіне дейін тағы '+n+' тапсырыс',ko:lv+'까지 주문 '+n+'건 남음'}[lang]}
+function tierOf(done){let cur=TIERS[0];for(const x of TIERS)if(done>=x.from)cur=x;const next=TIERS[TIERS.indexOf(cur)+1]||null;return {cur,next}}
+
+function render(){
+ if(!S.session){if(S.ready)guest();return}
+ const p=S.profile||{},u=S.session.user,name=String(p.name||u.user_metadata?.name||t('Клиент')).trim(),ini=(name.charAt(0)||'L').toUpperCase();
+ const phone=p.phone||u.phone||'',email=u.email||p.email||'',phoneOk=!!u.phone_confirmed_at;
+ const done=S.orders.filter(o=>o.status==='done').length,{cur,next}=tierOf(done);
+ const pct=Number(p.cashback_percent_override??p.cashback_percent??cur.pct)||cur.pct;
+ const prog=next?Math.min(100,Math.round((done-cur.from)/(next.from-cur.from)*100)):100;
+ const tierText=next?tierLine(next.from-done,next.n):t('Максимальный уровень — спасибо, что вы с нами!');
+ const since=u.created_at?t('С нами с')+' '+date(u.created_at):'';
+ let h='<div class="card hero fade"><div class="ava">'+esc(ini)+'</div><div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Здравствуйте,')+' '+esc(name)+'</h1><p class="since">'+esc(since)+'</p></div>'+
+ '<div class="tier"><div class="tier-top"><span><small style="color:var(--mute);font-size:12px">'+t('Уровень')+'</small><br><span class="badge '+cur.c+'">★ '+cur.n+'</span></span><span class="tier-pct">'+pct+'%</span></div><div class="bar"><i style="width:0" data-w="'+prog+'"></i></div><small>'+esc(tierText)+'</small></div></div>';
+ h+='<div class="stats fade"><div class="card stat"><small>'+t('Баланс кэшбэка')+'</small><b>'+money(p.cashback_balance)+'</b><span>'+t('Можно оплатить до 50% заказа')+'</span></div><div class="card stat"><small>'+t('Ваш кэшбэк')+'</small><b>'+pct+'%</b><span>'+t('с каждого выполненного заказа')+'</span></div><div class="card stat"><small>'+t('Заказов')+'</small><b>'+S.orders.length+'</b><span>'+done+' '+t('выполнено')+'</span></div></div>';
+ h+='<div class="grid2 fade"><section class="card sec"><h2>'+t('Личные данные')+'</h2>';
+ h+='<div class="row"><span class="ico">'+I.user+'</span>'+(S.editName?'<form class="edit" onsubmit="event.preventDefault();saveName()"><input id="nmIn" maxlength="60" autocomplete="name" value="'+esc(name)+'"><p class="msg" id="nmMsg"></p><div class="acts"><button class="btn btn-p" id="nmBtn">'+t('Сохранить')+'</button><button type="button" class="btn btn-g" onclick="S.editName=false;render()">'+t('Отмена')+'</button></div></form>':'<div class="rv"><small>'+t('Имя')+'</small><div>'+esc(name)+'</div></div><button class="lnk" onclick="S.editName=true;render();setTimeout(()=>$(\'nmIn\').focus(),30)">'+t('Изменить')+'</button>')+'</div>';
+ h+='<div class="row"><span class="ico">'+I.phone+'</span><div class="rv"><small>'+t('Телефон')+'</small><div>'+(phone?esc(prettyPhone(phone))+(phoneOk?'<span class="ver">✓ '+t('Подтверждён')+'</span>':''):'<span class="none">'+t('Не указан')+'</span>')+'</div></div></div>';
+ h+='<div class="row"><span class="ico">'+I.mail+'</span><div class="rv"><small>'+t('E-mail')+'</small><div>'+(email?esc(email):'<span class="none">'+t('Не указан')+'</span>')+'</div></div></div></section>';
+ h+='<section class="card sec"><h2>'+t('Безопасность')+'</h2><div class="row"><span class="ico">'+I.lock+'</span>'+(S.editPass?'<form class="edit" onsubmit="event.preventDefault();savePass()"><input id="pw1" type="password" autocomplete="new-password" placeholder="'+t('Новый пароль')+'"><input id="pw2" type="password" autocomplete="new-password" placeholder="'+t('Повторите пароль')+'"><p class="msg" id="pwMsg"></p><div class="acts"><button class="btn btn-p" id="pwBtn">'+t('Сохранить')+'</button><button type="button" class="btn btn-g" onclick="S.editPass=false;render()">'+t('Отмена')+'</button></div></form>':'<div class="rv"><small>'+t('Пароль')+'</small><div>••••••••</div></div><button class="lnk" onclick="S.editPass=true;render();setTimeout(()=>$(\'pw1\').focus(),30)">'+t('Изменить')+'</button>')+'</div>';
+ h+='<button class="btn btn-o" onclick="logout()">'+I.out+t('Выйти из аккаунта')+'</button></section></div>';
+ h+='<section class="card sec orders fade"><h2>'+t('Мои заказы')+(S.orders.length?'<small style="font:500 14px Jost,Arial;color:var(--mute)">'+S.orders.length+'</small>':'')+'</h2>'+(S.orders.length?S.orders.map(orderHTML).join(''):'<div class="empty"><div class="ico">'+I.bag+'</div><b style="color:var(--ink);font-size:17px">'+t('Заказов пока нет')+'</b><p style="margin-top:6px">'+t('Выберите уход в каталоге — первый заказ уже даст кэшбэк.')+'</p><a class="btn btn-p" href="index.html#catalog">'+t('Перейти в каталог')+'</a></div>')+'</section>';
+ $('app').innerHTML=h;
+ requestAnimationFrame(()=>setTimeout(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'),60));
+}
+function orderHTML(o){const st=ST[o.status]||[o.status,'s-new',0],items=Array.isArray(o.items)?o.items:[],n=items.reduce((s,i)=>s+(Number(i.qty)||0),0),open=!!S.open[o.id];
+ let b='';if(st[2]>=0)b+='<div class="steps">'+['Принят','Оплачен','В пути','Доставлен'].map((x,k)=>'<div class="'+(k<=st[2]?'on':'')+'">'+t(x)+'</div>').join('')+'</div>';
+ b+=items.map(i=>{const pr=S.products[i.id],img=pr&&pr.image?'<img src="'+esc(pr.image)+'" alt="" loading="lazy">':'<span class="ph"></span>';return '<div class="it">'+img+'<div class="nm">'+esc(i.title||(pr&&pr.title)||'')+'<small>'+esc(i.qty)+' '+t('шт.')+' × '+money(i.price)+'</small></div><div class="pr">'+money((Number(i.price)||0)*(Number(i.qty)||0))+'</div></div>'}).join('');
+ b+='<div class="meta">'+(o.payment?'<div><span>'+t('Оплата')+'</span><b>'+esc(t(PAY[o.payment]||o.payment))+'</b></div>':'')+(o.discount?'<div><span>'+t('Скидка')+'</span><b>'+esc(o.discount)+'%</b></div>':'')+(o.cashback_used?'<div><span>'+t('Оплачено кэшбэком')+'</span><b>−'+money(o.cashback_used)+'</b></div>':'')+(o.address?'<div><span>'+t('Доставка и время')+'</span><b class="addr">'+esc(o.address)+'</b></div>':'')+'<div><span>'+t('Итого')+'</span><b>'+money(o.total)+'</b></div></div>';
+ return '<div class="ord'+(open?' open':'')+'" id="o'+o.id+'"><button class="ord-h" onclick="toggleO('+o.id+')" aria-expanded="'+open+'"><span><b>'+t('Заказ №')+esc(o.id)+'</b><small>'+esc(date(o.created_at))+' · '+n+' '+t('шт.')+'</small></span><span class="chip '+st[1]+'">'+esc(t(st[0]))+'</span><span style="display:flex;align-items:center;gap:10px"><span class="sum">'+money(o.total)+'</span>'+I.chev+'</span></button><div class="ord-b">'+b+'</div></div>'}
+function toggleO(id){S.open[id]=!S.open[id];const e=$('o'+id);if(e){e.classList.toggle('open',S.open[id]);e.querySelector('.ord-h').setAttribute('aria-expanded',S.open[id])}}
+function msg(id,text,ok){const e=$(id);if(e){e.textContent=text;e.className='msg '+(ok?'ok':'err')}}
+async function saveName(){const v=$('nmIn').value.trim().replace(/\s+/g,' ');if(v.length<2||v.length>60)return msg('nmMsg',t('Введите имя от 2 до 60 символов'));
+ $('nmBtn').disabled=true;const {data,error}=await sb.rpc('update_my_name',{p_name:v});if(error){console.warn(error);$('nmBtn').disabled=false;return msg('nmMsg',t(String(error.message).includes('invalid_name')?'Введите имя от 2 до 60 символов':'Не удалось сохранить. Попробуйте ещё раз.'))}
+ S.profile={...S.profile,name:data||v};S.editName=false;render();toast(t('Имя сохранено'))}
+async function savePass(){const a=$('pw1').value,b=$('pw2').value;if(a.length<6)return msg('pwMsg',t('Пароль должен быть не короче 6 символов'));if(a!==b)return msg('pwMsg',t('Пароли не совпадают'));
+ $('pwBtn').disabled=true;const {error}=await sb.auth.updateUser({password:a});if(error){console.warn(error);$('pwBtn').disabled=false;const c=String(error.code||''),m=String(error.message||'').toLowerCase();return msg('pwMsg',t(c==='same_password'||m.includes('different from the old')?'Новый пароль совпадает со старым':c==='reauthentication_needed'||m.includes('reauthentic')?'Для смены пароля войдите заново':c==='weak_password'?'Пароль должен быть не короче 6 символов':'Не удалось сохранить. Попробуйте ещё раз.'))}
+ S.editPass=false;render();toast(t('Пароль изменён'))}
+async function logout(){await sb.auth.signOut();location.href='index.html'}
+
+async function load(){
+ const {data:{session}}=await sb.auth.getSession();S.session=session;S.ready=true;
+ if(!session)return guest();
+ try{
+  const [pr,or]=await Promise.all([sb.from('profiles').select('name,phone,email,cashback_balance,cashback_percent,cashback_percent_override').eq('id',session.user.id).maybeSingle(),sb.from('orders').select('id,status,total,discount,cashback_used,payment,address,items,created_at').eq('user_id',session.user.id).order('created_at',{ascending:false})]);
+  if(pr.error)throw pr.error;S.profile=pr.data||{};S.orders=or.error?[]:(or.data||[]);
+  const ids=[...new Set(S.orders.flatMap(o=>(Array.isArray(o.items)?o.items:[]).map(i=>i.id)).filter(Boolean))];
+  render();
+  if(ids.length){const {data}=await sb.from('products').select('id,title,image').in('id',ids);(data||[]).forEach(x=>S.products[x.id]=x);render()}
+ }catch(e){console.warn(e);S.profile={};render();toast(t('Не удалось загрузить данные. Обновите страницу.'))}
+}
+sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_OUT'){S.session=null;guest()}});
+setLang(lang);load();
+</script></body></html>
