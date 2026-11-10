@@ -10,8 +10,7 @@ a{color:inherit;text-decoration:none}button{font:inherit}
 .langsel{background:#fff;border:1px solid #ededf0;color:#343439;border-radius:24px;padding:8px 10px;font:inherit;font-size:13px}
 main{flex:1;width:100%;max-width:1120px;margin:0 auto;padding:28px 22px 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 2px 14px #17171a08}
-.hero{position:relative;overflow:hidden;padding:30px;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:linear-gradient(120deg,#fff 0%,#fff 46%,#ffe9ec 100%)}
-.hero:after{content:"";position:absolute;right:-80px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#ef526522,transparent 70%);pointer-events:none}
+.hero{position:relative;z-index:2;padding:30px;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:radial-gradient(circle at 95% 0,#ef526522,transparent 320px),linear-gradient(120deg,#fff 0%,#fff 46%,#ffe9ec 100%)}
 .ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#ff8d9c,#ef5265);color:#fff;font:700 34px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px #ef526544}
 .eyebrow{font-size:11px;letter-spacing:.26em;font-weight:700;color:var(--rose);text-transform:uppercase}
 .hero h1{margin:6px 0 4px;font:700 clamp(28px,4vw,38px)/1.08 Arial,sans-serif;letter-spacing:-.04em}
@@ -62,6 +61,17 @@ main{flex:1;width:100%;max-width:1120px;margin:0 auto;padding:28px 22px 60px}
 .fade{animation:fade .4s cubic-bezier(.2,.7,.2,1)}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 footer{text-align:center;color:var(--mute);font-size:13px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));border-top:1px solid #e9e9ec;background:#fff}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#29282b;color:#fff;padding:12px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;z-index:20}#toast.on{opacity:1;transform:translate(-50%,0)}
+.ava-wrap{position:relative;flex:none}
+.ava-wrap .ava{overflow:hidden}.ava img{width:100%;height:100%;object-fit:cover;display:block}
+.ava-btn{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;border:3px solid #fff;background:#29282b;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px #0003;transition:transform .15s}
+.ava-btn:hover{transform:scale(1.08)}
+.ava{position:relative}.ava .spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#29282b80;border-radius:50%}
+.ava .spin:after{content:"";width:26px;height:26px;border:3px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ava-menu{position:absolute;left:0;top:calc(100% + 10px);z-index:6;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px #17171a24;padding:6px;display:none;animation:fade .2s}
+.ava-menu.on{display:block}
+.ava-menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:11px 12px;border-radius:11px;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
+.ava-menu button:hover{background:#f5f5f7}.ava-menu .del{color:#c0394f}
 @media(max-width:900px){.hero{grid-template-columns:auto 1fr}.tier{grid-column:1/-1}.grid2{grid-template-columns:1fr}}
 @media(max-width:640px){.top{padding-left:16px;padding-right:16px}.logo{font-size:24px}.top nav a{padding:7px 9px;font-size:13px}.top nav a.hide-m{display:none}main{padding:18px 14px 46px}.hero{padding:22px 18px;gap:16px}.ava{width:64px;height:64px;font-size:26px}.stats{grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.stat{padding:16px}.stat b{font-size:21px}.stat:last-child{grid-column:1/-1}.sec{padding:18px}.ord-h{grid-template-columns:1fr auto;padding:14px}.ord-h .chev{display:none}.ord-b{padding:0 14px 14px}.card{border-radius:20px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -107,7 +117,7 @@ const D={
 'Для смены пароля войдите заново':['Please log in again to change your password','Parolni o‘zgartirish uchun qayta kiring','Құпиясөзді өзгерту үшін қайта кіріңіз','비밀번호를 변경하려면 다시 로그인하세요'],
 'Не удалось сохранить. Попробуйте ещё раз.':['Could not save. Please try again.','Saqlab bo‘lmadi. Qayta urinib ko‘ring.','Сақтау мүмкін болмады. Қайта көріңіз.','저장하지 못했습니다. 다시 시도하세요.'],
 'Не удалось загрузить данные. Обновите страницу.':['Could not load your data. Please refresh the page.','Ma’lumotlarni yuklab bo‘lmadi. Sahifani yangilang.','Деректер жүктелмеді. Бетті жаңартыңыз.','데이터를 불러오지 못했습니다. 새로고침하세요.'],
-'Клиент':['Customer','Mijoz','Клиент','고객'],'шт.':['pcs','dona','дана','개'],'Показать':['Show','Ko‘rsatish','Көрсету','보기']
+'Изменить фото':['Change photo','Rasmni o‘zgartirish','Фотоны өзгерту','사진 변경'],'Загрузить фото':['Upload photo','Rasm yuklash','Фото жүктеу','사진 올리기'],'Удалить фото':['Remove photo','Rasmni o‘chirish','Фотоны жою','사진 삭제'],'Фото обновлено':['Photo updated','Rasm yangilandi','Фото жаңартылды','사진이 변경되었습니다'],'Фото удалено':['Photo removed','Rasm o‘chirildi','Фото жойылды','사진이 삭제되었습니다'],'Выберите изображение (JPG, PNG или WEBP)':['Choose an image (JPG, PNG or WEBP)','Rasm tanlang (JPG, PNG yoki WEBP)','Сурет таңдаңыз (JPG, PNG немесе WEBP)','이미지를 선택하세요 (JPG, PNG, WEBP)'],'Файл слишком большой (до 15 МБ)':['File is too large (max 15 MB)','Fayl juda katta (15 MB gacha)','Файл тым үлкен (15 МБ дейін)','파일이 너무 큽니다 (최대 15MB)'],'Не удалось загрузить фото. Попробуйте ещё раз.':['Could not upload the photo. Please try again.','Rasmni yuklab bo‘lmadi. Qayta urinib ko‘ring.','Фото жүктелмеді. Қайта көріңіз.','사진을 올리지 못했습니다. 다시 시도하세요.'],'Клиент':['Customer','Mijoz','Клиент','고객'],'шт.':['pcs','dona','дана','개'],'Показать':['Show','Ko‘rsatish','Көрсету','보기']
 };
 const t=s=>{const k=LN.indexOf(lang);return k>0&&D[s]&&D[s][k-1]!==undefined?D[s][k-1]:s};
 const LOC={ru:'ru-RU',en:'en-GB',uz:'uz-UZ',kk:'kk-KZ',ko:'ko-KR'};
@@ -132,6 +142,38 @@ function setLang(l){lang=LN.includes(l)?l:'ru';try{localStorage.setItem('luma_la
 
 function guest(){$('app').innerHTML='<div class="card guest fade"><div class="ava">'+I.user.replace(/20/g,'34')+'</div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Войдите в аккаунт')+'</h1><p>'+t('Здесь будут ваши заказы, кэшбэк и личные данные.')+'</p><div class="perks"><div><i>%</i>'+t('Кэшбэк до 3% с каждого заказа')+'</div><div><i>✓</i>'+t('История и статус заказов')+'</div><div><i>⚡</i>'+t('Быстрое оформление покупок')+'</div></div><div class="acts"><a class="btn btn-p" href="index.html#login">'+t('Войти')+'</a><a class="btn btn-g" href="index.html#signup">'+t('Создать аккаунт')+'</a></div></div>'}
 
+const AVA_BASE=CFG.SUPABASE_URL+'/storage/v1/object/public/avatars/';
+const I_CAM='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+function avaURL(){const p=S.profile&&S.profile.avatar_url;return p?AVA_BASE+p.split('/').map(encodeURIComponent).join('/'):''}
+function avaHTML(ini){const u=avaURL();return '<div class="ava-wrap"><div class="ava" id="ava">'+(u?'<img src="'+esc(u)+'" alt="">':esc(ini))+(S.avaBusy?'<span class="spin"></span>':'')+'</div><button class="ava-btn" type="button" aria-label="'+t(u?'Изменить фото':'Загрузить фото')+'" onclick="avaClick(event)">'+I_CAM+'</button><div class="ava-menu" id="avaMenu"><button type="button" onclick="avaPick()">'+I_CAM+t('Изменить фото')+'</button><button type="button" class="del" onclick="avaRemove()">✕&nbsp; '+t('Удалить фото')+'</button></div><input type="file" id="avaFile" accept="image/jpeg,image/png,image/webp,image/*" hidden onchange="avaUpload(this.files[0]);this.value=\'\'"></div>'}
+function avaClick(e){e.stopPropagation();if(S.avaBusy)return;if(!avaURL())return avaPick();$('avaMenu').classList.toggle('on')}
+document.addEventListener('click',e=>{const m=$('avaMenu');if(m&&!e.target.closest('.ava-wrap'))m.classList.remove('on')});
+function avaPick(){const m=$('avaMenu');if(m)m.classList.remove('on');$('avaFile').click()}
+function loadImg(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{ok(im);setTimeout(()=>URL.revokeObjectURL(u),1000)};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('decode'))};im.src=u})}
+function toBlob(c,type,q){return new Promise(r=>c.toBlob(r,type,q))}
+async function avaUpload(file){if(!file)return;
+ if(!/^image\//.test(file.type||'')&&!/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||''))return toast(t('Выберите изображение (JPG, PNG или WEBP)'));
+ if(file.size>15*1024*1024)return toast(t('Файл слишком большой (до 15 МБ)'));
+ S.avaBusy=true;render();
+ try{
+  const im=await loadImg(file),side=Math.min(im.naturalWidth,im.naturalHeight),N=Math.min(512,side)||512;
+  const c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d');x.imageSmoothingQuality='high';
+  x.drawImage(im,(im.naturalWidth-side)/2,(im.naturalHeight-side)/2,side,side,0,0,N,N);
+  let blob=await toBlob(c,'image/webp',.88),ext='webp';
+  if(!blob||blob.type!=='image/webp'){blob=await toBlob(c,'image/jpeg',.9);ext='jpg'}
+  if(!blob)throw new Error('encode');
+  const uid=S.session.user.id,path=uid+'/'+Date.now()+'.'+ext,old=S.profile.avatar_url||'';
+  const up=await sb.storage.from('avatars').upload(path,blob,{contentType:blob.type,cacheControl:'31536000',upsert:false});if(up.error)throw up.error;
+  const r=await sb.rpc('update_my_avatar',{p_path:path});if(r.error){await sb.storage.from('avatars').remove([path]);throw r.error}
+  S.profile={...S.profile,avatar_url:path};
+  if(old&&old!==path)sb.storage.from('avatars').remove([old]).catch(()=>{});
+  S.avaBusy=false;render();toast(t('Фото обновлено'));
+ }catch(e){console.warn(e);S.avaBusy=false;render();toast(t('Не удалось загрузить фото. Попробуйте ещё раз.'))}}
+async function avaRemove(){const m=$('avaMenu');if(m)m.classList.remove('on');const old=S.profile&&S.profile.avatar_url;if(!old)return;
+ S.avaBusy=true;render();
+ const r=await sb.rpc('update_my_avatar',{p_path:''});S.avaBusy=false;
+ if(r.error){console.warn(r.error);render();return toast(t('Не удалось сохранить. Попробуйте ещё раз.'))}
+ S.profile={...S.profile,avatar_url:''};render();sb.storage.from('avatars').remove([old]).catch(()=>{});toast(t('Фото удалено'))}
 function tierLine(n,lv){const ru=n%10==1&&n%100!=11?'заказ':[2,3,4].includes(n%10)&&![12,13,14].includes(n%100)?'заказа':'заказов';
  return {ru:'Ещё '+n+' '+ru+' до '+lv,en:n+' more order'+(n>1?'s':'')+' to '+lv,uz:lv+' gacha yana '+n+' ta buyurtma',kk:lv+' деңгейіне дейін тағы '+n+' тапсырыс',ko:lv+'까지 주문 '+n+'건 남음'}[lang]}
 function tierOf(done){let cur=TIERS[0];for(const x of TIERS)if(done>=x.from)cur=x;const next=TIERS[TIERS.indexOf(cur)+1]||null;return {cur,next}}
@@ -145,7 +187,7 @@ function render(){
  const prog=next?Math.min(100,Math.round((done-cur.from)/(next.from-cur.from)*100)):100;
  const tierText=next?tierLine(next.from-done,next.n):t('Максимальный уровень — спасибо, что вы с нами!');
  const since=u.created_at?t('С нами с')+' '+date(u.created_at):'';
- let h='<div class="card hero fade"><div class="ava">'+esc(ini)+'</div><div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Здравствуйте,')+' '+esc(name)+'</h1><p class="since">'+esc(since)+'</p></div>'+
+ let h='<div class="card hero fade">'+avaHTML(ini)+'<div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Здравствуйте,')+' '+esc(name)+'</h1><p class="since">'+esc(since)+'</p></div>'+
  '<div class="tier"><div class="tier-top"><span><small style="color:var(--mute);font-size:12px">'+t('Уровень')+'</small><br><span class="badge '+cur.c+'">★ '+cur.n+'</span></span><span class="tier-pct">'+pct+'%</span></div><div class="bar"><i style="width:0" data-w="'+prog+'"></i></div><small>'+esc(tierText)+'</small></div></div>';
  h+='<div class="stats fade"><div class="card stat"><small>'+t('Баланс кэшбэка')+'</small><b>'+money(p.cashback_balance)+'</b><span>'+t('Можно оплатить до 50% заказа')+'</span></div><div class="card stat"><small>'+t('Ваш кэшбэк')+'</small><b>'+pct+'%</b><span>'+t('с каждого выполненного заказа')+'</span></div><div class="card stat"><small>'+t('Заказов')+'</small><b>'+S.orders.length+'</b><span>'+done+' '+t('выполнено')+'</span></div></div>';
  h+='<div class="grid2 fade"><section class="card sec"><h2>'+t('Личные данные')+'</h2>';
@@ -177,7 +219,7 @@ async function load(){
  const {data:{session}}=await sb.auth.getSession();S.session=session;S.ready=true;
  if(!session)return guest();
  try{
-  const [pr,or]=await Promise.all([sb.from('profiles').select('name,phone,email,cashback_balance,cashback_percent,cashback_percent_override').eq('id',session.user.id).maybeSingle(),sb.from('orders').select('id,status,total,discount,cashback_used,payment,address,items,created_at').eq('user_id',session.user.id).order('created_at',{ascending:false})]);
+  const [pr,or]=await Promise.all([sb.from('profiles').select('name,phone,email,cashback_balance,cashback_percent,cashback_percent_override,avatar_url').eq('id',session.user.id).maybeSingle(),sb.from('orders').select('id,status,total,discount,cashback_used,payment,address,items,created_at').eq('user_id',session.user.id).order('created_at',{ascending:false})]);
   if(pr.error)throw pr.error;S.profile=pr.data||{};S.orders=or.error?[]:(or.data||[]);
   const ids=[...new Set(S.orders.flatMap(o=>(Array.isArray(o.items)?o.items:[]).map(i=>i.id)).filter(Boolean))];
   render();
