@@ -97,6 +97,7 @@ td input[type=text]{min-width:130px}
 .photo-help{color:var(--adm-muted);font-size:11px}
 input[type=file]{max-width:190px}
 .order-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;align-items:center}
+.err{color:#c0392b;font-weight:600;margin:8px 0}
 .cat-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.cat-chip{border:1px solid #d9cbbd;background:#fff;color:#30271e;border-radius:999px;padding:7px 14px;font:600 13px/1 inherit;cursor:pointer}.cat-chip b{opacity:.55;margin-left:4px;font-weight:600}.cat-chip.on{background:#30271e;border-color:#30271e;color:#fff}
 .order-tools input{min-width:min(320px,100%);flex:1}
 .order-tools select{min-width:170px}
@@ -206,6 +207,7 @@ async function init(){
         ['analytics','Главная'],
         ['blog','Блог'],
         ['orders','Заказы'],
+        ['returns','Возвраты'],
         ['orderControl','Контроль заказов'],
         ['products','Товары'],
         ['smartStock','Умный склад'],
@@ -236,6 +238,7 @@ function go(k){
     smartStock:vSmartStock,
     orderControl:vOrderControl,
     orders:vOrders,
+    returns:vReturns,
     products:vProducts,
     clients:vClients,
     cashback:vCashback,
@@ -307,6 +310,148 @@ async function vOrders(){
     </table>`;
   filterOrderRows();
 }
+
+
+/* ---------- Возвраты ---------- */
+const RST = {new:'Заявка',approved:'Одобрен',received:'Товар получен',refunded:'Деньги возвращены',rejected:'Отклонён'};
+const RREASONS = ['Брак / повреждение','Не подошёл','Аллергия / реакция','Ошибка в заказе','Повреждён при доставке','Передумал(а)','Другое'];
+const RMETHODS = ['Как оплачивал клиент','Наличные','Перевод на карту','Payme','Click','Кешбэк на баланс'];
+let _returns = [], _retOrder = null;
+
+async function vReturns(){
+  const {data,error} = await sb.from('order_returns').select('*').order('id',{ascending:false}).limit(500);
+  if(error) return $('m').innerHTML = '<p>Не удалось загрузить возвраты: '+esc(error.message)+'</p>';
+  _returns = data || [];
+  const open = _returns.filter(r=>['new','approved','received'].includes(r.status)).length;
+  const refunded = _returns.filter(r=>r.status==='refunded');
+  const sum = refunded.reduce((n,r)=>n+Number(r.amount||0),0);
+  $('m').innerHTML = `
+    <h3>Возвраты <button onclick="newReturn()">+ Новый возврат</button></h3>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Всего возвратов</small><b>${_returns.length}</b></div>
+      <div class="admin-stat"><small>В работе</small><b>${open}</b></div>
+      <div class="admin-stat"><small>Деньги возвращены</small><b>${refunded.length}</b></div>
+      <div class="admin-stat"><small>Сумма возвратов</small><b style="font-size:20px">${fmt(sum)}</b></div>
+    </div>
+    <div id="retForm"></div>
+    <div class="order-tools">
+      <input id="retSearch" placeholder="Поиск: номер возврата или заказа, имя, телефон…" oninput="filterReturns()">
+      <select id="retStatus" onchange="filterReturns()"><option value="">Все статусы</option>${opts(RST,'')}</select>
+      <button class="g" onclick="vReturns()">Обновить</button>
+    </div>
+    ${_returns.length ? `<table id="retTable">
+      <tr><th>№</th><th>Дата</th><th>Заказ</th><th>Клиент</th><th>Товары</th><th>Причина</th><th>Сумма</th><th>Способ возврата</th><th>Статус</th><th>Склад</th></tr>
+      ${_returns.map(r=>`
+        <tr data-status="${esc(r.status)}" data-search="${esc([r.id,r.order_id,r.customer_name,r.phone,r.reason].join(' ').toLowerCase())}">
+          <td><b>В-${esc(r.id)}</b></td>
+          <td>${dt(r.created_at)}</td>
+          <td>${r.order_id?'#'+esc(r.order_id):'—'}</td>
+          <td>${esc(r.customer_name)}<br>${esc(r.phone)}</td>
+          <td>${(r.items||[]).map(i=>esc(i.title)+' × '+esc(i.qty)).join('<br>')}</td>
+          <td>${esc(r.reason)}${r.comment?'<br><small style="color:var(--adm-muted)">'+esc(r.comment)+'</small>':''}</td>
+          <td><b>${fmt(r.amount)}</b></td>
+          <td>${esc(r.refund_method)}</td>
+          <td><select class="status-select" onchange="setRetSt(${JSON.stringify(r.id)},this)">${opts(RST,r.status)}</select></td>
+          <td>${!r.restock?'не возвращать':(r.restocked?'✓ вернули на склад':'вернётся при «Товар получен»')}</td>
+        </tr>`).join('')}
+    </table>` : '<p style="color:var(--adm-muted)">Возвратов пока нет. Нажмите «+ Новый возврат», чтобы оформить первый.</p>'}`;
+  filterReturns();
+}
+
+function filterReturns(){
+  const q = ($('retSearch')?.value||'').trim().toLowerCase(), st = $('retStatus')?.value||'';
+  document.querySelectorAll('#retTable tr[data-status]').forEach(r=>{
+    r.style.display = (!q||(r.dataset.search||'').includes(q)) && (!st||r.dataset.status===st) ? '' : 'none';
+  });
+}
+
+function newReturn(){
+  _retOrder = null;
+  $('retForm').innerHTML = `
+    <section class="admin-panel">
+      <h4>Новый возврат</h4>
+      <div class="order-tools">
+        <input id="retOrderId" type="number" min="1" placeholder="Номер заказа, например 125" style="width:220px" onkeydown="if(event.key==='Enter')loadReturnOrder()">
+        <button onclick="loadReturnOrder()">Найти заказ</button>
+        <button class="g" onclick="$('retForm').innerHTML=''">Отмена</button>
+      </div>
+      <div id="retOrderBox"></div>
+    </section>`;
+  $('retOrderId').focus();
+}
+
+async function loadReturnOrder(){
+  const id = Number($('retOrderId').value);
+  if(!id) return $('retOrderBox').innerHTML = '<p class="err">Введите номер заказа</p>';
+  const {data:o,error} = await sb.from('orders').select('*').eq('id',id).maybeSingle();
+  if(error) return $('retOrderBox').innerHTML = '<p class="err">'+esc(error.message)+'</p>';
+  if(!o) return $('retOrderBox').innerHTML = '<p class="err">Заказ #'+esc(id)+' не найден</p>';
+  _retOrder = o;
+  const already = {};
+  _returns.filter(r=>r.order_id===o.id && r.status!=='rejected').forEach(r=>(r.items||[]).forEach(i=>{already[i.id]=(already[i.id]||0)+Number(i.qty||0)}));
+  const items = o.items || [];
+  $('retOrderBox').innerHTML = `
+    <p><b>Заказ #${esc(o.id)}</b> от ${dt(o.created_at)} · ${esc(o.customer_name)} ${esc(o.phone)} · сумма ${fmt(o.total)}${o.promo?' · промокод '+esc(o.promo)+' −'+esc(o.discount)+'%':''} · статус: ${esc(ST[o.status]||o.status)}</p>
+    <table class="mini-table">
+      <tr><th></th><th>Товар</th><th>Цена</th><th>В заказе</th><th>Уже возвращено</th><th>Вернуть, шт.</th></tr>
+      ${items.map((i,k)=>{const left=Math.max(0,Number(i.qty||0)-(already[i.id]||0));return `
+        <tr>
+          <td><input type="checkbox" id="rc${k}" ${left?'':'disabled'} onchange="calcReturn()"></td>
+          <td>${esc(i.title)}</td><td>${fmt(i.price)}</td><td>${esc(i.qty)}</td><td>${already[i.id]||0}</td>
+          <td><input type="number" id="rq${k}" min="1" max="${left}" value="${left||0}" style="width:70px" ${left?'':'disabled'} oninput="calcReturn()"></td>
+        </tr>`}).join('')}
+    </table>
+    <div class="order-tools" style="margin-top:12px">
+      <select id="retReason">${RREASONS.map(r=>`<option>${esc(r)}</option>`).join('')}</select>
+      <select id="retMethod">${RMETHODS.map(r=>`<option>${esc(r)}</option>`).join('')}</select>
+      <label>Сумма к возврату, сум <input id="retAmount" type="number" min="0" step="1000" style="width:130px"></label>
+      <label><input type="checkbox" id="retRestock" checked> вернуть товар на склад</label>
+    </div>
+    <textarea id="retComment" rows="2" placeholder="Комментарий (необязательно): что случилось, договорённости с клиентом" style="width:100%;max-width:640px"></textarea>
+    <p class="err" id="retErr"></p>
+    <button onclick="saveReturn(this)">Оформить возврат</button>`;
+  calcReturn();
+}
+
+function returnLines(){
+  return (_retOrder?.items||[]).map((i,k)=>({i,k})).filter(({k})=>$('rc'+k)?.checked).map(({i,k})=>({
+    id:i.id, title:i.title, price:Number(i.price||0), qty:Math.max(1,Math.min(Number($('rq'+k).max)||1,Number($('rq'+k).value)||1))
+  }));
+}
+
+function calcReturn(){
+  const o = _retOrder; if(!o) return;
+  const sub = returnLines().reduce((n,l)=>n+l.price*l.qty,0);
+  $('retAmount').value = Math.round(sub*(100-Number(o.discount||0))/100);
+}
+
+async function saveReturn(btn){
+  const o = _retOrder, lines = returnLines(), amount = Math.round(Number($('retAmount').value)||0);
+  const err = m => { $('retErr').textContent = m; };
+  if(!o) return err('Сначала найдите заказ');
+  if(!lines.length) return err('Отметьте хотя бы один товар');
+  if(amount < 0) return err('Сумма не может быть отрицательной');
+  if(amount > Number(o.total||0)) return err('Сумма возврата больше суммы заказа ('+fmt(o.total)+')');
+  btn.disabled = true;
+  const {error} = await sb.from('order_returns').insert({
+    order_id:o.id, user_id:o.user_id, customer_name:o.customer_name||'', phone:o.phone||'',
+    items:lines, reason:$('retReason').value, comment:$('retComment').value.trim(),
+    amount, refund_method:$('retMethod').value, restock:$('retRestock').checked
+  });
+  btn.disabled = false;
+  if(error) return err('Не удалось сохранить: '+error.message);
+  vReturns();
+}
+
+async function setRetSt(id,el){
+  const prev = (_returns.find(r=>r.id===id)||{}).status;
+  el.disabled = true;
+  const {error} = await sb.from('order_returns').update({status:el.value}).eq('id',id);
+  el.disabled = false;
+  if(error){ alertBox('Не удалось изменить статус: '+error.message); el.value = prev; return; }
+  vReturns();
+}
+function alertBox(m){ const p=document.createElement('p');p.className='err';p.textContent=m;$('m').prepend(p);setTimeout(()=>p.remove(),6000); }
 
 let _orders = [];
 function filterOrderRows(){
