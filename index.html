@@ -630,7 +630,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  <a class="bloom-cat bloom-cat-face" href="#catalog"><span>Уход за лицом</span></a>
  <a class="bloom-cat bloom-cat-hair" href="#catalog"><span>Уход за волосами</span></a>
  <a class="bloom-cat bloom-cat-gift" href="#catalog"><span>Подарочные карты</span></a>
- <a class="bloom-cat bloom-cat-perfume" href="#catalog"><span>Парфюмерия</span></a>
+ <a class="bloom-cat bloom-cat-perfume" href="#catalog" onclick="event.preventDefault();setCategory(&quot;Парфюмерия&quot;)"><span>Парфюмерия</span></a>
  <a class="bloom-cat bloom-cat-sale" href="#catalog" onclick="event.preventDefault();setCategory(&quot;Скидки&quot;)"><span>Скидки</span></a>
 </section>
 <section class="bloom-insta">
@@ -649,7 +649,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <script>
 let P=[];const $=i=>document.getElementById(i);const dr=$('dr');let cur='Все',cart={},disc=0,user=null,pend=false,cashbackBalance=0;const {TG_USER,PAYME_ID,CLICK_SERVICE,CLICK_MERCHANT}=CFG;const np=n=>Math.round(n*(1-disc));const salePrice=p=>Math.round(Number(p.p||0)*(100-(p.d||0))/100);const finalPrice=p=>np(salePrice(p));const productPrice=p=>(p.d?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d?'new':''}">${f(salePrice(p))}</span>`;const cartPrice=p=>((p.d||disc)?`<s class="old">${f(p.p)}</s>`:'')+`<span class="${p.d||disc?'new':''}">${f(finalPrice(p))}</span>`;
 const f=n=>n.toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';
-const cats=['Все','Лицо','Тело','Волосы','Загар и SPF','Для мужчин'];let q='';
+const cats=['Все','Лицо','Тело','Волосы','Загар и SPF','Для мужчин','Парфюмерия'];let q='';
 $('chips').innerHTML=cats.map(c=>`<button class="chip${c==cur?' on':''}" data-c="${c}">${c}</button>`).join('');
 $('chips').onclick=e=>{const c=e.target.dataset.c;if(!c)return;cur=c;[...$('chips').children].forEach(b=>b.classList.toggle('on',b.dataset.c==c));render()};
 function setCategory(c){cur=c;[...$('chips').children].forEach(b=>b.classList.toggle('on',b.dataset.c==c));render();$('catalog').scrollIntoView({behavior:'smooth'});}
