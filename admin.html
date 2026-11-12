@@ -97,6 +97,7 @@ td input[type=text]{min-width:130px}
 .photo-help{color:var(--adm-muted);font-size:11px}
 input[type=file]{max-width:190px}
 .order-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;align-items:center}
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.cat-chip{border:1px solid #d9cbbd;background:#fff;color:#30271e;border-radius:999px;padding:7px 14px;font:600 13px/1 inherit;cursor:pointer}.cat-chip b{opacity:.55;margin-left:4px;font-weight:600}.cat-chip.on{background:#30271e;border-color:#30271e;color:#fff}
 .order-tools input{min-width:min(320px,100%);flex:1}
 .order-tools select{min-width:170px}
 .admin-stats{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin:0 0 20px}
@@ -346,8 +347,14 @@ async function vProducts(){
     <h3>
       Товары (${data.length})
       <button onclick="addP()">+ Новый</button>
-      <input placeholder="Поиск" oninput="filt(this.value)">
     </h3>
+    <div class="order-tools">
+      <input id="prodSearch" placeholder="Поиск: название или бренд" oninput="filt()">
+      <select id="prodBrand" onchange="filt()"><option value="">Все бренды</option>${[...new Set(data.map(p=>(p.kind||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru')).map(b=>`<option value="${esc(b.toLowerCase())}">${esc(b)} (${data.filter(p=>(p.kind||'').trim()===b).length})</option>`).join('')}</select>
+      <select id="prodVis" onchange="filt()"><option value="">Видимые и скрытые</option><option value="1">Только видимые</option><option value="0">Только скрытые</option></select>
+      <span id="prodCount" class="photo-help"></span>
+    </div>
+    <div class="cat-chips" id="prodCats">${[['','Все',data.length],...[...new Set([...CATS,...data.map(p=>p.category).filter(Boolean)])].map(c=>[c,c,data.filter(p=>p.category===c).length])].map(([v,l,n])=>`<button type="button" class="cat-chip${v===''?' on':''}" data-cat="${esc(v)}" onclick="setProdCat(this)">${esc(l)} <b>${n}</b></button>`).join('')}</div>
     <table>
       <tr>
         <th>Фото</th><th>Название</th><th>Тип / бренд</th>
@@ -357,7 +364,7 @@ async function vProducts(){
       </tr>
       ${data.map(p => `
         <tr id="r${esc(p.id)}"
-            data-q="${esc((p.title+' '+(p.kind||'')).toLowerCase())}">
+            data-q="${esc((p.title+' '+(p.kind||'')).toLowerCase())}" data-cat="${esc(p.category||'')}" data-brand="${esc((p.kind||'').trim().toLowerCase())}" data-vis="${p.active?1:0}">
           <td>
             ${[p.image,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean).length ? `<div class="photo-stack">${[p.image,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean).map(u=>`<img src="${esc(u)}" alt="">`).join('')}</div>` : ''}
             <br>
@@ -384,6 +391,7 @@ async function vProducts(){
         </tr>
       `).join('')}
     </table>`;
+  prodCat='';filt();
 }
 
 
@@ -552,11 +560,20 @@ async function vAudit(){
   $('m').innerHTML='<h3>История действий <button class="g" onclick="vAudit()">Обновить</button></h3><p>Последние 200 изменений товаров, заказов и промокодов.</p><table class="mini-table"><tr><th>Дата</th><th>Раздел</th><th>ID записи</th><th>Действие</th><th>Администратор</th><th>Изменения</th></tr>'+(data||[]).map(x=>'<tr><td>'+dt(x.created_at)+'</td><td>'+esc(x.table_name)+'</td><td>'+esc(x.record_id)+'</td><td>'+esc(x.action)+'</td><td>'+esc(x.actor_id||'системное действие')+'</td><td><details><summary>Посмотреть</summary><pre>'+esc(JSON.stringify({до:x.old_data,после:x.new_data},null,2))+'</pre></details></td></tr>').join('')+'</table>';
 }
 
-function filt(q){
-  q = q.toLowerCase();
-  document.querySelectorAll('tr[data-q]').forEach(r => {
-    r.style.display = r.dataset.q.includes(q) ? '' : 'none';
+let prodCat='';
+function setProdCat(b){
+  prodCat=b.dataset.cat||'';
+  document.querySelectorAll('#prodCats .cat-chip').forEach(x=>x.classList.toggle('on',x===b));
+  filt();
+}
+function filt(){
+  const q=($('prodSearch')?.value||'').trim().toLowerCase(),br=$('prodBrand')?.value||'',vis=$('prodVis')?.value||'';
+  let n=0;
+  document.querySelectorAll('tr[data-q]').forEach(r=>{
+    const ok=(!q||r.dataset.q.includes(q))&&(!prodCat||r.dataset.cat===prodCat)&&(!br||r.dataset.brand===br)&&(!vis||r.dataset.vis===vis);
+    r.style.display=ok?'':'none';if(ok)n++;
   });
+  if($('prodCount'))$('prodCount').textContent='Показано: '+n;
 }
 
 /* Сохранение товара с проверкой ответа базы */
