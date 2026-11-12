@@ -181,7 +181,7 @@ function tierOf(done){let cur=TIERS[0];for(const x of TIERS)if(done>=x.from)cur=
 function render(){
  if(!S.session){if(S.ready)guest();return}
  const p=S.profile||{},u=S.session.user,name=String(p.name||u.user_metadata?.name||t('Клиент')).trim(),ini=(name.charAt(0)||'L').toUpperCase();
- const phone=p.phone||u.phone||'',email=u.email||p.email||'',phoneOk=!!u.phone_confirmed_at;
+ const phone=p.phone||u.phone||'',email=[u.email,p.email].find(x=>x&&!/@phone\.lumabeauty\.uz$/i.test(x))||'',phoneOk=!!u.phone_confirmed_at;
  const done=S.orders.filter(o=>o.status==='done').length,{cur,next}=tierOf(done);
  const pct=Number(p.cashback_percent_override??p.cashback_percent??cur.pct)||cur.pct;
  const prog=next?Math.min(100,Math.round((done-cur.from)/(next.from-cur.from)*100)):100;

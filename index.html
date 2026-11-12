@@ -768,6 +768,7 @@ window.LUMA_AUTH_PT=[
 ];
 /* ===== Luma Auth: регистрация по SMS, вход по номеру и паролю ===== */
 let signupPending=null;
+const phoneEmail=d=>'998'+String(d).replace(/\D/g,'').slice(-9)+'@phone.lumabeauty.uz';
 const LA={after:'',mode:'in',phone:'',name:'',flow:'',otpPhone:'',timer:null,left:0,emailMode:false,busy:false,otpAbort:null};
 function cleanPhone(v){let n=String(v||'').replace(/[^0-9+]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(n.startsWith('998'))n='+'+n;if(n.startsWith('0'))n='+998'+n.slice(1);if(!n.startsWith('+'))n='+998'+n;return n}
 function fmtPhone(d){d=String(d||'').replace(/\D/g,'').slice(0,9);return [d.slice(0,2),d.slice(2,5),d.slice(5,7),d.slice(7,9)].filter(Boolean).join(' ')}
@@ -807,14 +808,14 @@ function laSignup(){
  '<form class="la-form" onsubmit="event.preventDefault();laDoSignup()" novalidate>'+
  '<div class="la-f"><label class="la-l" for="laName">Ваше имя</label><input id="laName" autocomplete="given-name" autocapitalize="words" maxlength="60" placeholder="Например, Мадина" value="'+escHTML(LA.name)+'"></div>'+
  laPhoneField()+laPassField('laPass','Придумайте пароль',true)+
- laErrBox()+'<button class="buy la-btn" id="laBtn" type="submit">Получить код по SMS</button>'+
+ laErrBox()+'<button class="buy la-btn" id="laBtn" type="submit">Зарегистрироваться</button>'+
  '<small class="la-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</small></form>'+
  '<p class="la-foot"><span>Уже есть аккаунт?</span> <button type="button" class="la-link" onclick="acct(\'in\')">Войти</button></p></div>');
  laFocus('laName');
 }
 function laSwitchEmail(){LA.emailMode=!LA.emailMode;laLogin()}
 function laForgot(){
- if(LA.emailMode)return laErr('Для восстановления доступа к аккаунту с e-mail напишите нам в Telegram.',null,['Написать в Telegram',laTg]);
+ return laErr('Чтобы восстановить пароль, напишите нам в Telegram — поможем быстро.',null,['Написать в Telegram',laTg]);
  const d=phoneDigits('laPhone');if(d)LA.phone=d;laStop();
  modal('<div class="la">'+laHead('Восстановить пароль','Пришлём SMS-код, после него вы зададите новый пароль')+
  '<form class="la-form" onsubmit="event.preventDefault();laDoForgot()" novalidate>'+laPhoneField()+laErrBox()+
@@ -864,6 +865,7 @@ function laErr(msg,field,action){const el=$('laErr');if(!el){toast(msg);return}
 function laCode(e){return String((e&&(e.code||e.error_code))||'')}
 function laFail(e){try{console.warn('[auth]',e)}catch(x){}
  const c=laCode(e),m=String((e&&e.message)||e||'').toLowerCase();
+ if(c==='email_not_confirmed'||m.includes('email not confirmed'))return laErr('Аккаунт создан, но вход пока недоступен. Напишите нам в Telegram — мы активируем его.',null,['Написать в Telegram',laTg]);
  if(c==='invalid_credentials'||m.includes('invalid login'))return laErr(LA.emailMode?'Неверный e-mail или пароль':'Неверный номер или пароль','laPass',LA.emailMode?null:['Забыли пароль?',laForgot]);
  if(c==='user_already_exists'||c==='phone_exists'||m.includes('already registered')||m.includes('already exists'))return laErr('Этот номер уже зарегистрирован.',null,['Войти',()=>{LA.emailMode=false;acct('in')}]);
  if(c==='otp_expired'||c==='invalid_otp'||m.includes('expired')||m.includes('token'))return laErr('Неверный или устаревший код. Проверьте SMS или запросите новый.','laCode');
@@ -885,21 +887,19 @@ async function laDoSignup(){if(LA.busy)return;
  if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');
  if(w.length<6)return laErr('Пароль должен быть не короче 6 символов','laPass');
  const ph='+998'+d;laBusy(true);
- try{const r=await sb.auth.signUp({phone:ph,password:w,options:{data:{name:n,phone:ph}}});if(r.error)throw r.error;
+ try{const r=await sb.auth.signUp({email:phoneEmail(d),password:w,options:{data:{name:n,phone:ph}}});if(r.error)throw r.error;
   const u=r.data&&r.data.user;if(u&&Array.isArray(u.identities)&&!u.identities.length)throw {code:'user_already_exists'};
   if(r.data.session)return await finishAuth();
-  signupPending={phone:ph,name:n};LA.flow='signup';LA.mode='up';laOtp(ph);
+  const s=await sb.auth.signInWithPassword({email:phoneEmail(d),password:w});if(s.error)throw s.error;await finishAuth();
  }catch(e){laFail(e)}finally{laBusy(false)}}
 async function laDoLogin(){if(LA.busy)return;const w=$('laPass').value;let cred;
  if(LA.emailMode){const e=$('laEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(e))return laErr('Введите корректный e-mail','laEmail');cred={email:e,password:w}}
- else{const d=phoneDigits('laPhone');LA.phone=d;if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');cred={phone:'+998'+d,password:w}}
+ else{const d=phoneDigits('laPhone');LA.phone=d;if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');cred={email:phoneEmail(d),password:w}}
  if(!w)return laErr('Введите пароль','laPass');
  laBusy(true);
  try{const r=await sb.auth.signInWithPassword(cred);if(r.error)throw r.error;await finishAuth()}
  catch(e){const m=String((e&&e.message)||'').toLowerCase();
-  if(!LA.emailMode&&(laCode(e)==='phone_not_confirmed'||m.includes('not confirmed'))){
-   try{const rr=await sb.auth.resend({type:'sms',phone:cred.phone});if(rr.error)throw rr.error;signupPending={phone:cred.phone};LA.flow='signup';LA.mode='in';laOtp(cred.phone,'Номер ещё не подтверждён — отправили новый код')}catch(x){laFail(x)}
-  }else laFail(e)}
+  laFail(e)}
  finally{laBusy(false)}}
 async function laDoForgot(){if(LA.busy)return;const d=phoneDigits('laPhone');LA.phone=d;
  if(d.length!==9)return laErr('Введите номер полностью: +998 XX XXX XX XX','laPhone');
