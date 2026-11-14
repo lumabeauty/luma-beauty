@@ -748,6 +748,29 @@ footer .logo-img{height:62px;margin:0 auto}
 .skin-fab .ss-core{inset:27px}
 .skin-fab .sf-x{position:absolute;top:-4px;right:-4px;margin:0;z-index:6;width:24px;height:24px}
 @media(max-width:760px){.skin-fab{right:12px;bottom:14px;width:92px;height:92px}.skin-fab .ss-core{inset:21px}.skin-fab .ss-core b{font-size:12.5px}.skin-fab .ss-core small{font-size:8px}.skin-fab .ss-core i{font-size:12px}}
+
+/* micro-animations */
+.fx-fly{position:fixed;z-index:9999;border-radius:16px;object-fit:cover;background:#fff;box-shadow:0 12px 30px -8px #b4607daa,0 0 0 3px #fff;pointer-events:none;will-change:transform}
+div.fx-fly{background:linear-gradient(135deg,#f2a5bb,#81d8d0)}
+.fx-bump{animation:fxBump .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes fxBump{0%{transform:scale(1)}35%{transform:scale(1.14) rotate(-3deg)}65%{transform:scale(.96)}100%{transform:scale(1)}}
+.fx-bump-n{display:inline-block;animation:fxBumpN .6s cubic-bezier(.3,1.8,.5,1)}
+@keyframes fxBumpN{0%{transform:scale(1)}40%{transform:scale(1.7) translateY(-3px);background:#0a9e93}100%{transform:scale(1)}}
+.fx-done{background:#0a9e93!important;color:#fff!important;position:relative;animation:fxDone .5s cubic-bezier(.3,1.6,.5,1)}
+.fx-done::after{content:"";position:absolute;inset:0;border-radius:inherit;animation:fxRing .7s ease-out forwards;pointer-events:none}
+@keyframes fxDone{0%{transform:scale(.85)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes fxRing{0%{box-shadow:0 0 0 0 #81d8d0cc}100%{box-shadow:0 0 0 16px #81d8d000}}
+.fx-tick{stroke-dasharray:24;stroke-dashoffset:24;animation:fxTick .4s .08s ease-out forwards}
+@keyframes fxTick{to{stroke-dashoffset:0}}
+.pc-quick.fx-done{display:flex;align-items:center;justify-content:center;gap:8px;transform:none!important;opacity:1!important}
+.fx-burst{position:fixed;z-index:9999;width:0;height:0;pointer-events:none}
+.fx-burst i{position:absolute;left:0;top:0;border-radius:50%;font-style:normal;line-height:1;display:block}
+.fx-heart{position:absolute;left:0;top:0;transform:translate(-50%,-50%);color:#ff4d7d;font-size:30px;line-height:1;animation:fxHeart .8s cubic-bezier(.2,1.4,.4,1) forwards;text-shadow:0 4px 14px #ff4d7d66}
+@keyframes fxHeart{0%{transform:translate(-50%,-50%) scale(0);opacity:1}35%{transform:translate(-50%,-60%) scale(1.5);opacity:1}100%{transform:translate(-50%,-140%) scale(.9);opacity:0}}
+.pc-like.fx-pop{animation:fxPop .5s cubic-bezier(.3,1.8,.5,1)}
+.pc-like.fx-unpop{animation:fxUnpop .35s ease}
+@keyframes fxPop{0%{transform:scale(.6)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes fxUnpop{0%{transform:scale(1)}50%{transform:scale(.75)}100%{transform:scale(1)}}
 /* Skin Lab */
 .skinlab{max-width:1080px;margin:26px auto 0;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:0;background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 24px 60px -36px #b4607d73;text-align:left}
 .sl-intro{position:relative;padding:34px 30px;background:radial-gradient(120% 90% at 0% 0%,#ffe9ef 0%,#fbeef3 40%,#e7f8f6 100%);color:#2a1e22}
@@ -1349,7 +1372,34 @@ function resetFilters(){fB='';fMin=0;fMax=0;fSort='';fSale=false;fStock=false;['
 async function loadRatings(){try{const {data}=await sb.from('product_reviews').select('product_id,rating').eq('status','published');const m={};(data||[]).forEach(r=>{const x=m[r.product_id]||(m[r.product_id]={s:0,n:0});x.s+=r.rating;x.n++});RV={};for(const id in m)RV[id]={a:m[id].s/m[id].n,n:m[id].n};if(Object.keys(RV).length)render()}catch(e){}}
 function miniStars(v){let h='';for(let i=1;i<=5;i++){const f=Math.max(0,Math.min(1,v-i+1));h+=`<i><b style="width:${f*100}%">★</b>★</i>`}return `<span class="ms">${h}</span>`}
 </script>
-<script src="i18n-data.js?v=8"></script><script src="i18n.js?v=8"></script>
+<script>
+/* Luma micro-animations: fly-to-cart, check button, heart burst */
+(function(){
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cartEl=()=>{const c=document.getElementById('cnt');return c?c.closest('button')||c:null};
+function fly(src,img){const t=cartEl();if(!t||!src)return;const a=src.getBoundingClientRect(),b=t.getBoundingClientRect();if(!a.width)return;
+ const sz=Math.min(90,Math.max(46,a.width*.55));const el=document.createElement(img?'img':'div');el.className='fx-fly';if(img)el.src=img;
+ Object.assign(el.style,{left:(a.left+a.width/2-sz/2)+'px',top:(a.top+a.height/2-sz/2)+'px',width:sz+'px',height:sz+'px'});document.body.appendChild(el);
+ const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),lift=Math.min(160,Math.abs(dy)*.35+60);
+ const an=el.animate([{transform:'translate(0,0) scale(1) rotate(0)',opacity:1},{transform:`translate(${dx*.45}px,${dy*.45-lift}px) scale(.75) rotate(-12deg)`,opacity:1,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.12) rotate(8deg)`,opacity:.4}],{duration:820,easing:'cubic-bezier(.45,.05,.35,1)'});
+ an.onfinish=()=>{el.remove();t.classList.remove('fx-bump');void t.offsetWidth;t.classList.add('fx-bump');const c=document.getElementById('cnt');if(c){c.classList.remove('fx-bump-n');void c.offsetWidth;c.classList.add('fx-bump-n')}}}
+function check(btn){if(!btn||btn.dataset.fx)return;const html=btn.innerHTML;btn.dataset.fx='1';btn.classList.add('fx-done');btn.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="fx-tick" d="M5 12.5l4.2 4.2L19 7"/></svg>'+(btn.classList.contains('pc-quick')?'<span>Добавлено</span>':'');
+ setTimeout(()=>{btn.classList.remove('fx-done');btn.innerHTML=html;delete btn.dataset.fx},1300)}
+function burst(x,y){const wrap=document.createElement('div');wrap.className='fx-burst';wrap.style.left=x+'px';wrap.style.top=y+'px';
+ const big=document.createElement('span');big.className='fx-heart';big.textContent='♥';wrap.appendChild(big);
+ const cols=['#ff4d7d','#ff8fab','#ffc2d1','#f2a93b','#81d8d0','#d6336c'];
+ for(let n=0;n<14;n++){const p=document.createElement('i');const ang=(n/14)*Math.PI*2+Math.random()*.4,dist=34+Math.random()*30,s=4+Math.random()*6;p.style.width=p.style.height=s+'px';p.style.background=cols[n%cols.length];if(n%3===0){p.textContent='♥';p.style.background='none';p.style.color=cols[n%cols.length];p.style.fontSize=(10+Math.random()*6)+'px'}
+  wrap.appendChild(p);p.animate([{transform:'translate(-50%,-50%) scale(.3)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(ang)*dist}px),calc(-50% + ${Math.sin(ang)*dist}px)) scale(1)`,opacity:1,offset:.6},{transform:`translate(calc(-50% + ${Math.cos(ang)*dist*1.25}px),calc(-50% + ${Math.sin(ang)*dist*1.25+8}px)) scale(.4)`,opacity:0}],{duration:700+Math.random()*250,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'})}
+ document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),1100)}
+window.LUMA_FX={fly,check,burst};
+if(typeof window.add==='function'){const _add=window.add;window.add=function(i){const ev=window.event,btn=ev&&ev.target&&ev.target.closest?ev.target.closest('button'):null;const r=_add.apply(this,arguments);
+ if(!RM&&btn){const card=btn.closest('.pc,.sl-card,.it,.fav-card');const im=card&&card.querySelector('img');const p=(typeof P!=='undefined'&&P[i])||{};fly(im||btn,(im&&im.currentSrc)||(p.i?safeImage(p.i):''));if(btn.matches('.pc-bag,.pc-quick,.sl-add'))check(btn)}return r}}
+if(typeof window.favToggle==='function'){const _fav=window.favToggle;window.favToggle=function(id){const ev=window.event,btn=ev&&ev.target&&ev.target.closest?ev.target.closest('button'):null;const was=(typeof getFavIds==='function')&&getFavIds().includes(String(id));const rc=btn?btn.getBoundingClientRect():null;const r=_fav.apply(this,arguments);
+ if(!RM&&rc&&!was)burst(rc.left+rc.width/2,rc.top+rc.height/2);
+ if(!RM){requestAnimationFrame(()=>{document.querySelectorAll('.pc-like').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(JSON.stringify(id))){b.classList.add(was?'fx-unpop':'fx-pop')}})})}return r}}
+})();
+</script>
+<script src="i18n-data.js?v=9"></script><script src="i18n.js?v=9"></script>
 <script>
 function goSkin(){const el=document.getElementById('skinHelp');if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(!document.querySelector('#skinQuizBody .sl-q,#skinQuizBody .sl-res'))setTimeout(()=>{try{skinQuizStart()}catch(e){}},500)}
 function skinFabClose(){try{sessionStorage.setItem('luma_fab_off','1')}catch(e){}const f=document.getElementById('skinFab');if(f)f.hidden=true}
