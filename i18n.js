@@ -71,7 +71,7 @@ const PT=[[/^(\d+) товаров$/,["$1 products","$1 ta mahsulot","$1 тауа
 PT.push(...(window.LUMA_AUTH_PT||[]),...(window.LUMA_EXTRA_PT||[]));let lang='ru',k=0;const orig=new WeakMap(),last=new WeakMap();
 const U=s=>k?s.replace(/(\d) сум(?![а-яё])/g,'$1 '+["UZS","so‘m","сум","UZS"][k-1]).replace(/(\d) мл(?![а-яё])/g,'$1 '+["ml","ml","мл","ml"][k-1]).replace(/(\d) г(?![а-яё])/g,'$1 '+["g","g","г","g"][k-1]):s;
 function tx(s){if(!k||!CY.test(s))return U(s);const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2];if(!c)return s;let r=null;
-if(E[c])r=E[c][k];else{for(const [re,t] of PT)if(re.test(c)){r=c.replace(re,t[k-1]);break}
+if(E[c])r=E[c][k];else{for(const [re,t] of PT)if(re.test(c)){r=c.replace(re,(...g)=>t[k-1].replace(/\$(\d)/g,(_,i)=>{const v=g[+i];return v==null?'':(CY.test(v)?tx(v):v)}));break}
 if(r===null){const x=c.match(/^([А-Яа-яЁё ]{2,20}): ([\s\S]*)$/);if(x&&LB[x[1]])r=LB[x[1]][k-1]+': '+tx(x[2]);}
 if(r===null){r=c;for(const p of P)if(r.includes(p[0]))r=r.split(p[0]).join(p[k])}}
 return m[1]+U(r)+m[3]}
