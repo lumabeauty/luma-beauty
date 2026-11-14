@@ -145,7 +145,7 @@ const PAY={cash:'Наличными',payme:'Payme',click:'Click'};
 const TIERS=[{n:'Bronze',c:'b-bronze',from:0,pct:1},{n:'Silver',c:'b-silver',from:5,pct:2},{n:'Gold',c:'b-gold',from:10,pct:3}];
 let S={session:null,profile:null,orders:[],products:{},editName:false,editPass:false,open:{}};
 
-function setLang(l){lang=LN.includes(l)?l:'ru';try{localStorage.setItem('luma_lang',lang)}catch(e){}document.documentElement.lang=lang;$('lang').value=lang;document.querySelectorAll('[data-t]').forEach(e=>{if(!e.dataset.ru)e.dataset.ru=e.textContent;e.textContent=t(e.dataset.ru)});render()}
+function setLang(l){lang=LN.includes(l)?l:'ru';document.title=({en:'My account',uz:'Akkauntim',kk:'Менің аккаунтым',ko:'내 계정'}[lang]||'Мой аккаунт')+' — Luma Beauty';try{localStorage.setItem('luma_lang',lang)}catch(e){}document.documentElement.lang=lang;$('lang').value=lang;document.querySelectorAll('[data-t]').forEach(e=>{if(!e.dataset.ru)e.dataset.ru=e.textContent;e.textContent=t(e.dataset.ru)});render()}
 
 function guest(){$('app').innerHTML='<div class="card guest fade"><div class="ava">'+I.user.replace(/20/g,'34')+'</div><div class="eyebrow">'+t('Личный кабинет')+'</div><h1>'+t('Войдите в аккаунт')+'</h1><p>'+t('Здесь будут ваши заказы, кэшбэк и личные данные.')+'</p><div class="perks"><div><i>%</i>'+t('Кэшбэк до 3% с каждого заказа')+'</div><div><i>✓</i>'+t('История и статус заказов')+'</div><div><i>⚡</i>'+t('Быстрое оформление покупок')+'</div></div><div class="acts"><a class="btn btn-p" href="index.html#login">'+t('Войти')+'</a><a class="btn btn-g" href="index.html#signup">'+t('Создать аккаунт')+'</a></div></div>'}
 

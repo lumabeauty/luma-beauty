@@ -832,10 +832,10 @@ const FLD='border:1px solid var(--line);background:var(--bg);color:var(--ink);bo
 let addrGeo='';
 function savedAddr(){try{const v=JSON.parse(localStorage.getItem('luma_addr2')||'null');if(v&&typeof v==='object')return v}catch(e){}return {region:'г. Ташкент',district:'',street:'',note:''}}
 function escA(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function districtOpts(region,sel){return '<option value="">— Выберите район / город —</option>'+(UZ_GEO[region]||[]).map(d=>`<option${d===sel?' selected':''}>${escA(d)}</option>`).join('')}
+function districtOpts(region,sel){return '<option value="">— Выберите район / город —</option>'+(UZ_GEO[region]||[]).map(d=>`<option value="${escA(d)}"${d===sel?' selected':''}>${escA(d)}</option>`).join('')}
 function delivStep(){const sv=savedAddr();addrGeo='';
 modal(`<button class="ask" onclick="addrStep()" style="align-self:flex-start">← Назад</button><h3 class="serif">Адрес доставки</h3>
-<p class="mu">Область / город</p><select id="ad_r" onchange="$('ad_d').innerHTML=districtOpts(this.value,'')" style="${FLD}">${Object.keys(UZ_GEO).map(r=>`<option${r===sv.region?' selected':''}>${escA(r)}</option>`).join('')}</select>
+<p class="mu">Область / город</p><select id="ad_r" onchange="$('ad_d').innerHTML=districtOpts(this.value,'')" style="${FLD}">${Object.keys(UZ_GEO).map(r=>`<option value="${escA(r)}"${r===sv.region?' selected':''}>${escA(r)}</option>`).join('')}</select>
 <p class="mu">Район</p><select id="ad_d" style="${FLD}">${districtOpts(UZ_GEO[sv.region]?sv.region:'г. Ташкент',sv.district)}</select>
 <p class="mu">Улица, дом, квартира</p><input id="ad_s" autocomplete="street-address" placeholder="Например: ул. Амира Темура, 15, кв. 42" value="${escA(sv.street)}" style="${FLD}">
 <p class="mu">Ориентир (необязательно)</p><input id="ad_n" placeholder="Например: рядом с школой №110, 3 подъезд" value="${escA(sv.note)}" style="${FLD}">
