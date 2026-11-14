@@ -1197,5 +1197,5 @@ function resetFilters(){fB='';fMin=0;fMax=0;fSort='';fSale=false;fStock=false;['
 async function loadRatings(){try{const {data}=await sb.from('product_reviews').select('product_id,rating').eq('status','published');const m={};(data||[]).forEach(r=>{const x=m[r.product_id]||(m[r.product_id]={s:0,n:0});x.s+=r.rating;x.n++});RV={};for(const id in m)RV[id]={a:m[id].s/m[id].n,n:m[id].n};if(Object.keys(RV).length)render()}catch(e){}}
 function miniStars(v){let h='';for(let i=1;i<=5;i++){const f=Math.max(0,Math.min(1,v-i+1));h+=`<i><b style="width:${f*100}%">★</b>★</i>`}return `<span class="ms">${h}</span>`}
 </script>
-<script src="i18n-data.js?v=3"></script><script src="i18n.js?v=3"></script>
+<script src="i18n-data.js?v=4"></script><script src="i18n.js?v=4"></script>
 </body></html>
