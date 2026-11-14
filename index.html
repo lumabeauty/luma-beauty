@@ -771,6 +771,39 @@ div.fx-fly{background:linear-gradient(135deg,#f2a5bb,#81d8d0)}
 .pc-like.fx-unpop{animation:fxUnpop .35s ease}
 @keyframes fxPop{0%{transform:scale(.6)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
 @keyframes fxUnpop{0%{transform:scale(1)}50%{transform:scale(.75)}100%{transform:scale(1)}}
+
+/* order success v2 (site palette) */
+.box:has(.order-success){width:min(500px,100%);border:0!important;border-radius:28px!important;background:#fff!important;box-shadow:0 30px 80px -20px #5b293555!important}
+.order-success{color:#2a1e22}
+.order-check{background:linear-gradient(135deg,#81d8d0,#0a9e93)!important;color:#fff!important;box-shadow:0 10px 24px -8px #0a9e93aa!important;animation:ocPop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes ocPop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.order-eyebrow{color:#0a9e93!important}
+.order-title{color:#2a1e22}
+.order-number{background:#fdf6f8!important;border:1.5px dashed #f0d5de!important}
+.order-number b{color:#b4466c!important}
+.order-section-title{color:#b4466c!important}
+.order-section{border-bottom-color:#f3e6ea!important}
+.order-line{align-items:center;gap:10px!important;padding:7px 0!important;font-size:13px!important}
+.order-line img,.order-line .ol-ph{flex:0 0 44px;width:44px;height:44px;border-radius:12px;object-fit:cover;background:#fdf0f4;display:block}
+.ol-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ol-k{font-size:10px!important;letter-spacing:.1em;text-transform:uppercase;color:#0a9e93!important;white-space:normal!important}
+.ol-n{font-size:13px;line-height:1.3;color:#2a1e22;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ol-q{font-size:11.5px!important;color:#9b868c!important;white-space:normal!important}
+.order-line>b{font-weight:600!important;font-size:13px;color:#2a1e22}
+.order-address{display:flex;flex-direction:column;gap:2px;font-size:13px!important;color:#5e4b51!important;line-height:1.5}
+.oa-h{color:#2a1e22;font-weight:600;margin-bottom:2px}
+.oa-map{align-self:flex-start;margin-top:6px;padding:6px 12px;border-radius:999px;background:#e9faf8;color:#087a72;text-decoration:none;font-size:12.5px;font-weight:500}
+.order-total{background:linear-gradient(110deg,#fff0f4,#e9faf8)!important;color:#2a1e22!important}
+.order-total b{color:#2a1e22}
+.order-cashback{background:#e9faf8!important;color:#087a72!important}
+.order-tg{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 16px;border-radius:999px;background:linear-gradient(135deg,#2aabee,#229ed9);color:#fff;text-decoration:none;font:500 15px Jost,Arial,sans-serif;box-shadow:0 12px 24px -12px #229ed9;transition:transform .2s}
+.order-tg:hover{transform:translateY(-1px)}
+.order-note{background:#fdf6f8!important;color:#8c7378!important}
+.order-close{border:1.5px solid #2a1e22!important;color:#2a1e22!important;font-weight:500}
+.order-close:hover{background:#2a1e22!important;color:#fff!important}
+.order-footnote{color:#b4466c!important}
+body:has(#md.on) .skin-fab,body:has(#dr.open) .skin-fab{display:none!important}
+@media(max-width:760px){.box:has(.order-success){border-radius:24px!important;max-height:92vh;overflow:auto}.order-title{font-size:28px!important}.order-subtitle{font-size:12.5px}.order-tg{font-size:14px;padding:13px}}
 /* Skin Lab */
 .skinlab{max-width:1080px;margin:26px auto 0;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:0;background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 24px 60px -36px #b4607d73;text-align:left}
 .sl-intro{position:relative;padding:34px 30px;background:radial-gradient(120% 90% at 0% 0%,#ffe9ef 0%,#fbeef3 40%,#e7f8f6 100%);color:#2a1e22}
@@ -1230,7 +1263,7 @@ async function pay(m){
 const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart),cb=Math.max(0,Math.floor(Number($('cbUse')?.value)||0));
 const base=ks.reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0),max=Math.min(cashbackBalance,Math.floor(base*0.5));
 if(cb>max)return toast('Можно использовать не более '+f(max));
-const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''}\n     ${cart[k]} × ${f(finalPrice(P[k]))} = ${f(finalPrice(P[k])*cart[k])}`).join('\n');
+const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''}\n    ${cart[k]} шт × ${String(finalPrice(P[k])).replace(/\B(?=(\d{3})+(?!\d))/g,' ')} = ${f(finalPrice(P[k])*cart[k])}`).join('\n');
 const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa(),p_cashback_to_use:cb});
 if(error){console.error(error);return toast(error.message?.includes('cashback')?'Проверьте баланс кешбэка и сумму списания':'Не удалось создать заказ, попробуйте ещё раз')}
 const o=data.id,T=data.total,used=Number(data.cashback_used)||0;let u='';
@@ -1238,10 +1271,10 @@ if(m=='payme'&&PAYME_ID)u='https://checkout.paycom.uz/'+btoa(`m=${PAYME_ID};ac.o
 if(m=='click'&&CLICK_SERVICE&&CLICK_MERCHANT)u=`https://my.click.uz/services/pay?service_id=${CLICK_SERVICE}&merchant_id=${CLICK_MERCHANT}&amount=${T}&transaction_param=${o}`;
 const txt=`🛍 Заказ №${o} — Luma Beauty\n\n👤 ${user.name||''}, ${user.phone||''}\n💳 Оплата: ${N}\n🚚 ${fa().split('\n')[0]}\n\n📦 Состав заказа:\n${L}\n\n${disc?'🎟 Промокод '+pcode+' (−'+Math.round(disc*100)+'%)\n':''}${used?'✦ Списан кешбэк: '+f(used)+'\n':''}💰 Итого к оплате: ${f(T)}`;
 const qty={...cart};cart={};upd();
-const tg=TG_USER?`<a class="buy" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${encodeURIComponent(txt)}">Сообщить о заказе в Telegram</a>`:'';
+const tg=TG_USER?`<a class="order-tg" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${encodeURIComponent(txt)}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M20.6 4.3 3.4 10.9c-1.2.5-1.1 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.6.4.8.8.8.4 0 .6-.2.9-.5l2.2-2.1 4.5 3.3c.8.5 1.4.2 1.6-.8l2.9-13.7c.3-1.2-.4-1.8-1.6-1.4Zm-3 3.4-7.9 7.1-.3 3.3-1.5-4.6 9.3-5.9c.4-.3.8-.1.4.1Z"/></svg><span>Сообщить о заказе в Telegram</span></a>`:'';
 const py=u?`<a class="pay ${m}" style="text-align:center;text-decoration:none" href="${u}">Перейти к оплате ${N}</a>`:`<p class="mu">Оплата ${N} пока не подключена: мы свяжемся с вами по заказу.</p>`;
-const itemRows=ks.map(k=>`<div class="order-line"><span>${escHTML(P[k].t)} <small>× ${qty[k]||0}</small></span><b>${f(finalPrice(P[k])*(qty[k]||0))}</b></div>`).join('');
-const orderAddress=escHTML(fa()).replace(/\n/g,'<br>');
+const itemRows=ks.map(k=>`<div class="order-line">${P[k].i?`<img src="${safeImage(P[k].i)}" alt="">`:'<i class="ol-ph"></i>'}<span class="ol-t">${P[k].k?`<small class="ol-k">${escHTML(P[k].k)}</small>`:''}<span class="ol-n">${escHTML(P[k].t)}</span><small class="ol-q">${qty[k]||0} × ${f(finalPrice(P[k]))}${P[k].v?' · '+escHTML(P[k].v):''}</small></span><b>${f(finalPrice(P[k])*(qty[k]||0))}</b></div>`).join('');
+const _al=fa().split('\n').map(x=>x.trim()).filter(Boolean),_lk=_al.find(x=>/^https?:\/\//.test(x)),_ln=_al.filter(x=>x!==_lk),_m=(_ln[0]||'').match(/^(Самовывоз|Доставка):\s*(.*)$/);if(_m)_ln[0]=_m[2];const orderAddress=`<b class="oa-h">${_m&&_m[1]==='Самовывоз'?'🏬 Самовывоз':'🚚 Доставка'}</b>${_ln.map(x=>`<span>${escHTML(x)}</span>`).join('')}${_lk?`<a class="oa-map" href="${escHTML(_lk)}" target="_blank" rel="noopener">📍 Открыть на карте</a>`:''}`;
 modal(`<div class="order-success">
 <div class="order-check">✓</div>
 <p class="order-eyebrow">LUMA BEAUTY · ВАШ ЗАКАЗ</p>
@@ -1249,7 +1282,7 @@ modal(`<div class="order-success">
 <p class="order-subtitle">Заказ <b>№${o}</b> успешно создан. Мы скоро свяжемся с вами для подтверждения.</p>
 <div class="order-number"><span>Номер заказа</span><b>#${o}</b></div>
 <div class="order-section"><div class="order-section-title">СОСТАВ ЗАКАЗА</div>${itemRows}</div>
-<div class="order-section"><div class="order-section-title">ПОЛУЧЕНИЕ</div><p class="order-address">${orderAddress}</p></div>
+<div class="order-section"><div class="order-section-title">ПОЛУЧЕНИЕ</div><div class="order-address">${orderAddress}</div></div>
 <div class="order-total"><span>К оплате</span><b>${f(T)}</b></div>
 ${used?`<div class="order-cashback">✦ Использовано кешбэка: <b>${f(used)}</b></div>`:''}
 ${tg}
@@ -1399,7 +1432,7 @@ if(typeof window.favToggle==='function'){const _fav=window.favToggle;window.favT
  if(!RM){requestAnimationFrame(()=>{document.querySelectorAll('.pc-like').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(JSON.stringify(id))){b.classList.add(was?'fx-unpop':'fx-pop')}})})}return r}}
 })();
 </script>
-<script src="i18n-data.js?v=9"></script><script src="i18n.js?v=9"></script>
+<script src="i18n-data.js?v=10"></script><script src="i18n.js?v=10"></script>
 <script>
 function goSkin(){const el=document.getElementById('skinHelp');if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(!document.querySelector('#skinQuizBody .sl-q,#skinQuizBody .sl-res'))setTimeout(()=>{try{skinQuizStart()}catch(e){}},500)}
 function skinFabClose(){try{sessionStorage.setItem('luma_fab_off','1')}catch(e){}const f=document.getElementById('skinFab');if(f)f.hidden=true}

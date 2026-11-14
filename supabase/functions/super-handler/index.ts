@@ -2,7 +2,8 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 // Accepts calls only from the database triggers (they send the shared x-order-secret header).
 const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const money = (n: unknown) => Math.round(Number(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " сум";
+const num = (n: unknown) => Math.round(Number(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const money = (n: unknown) => num(n) + " сум";
 const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 const PAY: Record<string, string> = { payme: "Payme", click: "Click", cash: "Наличными", card: "Картой" };
 
@@ -25,7 +26,7 @@ function buildOrder(r: any) {
     sub += q * p;
     const disc = Number(it.discount_percent) > 0 ? `  <i>−${Number(it.discount_percent)}%</i>` : "";
     out.push(`${n + 1}. ${esc(clip(String(it.title || "Товар #" + it.id), 120))}`);
-    out.push(`     ${q} × ${money(p)} = <b>${money(q * p)}</b>${disc}`);
+    out.push(`    ${q} шт × ${num(p)} = <b>${money(q * p)}</b>${disc}`);
   });
   if (items.length > 40) out.push(`… и ещё ${items.length - 40} позиций`);
   out.push("");
@@ -43,7 +44,7 @@ function buildOrder(r: any) {
   if (r.promo) out.push(`🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
   if (Number(r.cashback_used) > 0) out.push(`✦ Списан кэшбэк: ${money(r.cashback_used)}`);
   if (Math.round(sub) !== Math.round(Number(r.total) || 0) && sub > 0) out.push(`Сумма товаров: ${money(sub)}`);
-  out.push("━━━━━━━━━━━━━━");
+  out.push("━━━━━━━━━━━━");
   out.push(`💰 <b>ИТОГО: ${money(r.total)}</b>`);
   return out.join("\n");
 }
