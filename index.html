@@ -673,7 +673,7 @@ const md=$('md'),mb=$('mb');
 function modal(h){mb.innerHTML=h+'<button class="x" onclick="closeM()">×</button>';md.classList.add('on')}
 function closeM(){md.classList.remove('on')}
 md.onclick=e=>{if(e.target==md)closeM()};
-let addr='',mode='delivery',dlD='',dlT='';const PICKUP='Узбекистан, г. Ташкент, Order Plaza',fd=()=>dlD.split('-').reverse().join('.')+', '+dlT,fa=()=>mode=='pickup'?'Самовывоз: '+addr:'Доставка: '+addr+'\nДата и время: '+fd();
+let addr='',mode='delivery',dlD='',dlT='';const PICKUP='Узбекистан, г. Ташкент, Order Plaza',fd=()=>dlD.split('-').reverse().join('.')+', '+dlT,fa=()=>mode=='pickup'?'Самовывоз: '+addr:'Доставка: '+addr;
 const SL=['09:00–12:00','12:00–15:00','15:00–18:00','18:00–21:00'],iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
 function slots(){const d=$('dl_d').value,n=new Date();dlD=d;if(!SL.includes(dlT))dlT='';
 $('dl_t').innerHTML=SL.map(s=>{const off=!d||(d==iso(n)&&+s.slice(0,2)<n.getHours()+2);if(off&&dlT==s)dlT='';return `<button class="slot${dlT==s?' on':''}"${off?' disabled':''} onclick="pickT('${s}')">${s}</button>`}).join('')}
@@ -722,7 +722,7 @@ modal(`<button class="ask" onclick="addrStep()" style="align-self:flex-start">�
 <p class="mu">Район</p><select id="ad_d" style="${FLD}">${districtOpts(UZ_GEO[sv.region]?sv.region:'г. Ташкент',sv.district)}</select>
 <p class="mu">Улица, дом, квартира</p><input id="ad_s" autocomplete="street-address" placeholder="Например: ул. Амира Темура, 15, кв. 42" value="${escA(sv.street)}" style="${FLD}">
 <p class="mu">Ориентир (необязательно)</p><input id="ad_n" placeholder="Например: рядом с школой №110, 3 подъезд" value="${escA(sv.note)}" style="${FLD}">
-<button class="ask" onclick="geo()">📍 Определить моё местоположение</button><p class="mu" id="ge"></p><p class="mu">Дата доставки</p><input type="date" id="dl_d" value="${dlD}" min="${iso(new Date())}" max="${iso(new Date(Date.now()+30*864e5))}" onchange="slots()"><p class="mu">Время доставки</p><div class="slots" id="dl_t"></div><button class="buy" onclick="addrNext()">Далее к оплате</button>`);slots()}
+<button class="ask" onclick="geo()">📍 Определить моё местоположение</button><p class="mu" id="ge"></p><button class="buy" onclick="addrNext()">Далее к оплате</button>`)}
 function geo(){const g=$('ge');if(!navigator.geolocation)return g.textContent='Геолокация не поддерживается этим браузером';g.textContent='Определяем местоположение…';
 navigator.geolocation.getCurrentPosition(async p=>{const la=p.coords.latitude.toFixed(5),lo=p.coords.longitude.toFixed(5);let a={};
 try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=ru&lat=${la}&lon=${lo}`);a=(await r.json()).address||{}}catch(e){}
@@ -735,7 +735,6 @@ g.textContent='Местоположение определено: курьер �
 ()=>{g.textContent='Не удалось определить местоположение. Разрешите доступ к геолокации или введите адрес вручную.'},{enableHighAccuracy:true,timeout:10000})}
 function addrNext(){const r=$('ad_r').value,d=$('ad_d').value,st=$('ad_s').value.trim(),n=$('ad_n').value.trim(),e=m=>$('ge').textContent=m;
 if(!d)return e('Выберите район.');if(st.length<5)return e('Укажите улицу, дом и квартиру.');
-if(!dlD||!dlT||dlD<iso(new Date()))return e('Выберите дату и время доставки.');
 const line=[r,d,st].join(', ')+(n?' (ориентир: '+n+')':'');
 const map=addrGeo||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(['Узбекистан',r,d,st].join(', ')));
 addr=line+'\n'+map;try{localStorage.setItem('luma_addr2',JSON.stringify({region:r,district:d,street:st,note:n}))}catch(x){}payStep()}
@@ -744,7 +743,7 @@ const T=Object.keys(cart).reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0);
 const {data}=await sb.from('profiles').select('cashback_balance').eq('id',user.id).single();
 cashbackBalance=Math.max(0,Number(data?.cashback_balance)||0);
 const max=Math.min(cashbackBalance,Math.floor(T*0.5));
-modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Самовывоз':'Доставка'}: ${addr.split('\\n')[0].replace(/</g,'&lt;')}</p>${mode=='pickup'?'':`<p class="mu">📅 ${fd()}</p>`}<div class="ib"><b>Ваш кешбэк</b><p>Баланс: <strong>${f(cashbackBalance)}</strong></p><p>Можно использовать до: <strong>${f(max)}</strong> (не более 50% заказа)</p><input id="cbUse" type="number" min="0" max="${max}" step="1" value="0" style="width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit" placeholder="Сколько кешбэка списать?"></div><p class="mu">Сумма до кешбэка: <b>${f(T)}</b></p><button class="pay payme" onclick="pay('payme')">Продолжить через Payme</button><button class="pay click" onclick="pay('click')">Продолжить через Click</button>`);
+modal(`<h3 class="serif">Оплата</h3><p class="mu">${mode=='pickup'?'Самовывоз':'Доставка'}: ${addr.split('\\n')[0].replace(/</g,'&lt;')}</p><div class="ib"><b>Ваш кешбэк</b><p>Баланс: <strong>${f(cashbackBalance)}</strong></p><p>Можно использовать до: <strong>${f(max)}</strong> (не более 50% заказа)</p><input id="cbUse" type="number" min="0" max="${max}" step="1" value="0" style="width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit" placeholder="Сколько кешбэка списать?"></div><p class="mu">Сумма до кешбэка: <b>${f(T)}</b></p><button class="pay payme" onclick="pay('payme')">Продолжить через Payme</button><button class="pay click" onclick="pay('click')">Продолжить через Click</button>`);
 }
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);let pcode='';
 async function loadP(){const {data,error}=await sb.from('products').select('*').eq('active',true).order('sort').order('id');if(error)return toast('Не удалось загрузить товары');P=data.map(r=>({id:r.id,t:r.title,k:r.kind||'',c:r.category,v:r.volume||'',p:r.price,d:Number(r.discount_percent)||0,i:r.image||'',gallery:Array.isArray(r.gallery)?r.gallery:[],ing:r.ingredients||'',su:r.suits||'',av:r.avoid||''}));cart=LS.get('luma_cart')||{};render();const addId=new URLSearchParams(location.search).get('add');if(addId){const i=P.findIndex(p=>String(p.id)===addId);if(i>=0){const count=Math.max(1,Math.min(99,Number(new URLSearchParams(location.search).get('qty'))||1));cart[i]=(cart[i]||0)+count;LS.set('luma_cart',cart);upd();toast('Добавлено в корзину')}history.replaceState(null,'',location.pathname)}}
