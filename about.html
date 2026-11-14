@@ -50,6 +50,29 @@
     .brands-logos{margin-top:28px;background:#f6f1ea;border-radius:18px;padding:26px 18px;display:flex;flex-wrap:wrap;justify-content:space-around;gap:18px 28px}
     .brands-logos span{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;letter-spacing:.14em;color:#5d5246}
     @media(max-width:760px){.brands-track{grid-auto-columns:82%;gap:14px}.brands-arrow{display:none}.brands-logos span{font-size:18px}.brand-mono span{font-size:28px}}
+  
+    .lead{margin:64px calc(50% - 50vw) 40px;position:relative}
+    .lead-band{background:#003d2f;color:#fff;padding:56px 0 64px}
+    .lead-head{max-width:1080px;margin:0 auto;padding:0 5vw}
+    .lead-head h2{color:#fff;max-width:480px;margin:6px 0 0;font-size:clamp(28px,3.4vw,38px)}
+    .lead-eyebrow{font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:#c9d8d2;display:inline-flex;align-items:center;gap:10px}
+    .lead-eyebrow i{display:inline-block;width:70px;height:1px;background:#c9d8d2}
+    .lead-grid{max-width:1080px;margin:0 auto;padding:0 5vw;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+    .lead-text{margin:28px 0 0;color:var(--muted);font-size:15px;max-width:420px}
+    .lead-form{background:#f4e6dd;border-radius:16px;padding:26px 24px;margin-top:-140px;display:flex;flex-direction:column;gap:14px;box-shadow:0 10px 30px #0001}
+    .lead-row{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+    .lead-f{position:relative;display:block}
+    .lead-f input,.lead-f textarea{width:100%;border:0;border-radius:99px;background:#fff;padding:13px 44px 13px 18px;font:14px Jost,Arial,sans-serif;color:var(--ink);outline:none}
+    .lead-f textarea{border-radius:18px;resize:vertical;min-height:96px}
+    .lead-f input:focus,.lead-f textarea:focus{box-shadow:0 0 0 2px #5bc4bf}
+    .lead-f span{position:absolute;right:16px;top:13px;font-size:13px;opacity:.55}
+    .lead-hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+    .lead-form button{border:0;border-radius:99px;background:#fff;padding:14px;font:600 13px Jost,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);cursor:pointer}
+    .lead-form button:hover{background:#003d2f;color:#fff}
+    .lead-form button:disabled{opacity:.6;cursor:wait}
+    .lead-status{margin:0;font-size:14px;min-height:0}
+    .lead-status.ok{color:#1d6b4f;font-weight:600}.lead-status.err{color:#b23b3b;font-weight:600}
+    @media(max-width:760px){.lead-grid{grid-template-columns:1fr;gap:0}.lead-form{margin-top:-40px}.lead-row{grid-template-columns:1fr}.lead-band{padding:40px 0 64px}.lead-text{margin:0 0 20px;order:2}}
   </style>
   <script type="application/ld+json">
   {
@@ -109,6 +132,29 @@
       </div>
       <div class="brands-logos"><span>ECLADO</span><span>ZEITUN</span><span>КУДРЯВЫЙ МЕТОД</span><span>DUFT & DOFT</span><span>DESSI</span></div>
     </section>
+    <section class="lead" id="partner">
+      <div class="lead-band">
+        <div class="lead-head">
+          <span class="lead-eyebrow">Возникли вопросы? <i aria-hidden="true"></i></span>
+          <h2>Заполните заявку, и наши специалисты свяжутся с вами</h2>
+        </div>
+      </div>
+      <div class="lead-grid">
+        <p class="lead-text">Вы производитель и ищете партнёра? Напишите нам. У вас розничный магазин и вы ищете интересные товары? Свяжитесь с нами!</p>
+        <form class="lead-form" id="leadForm" novalidate>
+          <div class="lead-row">
+            <label class="lead-f"><input name="name" maxlength="120" placeholder="Ваше ФИО" required autocomplete="name"><span aria-hidden="true">👤</span></label>
+            <label class="lead-f"><input name="company" maxlength="160" placeholder="Компания" autocomplete="organization"><span aria-hidden="true">🏢</span></label>
+          </div>
+          <label class="lead-f"><input name="email" type="email" maxlength="160" placeholder="Email" autocomplete="email"><span aria-hidden="true">✉</span></label>
+          <label class="lead-f"><input name="phone" type="tel" maxlength="30" placeholder="Номер телефона" required autocomplete="tel"><span aria-hidden="true">☎</span></label>
+          <label class="lead-f lead-msg"><textarea name="message" maxlength="2000" rows="4" placeholder="Ваше сообщение"></textarea><span aria-hidden="true">💬</span></label>
+          <input class="lead-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <p class="lead-status" id="leadStatus" role="status"></p>
+          <button type="submit" id="leadBtn">Оставить заявку →</button>
+        </form>
+      </div>
+    </section>
     <section class="panel">
       <h2 id="contactTitle">Связаться с Luma Beauty</h2>
       <p id="contactText">По вопросам о магазине и товарах свяжитесь с нами по телефону или через Instagram.</p>
@@ -155,5 +201,30 @@ languageSelect.value=savedLanguage;setAboutLanguage(savedLanguage);
 languageSelect.addEventListener("change",()=>{localStorage.setItem("luma_about_language",languageSelect.value);setAboutLanguage(languageSelect.value)});
 </script>
 <script>function brandsScroll(d){const t=document.getElementById('brandsTrack');if(!t)return;const c=t.querySelector('.brand-card');t.scrollBy({left:d*((c?c.offsetWidth:300)+24),behavior:'smooth'})}</script>
+<script src="config.js"></script>
+<script>
+(function(){
+  const f=document.getElementById('leadForm');if(!f)return;
+  const st=document.getElementById('leadStatus'),btn=document.getElementById('leadBtn');
+  const say=(m,c)=>{st.textContent=m;st.className='lead-status '+(c||'')};
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const d=Object.fromEntries(new FormData(f).entries());
+    if(d.website)return say('Спасибо! Заявка отправлена.','ok');
+    const name=(d.name||'').trim(),phone=(d.phone||'').trim(),email=(d.email||'').trim();
+    if(name.length<2)return say('Укажите ваше имя.','err');
+    if(phone.replace(/\D/g,'').length<7)return say('Укажите номер телефона.','err');
+    if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return say('Проверьте email.','err');
+    btn.disabled=true;say('Отправляем…');
+    try{
+      const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/partner_requests',{method:'POST',headers:{'Content-Type':'application/json',apikey:CFG.SUPABASE_KEY,Authorization:'Bearer '+CFG.SUPABASE_KEY,Prefer:'return=minimal'},
+        body:JSON.stringify({name,company:(d.company||'').trim(),email,phone,message:(d.message||'').trim()})});
+      if(!r.ok)throw new Error(r.status);
+      f.reset();say('Спасибо! Заявка отправлена — мы свяжемся с вами в ближайшее время.','ok');
+    }catch(x){say('Не удалось отправить заявку. Позвоните нам: +998 91 001 01 84','err')}
+    btn.disabled=false;
+  });
+})();
+</script>
 </body>
 </html>

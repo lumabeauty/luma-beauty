@@ -208,6 +208,7 @@ async function init(){
         ['blog','Блог'],
         ['orders','Заказы'],
         ['returns','Возвраты'],
+        ['leads','Заявки'],
         ['orderControl','Контроль заказов'],
         ['products','Товары'],
         ['smartStock','Умный склад'],
@@ -239,6 +240,7 @@ function go(k){
     orderControl:vOrderControl,
     orders:vOrders,
     returns:vReturns,
+    leads:vLeads,
     products:vProducts,
     clients:vClients,
     cashback:vCashback,
@@ -452,6 +454,57 @@ async function setRetSt(id,el){
   vReturns();
 }
 function alertBox(m){ const p=document.createElement('p');p.className='err';p.textContent=m;$('m').prepend(p);setTimeout(()=>p.remove(),6000); }
+
+/* ---------- Заявки с сайта (страница «О нас») ---------- */
+const LST = {new:'Новая',in_work:'В работе',done:'Обработана',spam:'Спам'};
+let _leads = [];
+async function vLeads(){
+  const {data,error} = await sb.from('partner_requests').select('*').order('id',{ascending:false}).limit(500);
+  if(error) return $('m').innerHTML = '<p>Не удалось загрузить заявки: '+esc(error.message)+'</p>';
+  _leads = data || [];
+  const cnt = k => _leads.filter(r=>r.status===k).length;
+  $('m').innerHTML = `
+    <h3>Заявки с сайта</h3>
+    <p class="photo-help">Сюда приходят заявки из формы «Заполните заявку» на странице «О нас». О каждой новой заявке также приходит сообщение в Telegram.</p>
+    <div class="admin-stats">
+      <div class="admin-stat"><small>Всего</small><b>${_leads.length}</b></div>
+      <div class="admin-stat"><small>Новые</small><b>${cnt('new')}</b></div>
+      <div class="admin-stat"><small>В работе</small><b>${cnt('in_work')}</b></div>
+      <div class="admin-stat"><small>Обработаны</small><b>${cnt('done')}</b></div>
+    </div>
+    <div class="order-tools">
+      <input id="leadSearch" placeholder="Поиск: имя, компания, телефон, email…" oninput="filterLeads()">
+      <select id="leadSt" onchange="filterLeads()"><option value="">Все статусы</option>${opts(LST,'')}</select>
+      <button class="g" onclick="vLeads()">Обновить</button>
+    </div>
+    ${_leads.length ? `<table id="leadTable">
+      <tr><th>№</th><th>Дата</th><th>Имя</th><th>Компания</th><th>Контакты</th><th>Сообщение</th><th>Статус</th><th>Заметка</th></tr>
+      ${_leads.map(r=>`
+        <tr data-st="${esc(r.status)}" data-q="${esc([r.id,r.name,r.company,r.phone,r.email].join(' ').toLowerCase())}">
+          <td><b>${esc(r.id)}</b></td>
+          <td>${dt(r.created_at)}</td>
+          <td>${esc(r.name)}</td>
+          <td>${esc(r.company||'—')}</td>
+          <td><a href="tel:${esc(String(r.phone).replace(/[^\d+]/g,''))}">${esc(r.phone)}</a>${r.email?'<br><a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</td>
+          <td style="max-width:320px;white-space:pre-wrap">${esc(r.message||'—')}</td>
+          <td><select class="status-select" onchange="setLead(${JSON.stringify(r.id)},{status:this.value},this)">${opts(LST,r.status)}</select></td>
+          <td><input value="${esc(r.admin_note||'')}" placeholder="Заметка" onchange="setLead(${JSON.stringify(r.id)},{admin_note:this.value.trim()},this)" style="min-width:160px"></td>
+        </tr>`).join('')}
+    </table>` : '<p style="color:var(--adm-muted)">Заявок пока нет.</p>'}`;
+  filterLeads();
+}
+function filterLeads(){
+  const q=($('leadSearch')?.value||'').trim().toLowerCase(),st=$('leadSt')?.value||'';
+  document.querySelectorAll('#leadTable tr[data-st]').forEach(r=>{r.style.display=(!q||r.dataset.q.includes(q))&&(!st||r.dataset.st===st)?'':'none'});
+}
+async function setLead(id,patch,el){
+  el.disabled=true;
+  const {error}=await sb.from('partner_requests').update(patch).eq('id',id);
+  el.disabled=false;
+  if(error){ alert('Не удалось сохранить: '+error.message); return; }
+  const r=_leads.find(x=>x.id===id); if(r) Object.assign(r,patch);
+  if(patch.status){ const tr=el.closest('tr'); if(tr) tr.dataset.st=patch.status; }
+}
 
 let _orders = [];
 function filterOrderRows(){
