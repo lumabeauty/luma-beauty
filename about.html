@@ -177,6 +177,15 @@
     .btn.alt{border-radius:2px}
     footer{background:linear-gradient(120deg,#003d2f 0%,#0b4a3c 100%)}
     @media(max-width:600px){.panel{padding:26px 22px}}
+  
+    .loc{display:grid;grid-template-columns:minmax(260px,1fr) 1.4fr;gap:28px;align-items:stretch;margin:30px 0 8px;padding:28px;border:1px solid #e3eeea;border-radius:6px;background:linear-gradient(135deg,#f3fbf9,#ffffff)}
+    .loc-label{display:block;text-transform:uppercase;letter-spacing:.3em;font-size:11px;color:#5a9e97;margin-bottom:10px}
+    .loc-addr{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,3.4vw,40px);line-height:1.15;color:var(--emerald);margin:0 0 20px;font-weight:500}
+    .loc-btns{display:flex;flex-wrap:wrap;gap:10px}
+    .loc-btns a{padding:11px 18px;border:1px solid var(--emerald);color:var(--emerald);text-decoration:none;font-size:12px;letter-spacing:.14em;text-transform:uppercase;border-radius:2px}
+    .loc-btns a:hover{background:var(--emerald);color:#fff}
+    .loc-map{width:100%;min-height:300px;height:100%;border:0;border-radius:4px;filter:saturate(.85)}
+    @media(max-width:760px){.loc{grid-template-columns:1fr;padding:20px}.loc-map{min-height:260px}}
   </style>
   <script type="application/ld+json">
   {
@@ -276,9 +285,20 @@
     </section>
     <section class="panel">
       <h2 id="contactTitle">Связаться с Luma Beauty</h2>
-      <p id="contactText">По вопросам о магазине и товарах свяжитесь с нами по телефону или через Instagram.</p>
+      <p id="contactText">По вопросам о магазине и товарах свяжитесь с нами по телефону, через Instagram или приходите к нам.</p>
       <p><strong id="phoneLabel">Телефон:</strong> <a href="tel:+998910010184">+998 91 001 01 84</a><br>
       <strong id="instagramLabel">Instagram:</strong> <a href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">@lumabeautyuz</a></p>
+      <div class="loc">
+        <div class="loc-info">
+          <span class="loc-label">📍 Наш адрес</span>
+          <p class="loc-addr">Узбекистан, Ташкент,<br>ул. Шарафа Рашидова, 69</p>
+          <div class="loc-btns">
+            <a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%A3%D0%B7%D0%B1%D0%B5%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD%2C%20%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A8%D0%B0%D1%80%D0%B0%D1%84%D0%B0%20%D0%A0%D0%B0%D1%88%D0%B8%D0%B4%D0%BE%D0%B2%D0%B0%2C%2069" target="_blank" rel="noopener">Google Карты ↗</a>
+            <a href="https://yandex.uz/maps/?text=%D0%A3%D0%B7%D0%B1%D0%B5%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD%2C%20%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A8%D0%B0%D1%80%D0%B0%D1%84%D0%B0%20%D0%A0%D0%B0%D1%88%D0%B8%D0%B4%D0%BE%D0%B2%D0%B0%2C%2069" target="_blank" rel="noopener">Яндекс Карты ↗</a>
+          </div>
+        </div>
+        <iframe class="loc-map" title="Luma Beauty на карте" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=%D0%A3%D0%B7%D0%B1%D0%B5%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD%2C%20%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A8%D0%B0%D1%80%D0%B0%D1%84%D0%B0%20%D0%A0%D0%B0%D1%88%D0%B8%D0%B4%D0%BE%D0%B2%D0%B0%2C%2069&amp;z=16&amp;output=embed"></iframe>
+      </div>
       <div class="actions">
         <a class="btn" href="index.html" id="shopButton">Перейти в магазин</a>
         <a class="btn alt" href="blog.html" id="blogButton">Читать блог</a>
