@@ -73,6 +73,19 @@
     .lead-status{margin:0;font-size:14px;min-height:0}
     .lead-status.ok{color:#1d6b4f;font-weight:600}.lead-status.err{color:#b23b3b;font-weight:600}
     @media(max-width:760px){.lead-grid{grid-template-columns:1fr;gap:0}.lead-form{margin-top:-40px}.lead-row{grid-template-columns:1fr}.lead-band{padding:40px 0 64px}.lead-text{margin:0 0 20px;order:2}}
+  
+    .cats{margin:56px 0;text-align:center}
+    .cats h2{margin:0 0 30px}
+    .cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+    .cat-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 6px 22px #0000000d;display:flex;flex-direction:column}
+    .cat-img{aspect-ratio:1/1.05;overflow:hidden;background:#f6f1ea}
+    .cat-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+    .cat-card:hover .cat-img img{transform:scale(1.04)}
+    .cat-body{padding:18px 18px 22px}
+    .cat-body h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:21px;line-height:1.25;margin:0 0 10px;color:var(--ink)}
+    .cat-body p{margin:0;font-size:14px;line-height:1.6;color:#6b6257}
+    @media(max-width:900px){.cats-grid{grid-template-columns:repeat(2,1fr);gap:14px}}
+    @media(max-width:420px){.cat-body{padding:14px 12px 16px}.cat-body h3{font-size:18px}.cat-body p{font-size:13px}}
   </style>
   <script type="application/ld+json">
   {
@@ -107,13 +120,15 @@
       <p id="careText1">Мы собрали онлайн-каталог косметики и средств ухода, чтобы вам было удобнее изучать ассортимент и выбирать продукты. На сайте также публикуются материалы о коже, волосах, составах косметики и способах ухода.</p>
       <p id="careText2">Наша цель — сделать знакомство с косметикой понятным и удобным: от просмотра каталога до изучения полезных советов в блоге.</p>
     </section>
-    <h2 id="featuresTitle">Что вы найдёте на Luma Beauty</h2>
-    <div class="grid">
-      <article class="tile"><h3 id="tile1Title">Каталог косметики</h3><p id="tile1Text">Онлайн-каталог товаров для красоты и ежедневного ухода.</p></article>
-      <article class="tile"><h3 id="tile2Title">Уход за кожей</h3><p id="tile2Text">Материалы о базовом уходе, косметических ингредиентах и привычках.</p></article>
-      <article class="tile"><h3 id="tile3Title">Уход за волосами</h3><p id="tile3Text">Статьи о волосах, включая кудрявый метод и уход за разными типами волос.</p></article>
-      <article class="tile"><h3 id="tile4Title">Бьюти-бренды</h3><p id="tile4Text">Знакомство с ассортиментом и материалами о Dessi Cosmetica и Uazan.</p></article>
-    </div>
+    <section class="cats" id="categories">
+      <h2>Категории товаров, с которыми мы работаем</h2>
+      <div class="cats-grid">
+        <article class="cat-card"><div class="cat-img"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=640&h=600&q=80" alt="Салонная косметика" loading="lazy"></div><div class="cat-body"><h3>Салонная косметика</h3><p>Профессиональные средства для косметологических процедур и ухода в салонах красоты.</p></div></article>
+        <article class="cat-card"><div class="cat-img"><img src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=640&h=600&q=80" alt="Профессиональные линии для СПА" loading="lazy"></div><div class="cat-body"><h3>Профессиональные линии для СПА</h3><p>Косметика для спа-процедур с акцентом на восстановление, уход и профессиональный результат.</p></div></article>
+        <article class="cat-card"><div class="cat-img"><img src="img/brand-kudryavy.jpg" alt="Косметика для волос" loading="lazy"></div><div class="cat-body"><h3>Косметика для волос</h3><p>Специализированные средства для ухода за кудрявыми и вьющимися волосами — для здоровья, увлажнения и подчёркивания естественной формы локонов.</p></div></article>
+        <article class="cat-card"><div class="cat-img"><img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=640&h=600&q=80" alt="Косметика для домашнего использования" loading="lazy"></div><div class="cat-body"><h3>Косметика для домашнего использования</h3><p>Простые и эффективные средства для ежедневного ухода в комфортных домашних условиях.</p></div></article>
+      </div>
+    </section>
     <section class="brands" id="brands">
       <span class="brands-eyebrow">Комплексный подход к партнёрству</span>
       <div class="brands-orn" aria-hidden="true"><i></i><b>◆</b><i></i></div>
