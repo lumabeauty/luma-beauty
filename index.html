@@ -691,6 +691,15 @@ footer .logo-img{height:62px;margin:0 auto}
 .pc-rate{display:flex;align-items:center;gap:6px;margin-top:5px;font:400 12px Jost,Arial,sans-serif;color:#9b868c}
 .ms{display:inline-flex;font-size:13px;letter-spacing:1px}.ms i{position:relative;font-style:normal;color:#eedfe3}.ms b{position:absolute;left:0;top:0;overflow:hidden;color:#f2a93b;font-weight:400}
 
+
+.skin-help{background:linear-gradient(135deg,#fff3f6 0%,#ffffff 45%,#ecfaf8 100%)!important;border:0!important;border-radius:34px!important;box-shadow:0 30px 70px -50px #b4607d80}
+.skin-help-head .eyebrow{color:#0a9e93!important;letter-spacing:.16em}
+.skin-help-head h2{color:#2a1e22!important}
+.skin-help-head p{color:#8c7378!important}
+.skin-help-actions a,.skin-help-actions button{border:0!important;background:#2a1e22!important;color:#fff!important;transition:background .25s,transform .2s}
+.skin-help-actions a:hover{background:#0a9e93!important;transform:translateY(-1px)}
+.skin-help-actions a.secondary{background:#fff!important;color:#2a1e22!important;box-shadow:inset 0 0 0 1.5px #2a1e22}
+.skin-help-actions a.secondary:hover{background:#25d366!important;color:#fff!important;box-shadow:none}
 /* Skin Lab */
 .skinlab{max-width:1080px;margin:26px auto 0;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:0;background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 24px 60px -36px #b4607d73;text-align:left}
 .sl-intro{position:relative;padding:34px 30px;background:radial-gradient(120% 90% at 0% 0%,#ffe9ef 0%,#fbeef3 40%,#e7f8f6 100%);color:#2a1e22}
@@ -1264,7 +1273,7 @@ function skinQuizStart(){skinQuizAnswers=[];skinQuizStep=0;skinQuizRender()}
 function skinQuizRender(){const root=$('skinQuizBody');if(!root)return;const q=SQ[skinQuizStep],cur=skinQuizAnswers[skinQuizStep];
  root.innerHTML='<div class="sl-q"><div class="sl-top"><span class="sl-step">Шаг '+(skinQuizStep+1)+' из '+SQ.length+'</span><div class="sl-dots">'+SQ.map((_,i)=>'<i class="'+(i<skinQuizStep?'done':i===skinQuizStep?'cur':'')+'"></i>').join('')+'</div></div><div class="sl-prog"><span style="width:'+((skinQuizStep+1)/SQ.length*100)+'%"></span></div><h4>'+q.title+'</h4><p class="sl-hint">'+q.hint+'</p><div class="sl-opts'+(q.opts.length===4?' four':'')+'">'+q.opts.map(o=>'<button type="button" class="sl-opt'+(cur===o[0]?' on':'')+'" onclick="skinQuizChoose(\''+o[0]+'\',this)"><i>'+o[1]+'</i><b>'+o[2]+'</b>'+(o[3]?'<small>'+o[3]+'</small>':'')+'</button>').join('')+'</div>'+(skinQuizStep?'<button class="sl-back" type="button" onclick="skinQuizPrev()">← Назад</button>':'')+'</div>'}
 function skinQuizPrev(){skinQuizStep=Math.max(0,skinQuizStep-1);skinQuizRender()}
-function skinQuizChoose(value,btn){skinQuizAnswers[skinQuizStep]=value;if(btn){btn.classList.add('on');}setTimeout(()=>{skinQuizStep++;if(skinQuizStep<SQ.length){skinQuizRender();return}try{localStorage.setItem('luma_skin',JSON.stringify(skinQuizAnswers))}catch(e){}skinQuizShowResults()},btn?220:0)}
+function skinQuizChoose(value,btn){if(window.__sqBusy)return;skinQuizAnswers[skinQuizStep]=value;const next=()=>{window.__sqBusy=false;skinQuizStep++;if(skinQuizStep<SQ.length){skinQuizRender();return}try{localStorage.setItem('luma_skin',JSON.stringify(skinQuizAnswers))}catch(e){}skinQuizShowResults()};if(btn){btn.classList.add('on');window.__sqBusy=true;setTimeout(next,220)}else next()}
 function sqPick(){const [type,sens,goal,age]=skinQuizAnswers;const terms=[...(SQ_W[type]||[]).map(w=>[w,2]),...(SQ_W[goal]||[]).map(w=>[w,3]),...(sens!=='no'?SQ_W.sens.map(w=>[w,sens==='yes'?3:1]):[]),...((age==='35'||age==='45')?SQ_W.antiage.map(w=>[w,1]):[])];
  const pool=P.map((p,i)=>({p,i})).filter(({p})=>(p.c==='Лицо'||p.c==='Загар и SPF')&&p.p&&(p.st==null||p.st>0));
  const score=p=>{const t=(p.t+' '+p.k+' '+(p.su||'')+' '+(p.ds||'')).toLowerCase();let s=0;terms.forEach(([w,v])=>{if(t.includes(w))s+=v});if(sens==='yes'&&/спикул|покалыв/.test(t))s-=8;if(age==='u25'&&/антивозраст|зрел/.test(t))s-=3;return s};
