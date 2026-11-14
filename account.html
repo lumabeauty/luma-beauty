@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Мой аккаунт — Luma Beauty</title><meta name="robots" content="noindex"><link rel="icon" href="./favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
+<html lang="ru"><head><link rel="apple-touch-icon" href="./apple-touch-icon.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Мой аккаунт — Luma Beauty</title><meta name="robots" content="noindex"><link rel="icon" href="./favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
 <style>
 :root{--bg:#f5f5f7;--card:#fff;--ink:#29282b;--ink2:#45454a;--mute:#77777e;--soft:#a3a3aa;--rose:#ef5265;--rose2:#ffe6e9;--line:#ececf0;--ok:#2f8f5b;--okbg:#e6f5ec}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--ink);font-family:Jost,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
@@ -75,8 +75,15 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:24px 20px calc
 @media(max-width:900px){.hero{grid-template-columns:auto 1fr}.tier{grid-column:1/-1}.grid2{grid-template-columns:1fr}}
 @media(max-width:640px){.top{padding-left:16px;padding-right:16px}.logo{font-size:24px}.top nav a{padding:7px 9px;font-size:13px}.top nav a.hide-m{display:none}main{padding:18px 14px 46px}.hero{padding:22px 18px;gap:16px}.ava{width:64px;height:64px;font-size:26px}.stats{grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.stat{padding:16px}.stat b{font-size:21px}.stat:last-child{grid-column:1/-1}.sec{padding:18px}.ord-h{grid-template-columns:1fr auto;padding:14px}.ord-h .chev{display:none}.ord-b{padding:0 14px 14px}.card{border-radius:20px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.logo-img{display:block;height:46px;width:auto;max-width:none}
+header .logo,.top .logo{display:inline-flex!important;align-items:center;line-height:0!important;font-size:0!important}
+footer .logo{display:inline-block!important;line-height:0!important;font-size:0!important;margin:0 auto 12px}
+footer .logo-img{height:62px;margin:0 auto}
+@media(max-width:760px){header .logo-img,.top .logo-img{height:34px}footer .logo-img{height:52px}}
+@media(max-width:380px){header .logo-img{height:30px}}
 </style></head><body>
-<header class="top"><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><nav><a class="hide-m" href="index.html#catalog" data-t>Каталог</a><a class="hide-m" href="blog.html" data-t>Блог</a><a class="on" href="account.html" data-t>Аккаунт</a><select class="langsel" id="lang" aria-label="Language" onchange="setLang(this.value)"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select></nav></header>
+<header class="top"><a class="logo" href="index.html"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></a><nav><a class="hide-m" href="index.html#catalog" data-t>Каталог</a><a class="hide-m" href="blog.html" data-t>Блог</a><a class="on" href="account.html" data-t>Аккаунт</a><select class="langsel" id="lang" aria-label="Language" onchange="setLang(this.value)"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select></nav></header>
 <main id="app"><div class="card hero"><div class="sk" style="width:84px;height:84px;border-radius:50%"></div><div><div class="sk" style="height:14px;width:120px"></div><div class="sk" style="height:34px;width:260px;margin:12px 0"></div><div class="sk" style="height:14px;width:160px"></div></div></div><div class="stats"><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div></div></main>
 <footer><span data-t>Luma Beauty · Красота в деталях</span></footer>
 <div id="toast"></div>

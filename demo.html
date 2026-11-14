@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="utf-8">
+<html lang="ru"><head><link rel="icon" type="image/png" href="./favicon.png"><link rel="apple-touch-icon" href="./apple-touch-icon.png"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Luma Beauty — уход за телом, волосами и кожей</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,11 +104,18 @@ footer .logo{display:block;margin-bottom:6px}
 #mus{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 20px -8px rgba(0,0,0,.25)}#mus.on{background:var(--rose);border-color:var(--rose);color:#fff}
 @media(max-width:640px){.cartbtn{margin-left:8px;padding:6px 12px}.logo{font-size:23px}}
 @media(max-width:640px){nav{display:none}.grid{grid-template-columns:repeat(2,1fr);gap:12px}.bd h3{font-size:20px}.bd{padding:12px}h2{font-size:34px}}
+
+.logo-img{display:block;height:46px;width:auto;max-width:none}
+header .logo,.top .logo{display:inline-flex!important;align-items:center;line-height:0!important;font-size:0!important}
+footer .logo{display:inline-block!important;line-height:0!important;font-size:0!important;margin:0 auto 12px}
+footer .logo-img{height:62px;margin:0 auto}
+@media(max-width:760px){header .logo-img,.top .logo-img{height:34px}footer .logo-img{height:52px}}
+@media(max-width:380px){header .logo-img{height:30px}}
 </style></head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
-<header><a class="logo serif" href="#top">Luma<i>·</i>Beauty</a><div style="display:flex;align-items:center"><nav><a href="#catalog">Каталог</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
+<header><a class="logo serif" href="#top"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></a><div style="display:flex;align-items:center"><nav><a href="#catalog">Каталог</a></nav><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <div class="hero" id="top"><div class="eyebrow">Luma Beauty</div><h1 class="serif">Сияние, которое<br>начинается <em>с ухода</em></h1><p>Нежный уход за телом, волосами и кожей — ежедневный ритуал, который хочется повторять.</p><a class="cta" href="#catalog">Смотреть каталог</a></div>
 <section id="catalog"><h2 class="serif">Каталог</h2><p class="sub" id="sub"></p><div class="promo">Промокод <b>LUMA25</b> — скидка 20% на все товары. Введите его в корзине.</div><div style="text-align:center;margin-bottom:18px"><input class="sq" placeholder="Поиск по товарам" oninput="q=this.value.trim().toLowerCase();render()"></div><div class="chips" id="chips"></div><div class="grid" id="grid"></div></section>
-<footer><span class="logo serif">Luma<i>·</i>Beauty</span>© 2026 Luma Beauty. Все права защищены.</footer>
+<footer><span class="logo serif"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></span>© 2026 Luma Beauty. Все права защищены.</footer>
 <aside id="dr"><h3 class="serif">Корзина <button onclick="dr.classList.remove('open')">×</button></h3><div id="items"></div><div class="promo-row"><input id="pc" placeholder="Промокод"><button onclick="promo()">Применить</button></div><div id="pm" class="mu"></div><div class="tot"><span>Итого</span><b id="tot">0 сум</b></div><button class="buy" onclick="buy()">Оформить заказ</button></aside>
 <button id="mus" onclick="music()">♪ Музыка: выкл</button><div id="md" class="md"><div class="box" id="mb"></div></div><div id="toast"></div>
 <script>

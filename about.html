@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
+<head><link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f4ec">
@@ -186,7 +186,14 @@
     .loc-btns a:hover{background:var(--emerald);color:#fff}
     .loc-map{width:100%;min-height:300px;height:100%;border:0;border-radius:4px;filter:saturate(.85)}
     @media(max-width:760px){.loc{grid-template-columns:1fr;padding:20px}.loc-map{min-height:260px}}
-  </style>
+  
+.logo-img{display:block;height:46px;width:auto;max-width:none}
+header .logo,.top .logo{display:inline-flex!important;align-items:center;line-height:0!important;font-size:0!important}
+footer .logo{display:inline-block!important;line-height:0!important;font-size:0!important;margin:0 auto 12px}
+footer .logo-img{height:62px;margin:0 auto}
+@media(max-width:760px){header .logo-img,.top .logo-img{height:34px}footer .logo-img{height:52px}}
+@media(max-width:380px){header .logo-img{height:30px}}
+</style>
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -203,7 +210,7 @@
 </head>
 <body>
   <header>
-    <a class="logo" href="index.html">Luma<i>·</i>Beauty</a>
+    <a class="logo" href="index.html"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></a>
     <nav aria-label="Основная навигация">
       <a href="index.html">Магазин</a>
       <a href="blog.html">Блог</a>
@@ -305,7 +312,7 @@
       </div>
     </section>
   </main>
-  <footer><a class="logo" href="index.html">Luma<i>·</i>Beauty</a><p id="footerTagline">Красота. Уход. Вдохновение.</p><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
+  <footer><a class="logo" href="index.html"><img class="logo-img" src="img/logo-luma-white.png" alt="Luma Beauty" width="116" height="48"></a><p id="footerTagline">Красота. Уход. Вдохновение.</p><p>© 2026 Luma Beauty. Все права защищены.</p></footer>
 
 <script>
 const aboutTranslations = {
