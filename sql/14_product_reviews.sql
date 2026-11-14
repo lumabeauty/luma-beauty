@@ -1,0 +1,2 @@
+-- product_reviews: only buyers (orders paid/shipped/done containing the product) can review; one review per user per product.
+-- Applied via Supabase migration "product_reviews" (see Supabase dashboard for full DDL).

@@ -209,6 +209,7 @@ async function init(){
         ['orders','Заказы'],
         ['returns','Возвраты'],
         ['leads','Заявки'],
+        ['reviews','Отзывы'],
         ['orderControl','Контроль заказов'],
         ['products','Товары'],
         ['smartStock','Умный склад'],
@@ -241,6 +242,7 @@ function go(k){
     orders:vOrders,
     returns:vReturns,
     leads:vLeads,
+    reviews:vReviews,
     products:vProducts,
     clients:vClients,
     cashback:vCashback,
@@ -458,6 +460,27 @@ function alertBox(m){ const p=document.createElement('p');p.className='err';p.te
 /* ---------- Заявки с сайта (страница «О нас») ---------- */
 const LST = {new:'Новая',in_work:'В работе',done:'Обработана',spam:'Спам'};
 let _leads = [];
+
+let _revs=[];
+async function vReviews(){
+  const {data,error}=await sb.from('product_reviews').select('id,product_id,rating,body,author_name,status,created_at,products(title)').order('id',{ascending:false}).limit(1000);
+  if(error) return $('m').innerHTML='<p>Не удалось загрузить отзывы: '+esc(error.message)+'</p>';
+  _revs=data||[];const pub=_revs.filter(r=>r.status==='published');const avg=pub.length?(pub.reduce((s,r)=>s+r.rating,0)/pub.length).toFixed(1):'—';
+  const stars=n=>'<span style="color:#f2a93b;letter-spacing:1px">'+'★'.repeat(n)+'</span><span style="color:#e5d8dc">'+'★'.repeat(5-n)+'</span>';
+  $('m').innerHTML=`<h3>Отзывы покупателей</h3>
+  <p class="photo-help">Оставить отзыв могут только клиенты, у которых есть оплаченный, отправленный или выполненный заказ с этим товаром. Отзывы публикуются сразу — здесь их можно скрыть или удалить.</p>
+  <div class="admin-stats"><div class="admin-stat"><small>Всего</small><b>${_revs.length}</b></div><div class="admin-stat"><small>Опубликованы</small><b>${pub.length}</b></div><div class="admin-stat"><small>Скрыты</small><b>${_revs.length-pub.length}</b></div><div class="admin-stat"><small>Средняя оценка</small><b>${avg}</b></div></div>
+  <div class="order-tools"><input id="revSearch" placeholder="Поиск: товар, автор, текст…" oninput="filterRevs()"><select id="revSt" onchange="filterRevs()"><option value="">Все</option><option value="published">Опубликованы</option><option value="hidden">Скрыты</option></select><select id="revRate" onchange="filterRevs()"><option value="">Любая оценка</option>${[5,4,3,2,1].map(n=>`<option value="${n}">${n} ★</option>`).join('')}</select><button class="g" onclick="vReviews()">Обновить</button></div>
+  ${_revs.length?`<table id="revTable"><tr><th>Дата</th><th>Товар</th><th>Автор</th><th>Оценка</th><th>Текст</th><th>Статус</th><th></th></tr>
+  ${_revs.map(r=>`<tr data-st="${esc(r.status)}" data-r="${r.rating}" data-q="${esc([r.products?.title,r.author_name,r.body].join(' ').toLowerCase())}">
+   <td>${dt(r.created_at)}</td><td><a href="product.html?id=${encodeURIComponent(r.product_id)}" target="_blank">${esc(r.products?.title||('#'+r.product_id))}</a></td><td>${esc(r.author_name||'—')}</td><td style="white-space:nowrap">${stars(r.rating)}</td>
+   <td style="max-width:340px;white-space:pre-wrap">${esc(r.body||'—')}</td>
+   <td><select class="status-select" onchange="setRev(${r.id},this.value,this)"><option value="published"${r.status==='published'?' selected':''}>Опубликован</option><option value="hidden"${r.status==='hidden'?' selected':''}>Скрыт</option></select></td>
+   <td><button class="g" onclick="delRev(${r.id},this)">Удалить</button></td></tr>`).join('')}</table>`:'<p style="color:var(--adm-muted)">Отзывов пока нет.</p>'}`;
+}
+function filterRevs(){const q=($('revSearch')?.value||'').trim().toLowerCase(),st=$('revSt')?.value||'',rt=$('revRate')?.value||'';document.querySelectorAll('#revTable tr[data-st]').forEach(r=>{r.style.display=(!q||r.dataset.q.includes(q))&&(!st||r.dataset.st===st)&&(!rt||r.dataset.r===rt)?'':'none'})}
+async function setRev(id,status,el){el.disabled=true;const {error}=await sb.from('product_reviews').update({status}).eq('id',id);el.disabled=false;if(error){alert('Не удалось сохранить: '+error.message);return}const r=_revs.find(x=>x.id===id);if(r)r.status=status;el.closest('tr').dataset.st=status}
+async function delRev(id,btn){if(btn.dataset.c!=='1'){btn.dataset.c='1';btn.textContent='Точно удалить?';setTimeout(()=>{btn.dataset.c='';btn.textContent='Удалить'},4000);return}btn.disabled=true;const {error}=await sb.from('product_reviews').delete().eq('id',id);if(error){btn.disabled=false;alert('Не удалось удалить: '+error.message);return}btn.closest('tr').remove();_revs=_revs.filter(x=>x.id!==id)}
 async function vLeads(){
   const {data,error} = await sb.from('partner_requests').select('*').order('id',{ascending:false}).limit(500);
   if(error) return $('m').innerHTML = '<p>Не удалось загрузить заявки: '+esc(error.message)+'</p>';

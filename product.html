@@ -139,6 +139,33 @@ footer{border-color:var(--line);background:rgba(255,240,242,.45);color:var(--mut
 
 
 .brand{line-height:0!important;font-size:0!important;display:inline-flex;align-items:center}.brand .logo-img{display:block;height:48px;width:auto}@media(max-width:760px){.brand .logo-img{height:34px}}
+
+/* reviews */
+.rv{margin:46px 0 10px;padding:30px;background:#fff;border-radius:26px;box-shadow:0 14px 40px -28px #b4607d66}
+.rv-head h2{margin:0 0 20px;font:600 30px 'Cormorant Garamond',Georgia,serif;color:#2a1e22}
+.rv-top{display:grid;grid-template-columns:170px 1fr 1.3fr;gap:28px;align-items:start;padding-bottom:24px;border-bottom:1px solid #f3e6ea}
+.rv-sum{text-align:center}.rv-avg{font:600 54px/1 'Cormorant Garamond',Georgia,serif;color:#2a1e22}.rv-avg.rv-0{color:#d9c8cd}
+.rv-cnt{margin-top:6px;font-size:13px;color:#9b868c}
+.stars{display:inline-flex;gap:2px;font-size:18px;vertical-align:middle}.st{position:relative;display:inline-block;width:1em;height:1em}
+.st-bg{color:#eedfe3;position:absolute;inset:0}.st-fg{position:absolute;inset:0;overflow:hidden;color:#f2a93b;white-space:nowrap}.st svg{display:block}
+.rv-bar{display:flex;align-items:center;gap:10px;font-size:13px;color:#6f5b61;margin:5px 0}.rv-bar span{width:10px}.rv-bar em{width:22px;font-style:normal;color:#b3a1a6;text-align:right}
+.rv-bar i{flex:1;height:7px;border-radius:9px;background:#f6ecef;overflow:hidden}.rv-bar b{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#f2a93b,#f5c46e)}
+.rv-note{background:#fdf6f8;border-radius:16px;padding:16px 18px;font-size:14px;line-height:1.5;color:#6f5b61}.rv-note a,.rv-link{color:#0a9e93;font-weight:500;background:none;border:0;padding:0;cursor:pointer;font:inherit;text-decoration:underline}
+.rv-form{background:#fdf6f8;border-radius:16px;padding:16px 18px}.rv-ft{font-weight:500;color:#2a1e22;margin-bottom:6px}
+.rv-pick{display:flex;gap:4px;margin-bottom:10px}.rv-pick button{border:0;background:none;padding:0;font-size:30px;color:#e7d6db;cursor:pointer;transition:transform .15s,color .15s;line-height:0}
+.rv-pick button:hover{transform:scale(1.15)}.rv-pick button.on{color:#f2a93b}
+.rv-form textarea{width:100%;box-sizing:border-box;border:1px solid #f0e2e6;border-radius:12px;padding:12px;font:400 14px Jost,Arial,sans-serif;resize:vertical;background:#fff}
+.rv-form textarea:focus{outline:none;border-color:#81d8d0;box-shadow:0 0 0 3px #81d8d033}
+.rv-fb{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.rv-err{color:#c2366a;font-size:13px}
+.rv-send{border:0;border-radius:999px;background:#2a1e22;color:#fff;padding:11px 20px;font:500 14px Jost,Arial,sans-serif;cursor:pointer;transition:background .2s}.rv-send:hover{background:#0a9e93}.rv-send:disabled{opacity:.5}
+.rv-list{margin-top:8px}.rv-item{display:flex;gap:14px;padding:20px 0;border-bottom:1px solid #f6edf0}.rv-item:last-child{border:0}
+.rv-ava{flex:0 0 42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#81d8d0,#0a9e93);color:#fff;font-weight:600;text-transform:uppercase}
+.rv-b{min-width:0}.rv-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-bottom:4px;font-size:14px;color:#2a1e22}
+.rv-ok{font-size:11.5px;color:#0a9e93;background:#e9faf8;border-radius:999px;padding:2px 8px}.rv-meta time{font-size:12.5px;color:#b3a1a6}
+.rv-b .stars{font-size:15px}.rv-b p{margin:8px 0 0;font-size:15px;line-height:1.55;color:#4a3a3f;white-space:pre-line;overflow-wrap:anywhere}
+.rv-empty{color:#9b868c;text-align:center;padding:22px 0 6px}
+.rv-mini{display:inline-flex;align-items:center;gap:8px;margin:2px 0 10px;color:#6f5b61;font-size:13.5px;text-decoration:none}.rv-mini .stars{font-size:16px}
+@media(max-width:760px){.rv{padding:20px 16px;border-radius:20px;margin-top:30px}.rv-head h2{font-size:25px;margin-bottom:14px}.rv-top{grid-template-columns:1fr 1.4fr;gap:16px}.rv-act{grid-column:1/-1}.rv-avg{font-size:44px}}
 </style>
 </head>
 <body>
@@ -187,6 +214,38 @@ $('content').innerHTML='<section class="layout"><div class="gallery"><div class=
 const {count}=await sb.from('products').select('id',{count:'exact',head:true}).eq('active',true);$('cartCount').textContent='0';
 }
 let touchStartX=0;document.addEventListener('touchstart',e=>{if(e.target.closest('.mainphoto'))touchStartX=e.changedTouches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{if(!touchStartX||!e.target.closest('.mainphoto'))return;const dx=e.changedTouches[0].clientX-touchStartX;touchStartX=0;if(Math.abs(dx)>45&&photos.length>1){const active=[...document.querySelectorAll('.thumb')].findIndex(b=>b.classList.contains('active'));showPhoto(active+(dx<0?1:-1))}},{passive:true});
-load();
+load().then(()=>{if(product)loadReviews()});
+</script>
+<script>
+const STAR='<svg viewBox="0 0 24 24" width="1em" height="1em"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="currentColor"/></svg>';
+function starsHTML(v){let h='';for(let i=1;i<=5;i++){const f=Math.max(0,Math.min(1,v-i+1));h+=`<span class="st"><span class="st-bg">${STAR}</span><span class="st-fg" style="width:${f*100}%">${STAR}</span></span>`}return `<span class="stars" aria-label="${v.toFixed(1)} из 5">${h}</span>`}
+let RVL=[],myRev=null,canRev=false,rvUser=null,pick=0;
+function rvWord(n){const a=n%10,b=n%100;return a==1&&b!=11?'отзыв':(a>=2&&a<=4&&(b<10||b>=20)?'отзыва':'отзывов')}
+async function loadReviews(){
+ const [{data:list},{data:{session}}]=await Promise.all([sb.from('product_reviews').select('id,rating,body,author_name,created_at,user_id,status').eq('product_id',product.id).order('created_at',{ascending:false}),sb.auth.getSession()]);
+ rvUser=session?.user||null;RVL=(list||[]).filter(r=>r.status==='published');myRev=rvUser?(list||[]).find(r=>r.user_id===rvUser.id)||null:null;
+ canRev=false;if(rvUser&&!myRev){const {data}=await sb.rpc('has_purchased',{p_product:product.id});canRev=!!data}
+ renderReviews();
+}
+function renderReviews(){
+ let box=document.getElementById('reviews');if(!box){box=document.createElement('section');box.id='reviews';box.className='rv';const rel=document.querySelector('#content .related');rel?rel.before(box):$('content').appendChild(box)}
+ const n=RVL.length,avg=n?RVL.reduce((s,r)=>s+r.rating,0)/n:0;
+ const dist=[5,4,3,2,1].map(x=>{const c=RVL.filter(r=>r.rating===x).length;return `<div class="rv-bar"><span>${x}</span><i><b style="width:${n?c/n*100:0}%"></b></i><em>${c}</em></div>`}).join('');
+ let form='';
+ if(!rvUser)form=`<div class="rv-note">Оставить отзыв могут покупатели этого товара. <a href="account.html">Войдите в аккаунт</a></div>`;
+ else if(myRev)form=`<div class="rv-note">Спасибо, ваш отзыв опубликован${myRev.status==='hidden'?' (скрыт модератором)':''}. <button type="button" class="rv-link" onclick="editReview()">Изменить</button> · <button type="button" class="rv-link" onclick="deleteReview()">Удалить</button></div>`;
+ else if(!canRev)form=`<div class="rv-note">Отзыв можно оставить после покупки этого товара — так все отзывы на Luma Beauty настоящие.</div>`;
+ else form=reviewForm();
+ box.innerHTML=`<div class="rv-head"><h2>Отзывы покупателей</h2></div><div class="rv-top"><div class="rv-sum">${n?`<div class="rv-avg">${avg.toFixed(1).replace('.',',')}</div>${starsHTML(avg)}<div class="rv-cnt">${n} ${rvWord(n)}</div>`:`<div class="rv-avg rv-0">—</div>${starsHTML(0)}<div class="rv-cnt">Пока нет отзывов</div>`}</div><div class="rv-dist">${dist}</div><div class="rv-act" id="rvAct">${form}</div></div><div class="rv-list">${n?RVL.map(r=>`<article class="rv-item"><div class="rv-ava">${esc((r.author_name||'П')[0])}</div><div class="rv-b"><div class="rv-meta"><b>${esc(r.author_name||'Покупатель')}</b><span class="rv-ok">✓ Покупка подтверждена</span><time>${new Date(r.created_at).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}</time></div>${starsHTML(r.rating)}${r.body?`<p>${esc(r.body)}</p>`:''}</div></article>`).join(''):'<p class="rv-empty">Станьте первым, кто поделится впечатлением об этом товаре.</p>'}</div>`;
+ if(n){const ld=document.getElementById('product-jsonld');if(ld){try{const o=JSON.parse(ld.textContent);o.aggregateRating={'@type':'AggregateRating',ratingValue:avg.toFixed(1),reviewCount:n};ld.textContent=JSON.stringify(o)}catch(e){}}}
+ const sumEl=document.querySelector('.info .price-row');if(sumEl&&n&&!document.getElementById('rvMini')){sumEl.insertAdjacentHTML('beforebegin',`<a id="rvMini" class="rv-mini" href="#reviews">${starsHTML(avg)}<span>${avg.toFixed(1).replace('.',',')} · ${n} ${rvWord(n)}</span></a>`)}
+}
+function reviewForm(r){pick=r?r.rating:0;return `<form class="rv-form" onsubmit="saveReview(event)"><div class="rv-ft">${r?'Изменить отзыв':'Оцените товар'}</div><div class="rv-pick" id="rvPick">${[1,2,3,4,5].map(i=>`<button type="button" data-v="${i}" onclick="setPick(${i})" aria-label="${i} из 5">${STAR}</button>`).join('')}</div><textarea id="rvBody" maxlength="1000" rows="4" placeholder="Что понравилось? Как подошло вашей коже или волосам?">${r?esc(r.body||''):''}</textarea><div class="rv-fb"><span id="rvErr" class="rv-err"></span><button type="submit" class="rv-send">${r?'Сохранить':'Опубликовать отзыв'}</button></div></form>`}
+function setPick(v){pick=v;document.querySelectorAll('#rvPick button').forEach(b=>b.classList.toggle('on',+b.dataset.v<=v))}
+function editReview(){$('rvAct').innerHTML=reviewForm(myRev);setPick(myRev.rating)}
+async function saveReview(e){e.preventDefault();const err=$('rvErr');if(!pick){err.textContent='Выберите оценку от 1 до 5';return}const body=$('rvBody').value.trim().slice(0,1000)||null;const btn=e.target.querySelector('.rv-send');btn.disabled=true;
+ const r=myRev?await sb.from('product_reviews').update({rating:pick,body}).eq('id',myRev.id):await sb.from('product_reviews').insert({product_id:product.id,rating:pick,body});
+ btn.disabled=false;if(r.error){err.textContent='Не удалось сохранить отзыв. Попробуйте ещё раз.';return}loadReviews()}
+async function deleteReview(){if(!myRev)return;const r=await sb.from('product_reviews').delete().eq('id',myRev.id);if(!r.error)loadReviews()}
 </script>
 </body></html>
