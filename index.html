@@ -405,7 +405,11 @@ footer .logo i{color:#ef5265}
   header{position:sticky;top:0;display:flex;flex-wrap:nowrap;align-items:center;gap:6px;padding:9px 12px;min-height:58px}
   header>.logo{font-size:21px;white-space:nowrap;letter-spacing:0}
   header>div{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0;margin-left:auto}
-  header nav{display:none!important}
+  header{flex-wrap:wrap!important;row-gap:6px!important}
+  header nav{display:flex!important;order:3;flex:0 0 100%;width:100%;gap:6px!important;overflow-x:auto;scrollbar-width:none;padding:2px 0 2px;margin:0!important;-webkit-overflow-scrolling:touch}
+  header nav::-webkit-scrollbar{display:none}
+  header nav a{flex:0 0 auto;margin:0!important;padding:6px 12px!important;border:1px solid var(--line);border-radius:99px;font-size:12px!important;line-height:1.2;white-space:nowrap;background:rgba(255,255,255,.7)}
+  header nav a[href="about.html"]{border-color:#81d8d0;background:#e9f8f5}
   .langsel{margin:0!important;padding:5px 4px!important;font-size:11px;min-width:42px}
   .cartbtn{margin:0!important;padding:7px 9px!important;font-size:12px!important;white-space:nowrap;line-height:1.2}
   #acc{max-width:62px;min-width:0;overflow:hidden;text-overflow:ellipsis}
