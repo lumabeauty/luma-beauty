@@ -1,0 +1,4 @@
+-- Welcome offer (applied via migration "welcome_offer"):
+-- private.app_secrets('welcome_key') + start_welcome_offer() issues HMAC-signed token "exp.pct.sig" (10 min by default)
+-- welcome_pct(token) validates (3 min grace); create_order(..., p_welcome) applies the best of promo / bulk / welcome.
+-- Settings: site_settings 'welcome_offer' = {active, pct, minutes}

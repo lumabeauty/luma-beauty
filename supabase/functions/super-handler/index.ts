@@ -41,7 +41,8 @@ function buildOrder(r: any) {
   if (link) out.push(`📍 <a href="${esc(link)}">Открыть на карте</a>`);
   out.push("");
   out.push(`💳 Оплата: <b>${esc(PAY[String(r.payment || "").toLowerCase()] || r.payment || "не указана")}</b>`);
-  if (r.promo) out.push(/^АКЦИЯ/.test(String(r.promo)) ? `🔥 <b>${esc(String(r.promo).replace(/^АКЦИЯ:\s*/, "Акция недели: "))}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}` : `🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
+  if (r.promo === "ПРИВЕТСТВЕННАЯ СКИДКА") out.push(`🎁 <b>Приветственная скидка</b> (−${Number(r.discount) || 0}%)`);
+  else if (r.promo) out.push(/^АКЦИЯ/.test(String(r.promo)) ? `🔥 <b>${esc(String(r.promo).replace(/^АКЦИЯ:\s*/, "Акция недели: "))}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}` : `🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
   if (Number(r.cashback_used) > 0) out.push(`✦ Списан кэшбэк: ${money(r.cashback_used)}`);
   if (Math.round(sub) !== Math.round(Number(r.total) || 0) && sub > 0) out.push(`Сумма товаров: ${money(sub)}`);
   out.push("━━━━━━━━━━━━");
@@ -88,7 +89,7 @@ serve(async (req) => {
   let response = await send({ text, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: keyboard });
   if (!response.ok) {
     // Fallback: plain text without HTML tags, so a formatting problem never loses an order.
-    const plain = text.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    const plain = text.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
     response = await send({ text: plain, disable_web_page_preview: true });
   }
   if (!response.ok) return Response.json({ error: "Telegram delivery failed" }, { status: 502 });

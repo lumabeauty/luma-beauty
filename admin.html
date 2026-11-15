@@ -1287,6 +1287,13 @@ async function vBanners(){const {data,error}=await sb.from('site_banners').selec
 async function saveBannerText(){const payload={id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim()};const {error}=await sb.from('site_banners').upsert(payload,{onConflict:'id'});if(error)return alert('Не удалось сохранить: '+error.message);alert('Текст фото-блока сохранён.');await vBanners();}
 async function uploadBannerPhotos(){const files=Array.from($('bannerFiles').files||[]);if(!files.length)return alert('Сначала выбери фотографии.');if(files.length>5)return alert('Можно загрузить максимум 5 фотографий.');if(files.some(f=>!f.type.startsWith('image/')))return alert('Выбери только изображения.');try{const urls=[];for(const file of files){const safe=file.name.replace(/[^\\w.-]/g,'_');const path='site-banner/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safe;const {error}=await sb.storage.from('products').upload(path,file);if(error)throw error;urls.push(sb.storage.from('products').getPublicUrl(path).data.publicUrl);}const {error}=await sb.from('site_banners').upsert({id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim(),photos:urls},{onConflict:'id'});if(error)throw error;alert('Загружено '+urls.length+' фотографий.');await vBanners();}catch(e){alert('Ошибка загрузки: '+(e.message||e));}}
 
+
+async function saveWelcome(btn){
+  const value={active:$('wlActive').checked,pct:Math.max(1,Math.min(30,Number($('wlPctA').value)||5)),minutes:Math.max(1,Math.min(60,Number($('wlMin').value)||10))};
+  btn.disabled=true;const {error}=await sb.from('site_settings').upsert({key:'welcome_offer',value,updated_at:new Date().toISOString()});btn.disabled=false;
+  if(error) return alert('Не удалось сохранить: '+error.message);
+  btn.textContent='Сохранено ✓'; setTimeout(()=>btn.textContent='Сохранить',1800);
+}
 async function saveBulkPromo(btn){
   const end=$('bpEnd').value; if(!end) return alert('Укажите дату окончания акции');
   const p2=Math.max(0,Math.min(30,Number($('bpT2').value)||0)), p3=Math.max(0,Math.min(30,Number($('bpT3').value)||0));
@@ -1307,6 +1314,8 @@ async function vPromos(){
 
   const {data:bpRow} = await sb.from('site_settings').select('value').eq('key','bulk_promo').maybeSingle();
   const bp = bpRow?.value || {active:false,ends_at:'',tiers:[{min:2,pct:5},{min:3,pct:10}]};
+  const {data:wlRow} = await sb.from('site_settings').select('value').eq('key','welcome_offer').maybeSingle();
+  const wl = wlRow?.value || {active:false,pct:5,minutes:10};
   const t2 = (bp.tiers||[]).find(t=>t.min==2)||{pct:5}, t3 = (bp.tiers||[]).find(t=>t.min==3)||{pct:10};
   const endLocal = bp.ends_at ? new Date(new Date(bp.ends_at).getTime()+5*3600e3).toISOString().slice(0,16) : '';
   $('m').innerHTML = `
@@ -1318,6 +1327,14 @@ async function vPromos(){
       <label>2 товара, %: <input type="number" id="bpT2" min="0" max="30" value="${esc(t2.pct)}" style="width:70px"></label>
       <label>3+ товара, %: <input type="number" id="bpT3" min="0" max="30" value="${esc(t3.pct)}" style="width:70px"></label>
       <button onclick="saveBulkPromo(this)">Сохранить акцию</button>
+    </div>
+    <h3>🎁 Приветственная скидка с таймером</h3>
+    <p class="photo-help">Новый посетитель видит окно «−5% на весь каталог» и таймер. Скидка проверяется на сервере и действует только пока идёт таймер (плюс 3 минуты на оформление).</p>
+    <div class="order-tools" style="flex-wrap:wrap;align-items:center;gap:10px">
+      <label><input type="checkbox" id="wlActive"${wl.active?' checked':''}> Включена</label>
+      <label>Скидка, %: <input type="number" id="wlPctA" min="1" max="30" value="${esc(wl.pct)}" style="width:70px"></label>
+      <label>Таймер, минут: <input type="number" id="wlMin" min="1" max="60" value="${esc(wl.minutes)}" style="width:70px"></label>
+      <button onclick="saveWelcome(this)">Сохранить</button>
     </div>
     <h3>Промокоды</h3>
     <table>
