@@ -430,3 +430,27 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
 }
 .hp-tag{left:auto;right:16px;top:16px;bottom:auto}
 @media(max-width:860px){.hp-ai{width:min(66%,250px)}.hp-track{min-height:660px}.hp-tag{right:8px;top:8px}}
+
+/* ===== Responsive pass ===== */
+.lp-catbtn.lp-tab{display:none}
+@media(min-width:761px) and (max-width:1180px){
+ .lp-catbtn.lp-tab{display:inline-flex;margin-left:12px}
+ .head{grid-template-columns:auto auto 1fr!important;gap:12px}
+ .head .nav{display:none!important}
+ .head .actions{gap:12px;justify-content:flex-end}
+ .assurances{grid-template-columns:repeat(2,1fr)!important;row-gap:12px}
+ header nav a[href="account.html"],header nav a[href="#favorites"]{display:none!important}
+ body>header{gap:10px!important}
+}
+@media(min-width:761px) and (max-width:960px){
+ body>header nav{display:none!important}
+ .layout{grid-template-columns:1fr!important}
+ .layout .gallery{max-width:620px;width:100%;margin:0 auto}
+}
+@media(max-width:1000px){.lp-top nav{display:none}.lp-top .lp-catbtn.lp-tab{display:inline-flex;margin-right:auto}}
+@media(max-width:760px){.lp-top .lp-catbtn.lp-tab{display:none}}
+@media(max-width:600px){.lp-tbl{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}.lp-tbl td,.lp-tbl th{white-space:normal;min-width:110px}}
+.lp-top .langsel,.lp-top #lang{margin:0}
+/* large monitors */
+@media(min-width:1800px){.hp{max-width:1520px}.hp-track{height:620px}.lp-rail,.lp-cols,.lp-stwrap,.lp-foot{max-width:1520px}}
+@media(min-width:2200px){html{font-size:17px}.hp{max-width:1680px}.hp-track{height:680px}.lp-rail,.lp-cols,.lp-stwrap,.lp-foot{max-width:1680px}}

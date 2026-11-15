@@ -498,7 +498,9 @@ LP.headerButtons = function () {
   sbtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   sbtn.onclick = () => LP.openSearch('');
   const mbtn = D.createElement('button'); mbtn.type = 'button'; mbtn.id = 'lpMBtn'; mbtn.className = 'lp-hbtn lp-catbtn'; mbtn.innerHTML = '<span>☰</span> Каталог'; mbtn.onclick = () => LP.openMega();
-  if (isIndex) { const logo = hdr.querySelector('.logo,.brand'); if (logo) logo.after(mbtn); else hdr.prepend(mbtn) }
+  { const logo = hdr.querySelector('.logo,.brand'); if (!isIndex) mbtn.classList.add('lp-tab'); if (logo) logo.after(mbtn); else hdr.prepend(mbtn) }
+  // keep the language switcher visible when the header nav is collapsed on tablets
+  setTimeout(() => { const ls = hdr.querySelector('nav #lang, nav .langsel'); const act = hdr.querySelector('.actions,.lp-acts'); if (ls && act) act.prepend(ls) }, 600);
   const old = hdr.querySelector('button[aria-label="Поиск"]');
   if (old) { old.onclick = () => LP.openSearch(''); old.removeAttribute('onclick') } else { const box = hdr.querySelector('.actions') || hdr.lastElementChild; box && box !== mbtn ? box.prepend(sbtn) : hdr.appendChild(sbtn) }
   // replace in-header nav "Каталог" link with mega
