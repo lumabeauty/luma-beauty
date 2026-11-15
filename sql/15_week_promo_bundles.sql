@@ -1,0 +1,4 @@
+-- Week promo (quantity discount) + bundles. Applied via Supabase migration "bulk_promo_and_bundles".
+-- site_settings(key,value jsonb): 'bulk_promo' = {active, ends_at, tiers:[{min,pct}]}
+-- bundles(id,title,subtitle,product_ids int[],active,sort)
+-- bulk_promo_pct(n) and create_order: the better of promo code / quantity discount applies (no stacking).

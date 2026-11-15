@@ -1286,6 +1286,17 @@ async function resetHeroPhotos(){
 async function vBanners(){const {data,error}=await sb.from('site_banners').select('*').eq('id',1).maybeSingle();if(error)return $('m').innerHTML='<h3>Большой фото-блок</h3><p>Сначала выполни SQL-файл sql/4_site_banners.sql в Supabase.</p><pre>'+esc(error.message)+'</pre>';const d=data||{};const photos=Array.isArray(d.photos)?d.photos:[];$('m').innerHTML='<h3>Большой фото-блок на главной</h3><p>Загрузи до 5 фотографий. Они будут автоматически перелистываться на сайте.</p><label>Заголовок<br><input id="bannerTitle" style="width:min(500px,95%)" value="'+esc(d.title||'Время для себя')+'"></label><br><br><label>Текст<br><textarea id="bannerSubtitle" style="width:min(500px,95%);height:70px">'+esc(d.subtitle||'Создайте свой ежедневный ритуал красоты')+'</textarea></label><h4>Фотографии ('+photos.length+'/5)</h4><div class="photo-stack">'+photos.map(u=>'<img src="'+esc(u)+'" style="width:100px;height:100px">').join('')+'</div><p><input id="bannerFiles" type="file" accept="image/*" multiple></p><button onclick="uploadBannerPhotos()">Загрузить выбранные фото</button> <button class="g" onclick="saveBannerText()">Сохранить заголовок и текст</button><p class="photo-help">При новой загрузке галерея заменяется выбранными фотографиями. Максимум 5.</p>';}
 async function saveBannerText(){const payload={id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim()};const {error}=await sb.from('site_banners').upsert(payload,{onConflict:'id'});if(error)return alert('Не удалось сохранить: '+error.message);alert('Текст фото-блока сохранён.');await vBanners();}
 async function uploadBannerPhotos(){const files=Array.from($('bannerFiles').files||[]);if(!files.length)return alert('Сначала выбери фотографии.');if(files.length>5)return alert('Можно загрузить максимум 5 фотографий.');if(files.some(f=>!f.type.startsWith('image/')))return alert('Выбери только изображения.');try{const urls=[];for(const file of files){const safe=file.name.replace(/[^\\w.-]/g,'_');const path='site-banner/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safe;const {error}=await sb.storage.from('products').upload(path,file);if(error)throw error;urls.push(sb.storage.from('products').getPublicUrl(path).data.publicUrl);}const {error}=await sb.from('site_banners').upsert({id:1,title:$('bannerTitle').value.trim(),subtitle:$('bannerSubtitle').value.trim(),photos:urls},{onConflict:'id'});if(error)throw error;alert('Загружено '+urls.length+' фотографий.');await vBanners();}catch(e){alert('Ошибка загрузки: '+(e.message||e));}}
+
+async function saveBulkPromo(btn){
+  const end=$('bpEnd').value; if(!end) return alert('Укажите дату окончания акции');
+  const p2=Math.max(0,Math.min(30,Number($('bpT2').value)||0)), p3=Math.max(0,Math.min(30,Number($('bpT3').value)||0));
+  const value={active:$('bpActive').checked,ends_at:end+':00+05:00',tiers:[{min:2,pct:p2},{min:3,pct:p3}]};
+  btn.disabled=true;
+  const {error}=await sb.from('site_settings').upsert({key:'bulk_promo',value,updated_at:new Date().toISOString()});
+  btn.disabled=false;
+  if(error) return alert('Не удалось сохранить: '+error.message);
+  btn.textContent='Сохранено ✓'; setTimeout(()=>btn.textContent='Сохранить акцию',1800);
+}
 async function vPromos(){
   const {data,error} = await sb
     .from('promos')
@@ -1294,7 +1305,20 @@ async function vPromos(){
 
   if(error) return $('m').textContent = error.message;
 
+  const {data:bpRow} = await sb.from('site_settings').select('value').eq('key','bulk_promo').maybeSingle();
+  const bp = bpRow?.value || {active:false,ends_at:'',tiers:[{min:2,pct:5},{min:3,pct:10}]};
+  const t2 = (bp.tiers||[]).find(t=>t.min==2)||{pct:5}, t3 = (bp.tiers||[]).find(t=>t.min==3)||{pct:10};
+  const endLocal = bp.ends_at ? new Date(new Date(bp.ends_at).getTime()+5*3600e3).toISOString().slice(0,16) : '';
   $('m').innerHTML = `
+    <h3>🔥 Акция недели: скидка за количество</h3>
+    <p class="photo-help">Покупатель получает скидку за количество товаров в корзине. Промокод и акция не складываются — применяется большая скидка. Таймер на сайте показывает время до конца акции; после окончания скидка выключается сама.</p>
+    <div class="order-tools" style="flex-wrap:wrap;align-items:center;gap:10px">
+      <label><input type="checkbox" id="bpActive"${bp.active?' checked':''}> Акция включена</label>
+      <label>До (Ташкент): <input type="datetime-local" id="bpEnd" value="${esc(endLocal)}"></label>
+      <label>2 товара, %: <input type="number" id="bpT2" min="0" max="30" value="${esc(t2.pct)}" style="width:70px"></label>
+      <label>3+ товара, %: <input type="number" id="bpT3" min="0" max="30" value="${esc(t3.pct)}" style="width:70px"></label>
+      <button onclick="saveBulkPromo(this)">Сохранить акцию</button>
+    </div>
     <h3>Промокоды</h3>
     <table>
       <tr><th>Код</th><th>Скидка, %</th><th>Активен</th><th></th></tr>

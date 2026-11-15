@@ -41,7 +41,7 @@ function buildOrder(r: any) {
   if (link) out.push(`📍 <a href="${esc(link)}">Открыть на карте</a>`);
   out.push("");
   out.push(`💳 Оплата: <b>${esc(PAY[String(r.payment || "").toLowerCase()] || r.payment || "не указана")}</b>`);
-  if (r.promo) out.push(`🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
+  if (r.promo) out.push(/^АКЦИЯ/.test(String(r.promo)) ? `🔥 <b>${esc(String(r.promo).replace(/^АКЦИЯ:\s*/, "Акция недели: "))}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}` : `🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
   if (Number(r.cashback_used) > 0) out.push(`✦ Списан кэшбэк: ${money(r.cashback_used)}`);
   if (Math.round(sub) !== Math.round(Number(r.total) || 0) && sub > 0) out.push(`Сумма товаров: ${money(sub)}`);
   out.push("━━━━━━━━━━━━");
