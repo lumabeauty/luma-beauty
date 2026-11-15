@@ -683,3 +683,57 @@ function boot() {
 }
 if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
+/* ---------- Creative promo hero (index) ---------- */
+(function () {
+  const D = document, W = window; if (!W.LP || LP.page !== 'index') return;
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = n => Number(n || 0).toLocaleString('ru-RU').replace(/ | /g, ' ') + ' сум';
+  let idx = 0, timer = null, paused = false, slides = [], endAt = null;
+  const DUR = 6500;
+  const pics = (arr, cls) => arr.filter(Boolean).slice(0, 3).map((u, n) => `<figure class="hp-ph hp-ph${n + 1} ${cls || ''}"><img src="${esc(u)}" alt="" loading="${n ? 'lazy' : 'eager'}"></figure>`).join('');
+  function pad(n) { return String(n).padStart(2, '0') }
+  function tick() {
+    if (!endAt) return; const l = Math.max(0, endAt - Date.now());
+    const d = Math.floor(l / 864e5), h = Math.floor(l % 864e5 / 36e5), m = Math.floor(l % 36e5 / 6e4), s = Math.floor(l % 6e4 / 1e3);
+    D.querySelectorAll('.hp-cd').forEach(e => e.innerHTML = `<span><b>${d}</b><small>дн</small></span><span><b>${pad(h)}</b><small>час</small></span><span><b>${pad(m)}</b><small>мин</small></span><span><b>${pad(s)}</b><small>сек</small></span>`);
+  }
+  async function build() {
+    let tries = 0; while ((typeof P === 'undefined' || !P.length) && tries++ < 80) await new Promise(r => setTimeout(r, 150));
+    const old = D.querySelector('.luma-hero'); if (!old || D.getElementById('lpHeroP')) return;
+    const c = LP.sb(); const L = P.filter(p => p.i && p.c !== 'Сертификаты');
+    const by = ids => ids.map(id => L.find(p => String(p.id) === String(id))).filter(Boolean).map(p => p.i);
+    let heroPh = []; try { const { data } = await c.from('home_hero').select('photos').eq('id', 1).maybeSingle(); if (Array.isArray(data?.photos)) heroPh = data.photos.filter(Boolean) } catch (e) { }
+    let bp = null, bundles = []; try { const [a, b] = await Promise.all([c.from('site_settings').select('value').eq('key', 'bulk_promo').maybeSingle(), c.from('bundles').select('product_ids').eq('active', true).order('sort').limit(2)]); bp = a.data && a.data.value; bundles = b.data || [] } catch (e) { }
+    await LP.shopReady; if (!LP.fresh) await LP.loadHits();
+    const s = LP.shop, hits = (LP.hits.length ? LP.hits : L).map(p => p.i), fresh = (LP.fresh || []).map(p => p.i).filter(Boolean);
+    const bundlePh = bundles.length ? by(bundles[0].product_ids || []) : hits;
+    const cica = L.filter(p => LP.tags(p).ing.includes('cica')).map(p => p.i);
+    const gc = P.filter(p => p.c === 'Сертификаты').sort((a, b) => b.p - a.p).map(p => p.i);
+    slides = [];
+    slides.push({ k: 'brand', cls: 'hp-brand', html: `<div class="hp-copy"><span class="hp-eye">LUMA BEAUTY · КОРЕЙСКАЯ КОСМЕТИКА</span><h2 class="hp-t">Искусство<br>быть <em>собой</em></h2><p class="hp-p">Премиальный уход из Кореи для вашей естественной красоты — 100% оригинал и доставка по всему Узбекистану.</p><div class="hp-btns"><a class="hp-cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hp-ghost" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div></div><div class="hp-art">${pics((heroPh.length ? heroPh : hits).slice(0, 3))}<span class="hp-stk hp-stk1">100%<br><small>оригинал</small></span><svg class="hp-ring" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="hpc" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#hpc">BEAUTY IS A RITUAL • LUMA BEAUTY • KOREAN CARE • </textPath></text></svg></div>` });
+    if (bp && bp.active && new Date(bp.ends_at) > Date.now()) {
+      endAt = new Date(bp.ends_at).getTime(); const top = (bp.tiers || []).slice().sort((a, b) => b.pct - a.pct)[0] || { min: 3, pct: 10 };
+      slides.push({ k: 'week', cls: 'hp-week', html: `<div class="hp-copy"><span class="hp-eye">🔥 АКЦИЯ НЕДЕЛИ</span><h2 class="hp-t hp-big"><span class="hp-num">−${top.pct}%</span><br>за ${top.min} товара</h2><p class="hp-p">${(bp.tiers || []).map(t => `${t.min} товара — −${t.pct}%`).join(' · ')}. Скидка применится в корзине сама.</p><div class="hp-cd"></div><div class="hp-btns"><a class="hp-cta" href="#bundles" onclick="if(typeof goBundles==='function'){goBundles();return false}">Собрать набор <span>→</span></a></div></div><div class="hp-art">${pics(bundlePh)}<span class="hp-stk hp-stk2"><small>${top.min} товара</small><b>−${top.pct}%</b></span></div>` });
+    }
+    slides.push({ k: 'new', cls: 'hp-first', html: `<div class="hp-copy"><span class="hp-eye">ДЛЯ НОВЫХ ПОКУПАТЕЛЕЙ</span><h2 class="hp-t">Первый заказ<br><em>−10%</em></h2><p class="hp-p">Введите промокод в корзине — скидка на весь первый заказ.</p><button type="button" class="hp-ticket" onclick="try{navigator.clipboard.writeText('NEW')}catch(e){};this.classList.add('ok');this.querySelector('small').textContent='Скопировано ✓'"><span>ПРОМОКОД</span><b>NEW</b><small>Нажмите, чтобы скопировать</small></button></div><div class="hp-art">${pics(fresh.slice(0, 3))}<span class="hp-stk hp-stk3">NEW</span></div>` });
+    slides.push({ k: 'quiz', cls: 'hp-quiz', html: `<div class="hp-copy"><span class="hp-eye">🧪 SKIN LAB · 1 МИНУТА</span><h2 class="hp-t">Не знаете,<br>что <em>подойдёт?</em></h2><p class="hp-p">Ответьте на 4 вопроса — соберём уход под ваш тип кожи: очищение, тонер, сыворотка, крем и SPF.</p><div class="hp-chips"><span>Сухая</span><span>Жирная</span><span>Чувствительная</span><span>Комбинированная</span></div><div class="hp-btns"><button type="button" class="hp-cta" onclick="if(typeof goSkin==='function')goSkin()">Пройти тест <span>→</span></button></div></div><div class="hp-art">${pics((cica.length >= 3 ? cica : hits).slice(0, 3))}<span class="hp-stk hp-stk4">✓ ваш<br>уход</span></div>` });
+    if (gc.length) slides.push({ k: 'gift', cls: 'hp-gift', html: `<div class="hp-copy"><span class="hp-eye">🎀 ПОДАРОЧНЫЙ СЕРТИФИКАТ</span><h2 class="hp-t">Подарок,<br>который <em>точно</em><br>понравится</h2><p class="hp-p">200 000 · 500 000 · 1 000 000 сум. Код придёт сразу после оплаты, тратится частями.</p><div class="hp-btns"><a class="hp-cta" href="gifts.html">Выбрать подарок <span>→</span></a></div></div><div class="hp-art hp-art-gc"><figure class="hp-ph hp-gc"><img src="${esc(gc[0])}" alt=""></figure><span class="hp-stk hp-stk5">🎁</span></div>` });
+    if (s.free_from) slides.push({ k: 'del', cls: 'hp-del', html: `<div class="hp-copy"><span class="hp-eye">🚚 ДОСТАВКА ПО УЗБЕКИСТАНУ</span><h2 class="hp-t">Бесплатно<br>от <em>${money(s.free_from).replace(' сум', '')}</em> сум</h2><p class="hp-p">По Ташкенту — в день заказа или завтра.${s.gift_active ? ` А от ${money(s.gift_from)} — ${esc(s.gift_text).toLowerCase()}.` : ''}</p><div class="hp-btns"><a class="hp-cta" href="#catalog">За покупками <span>→</span></a><a class="hp-ghost" href="delivery.html">Условия</a></div></div><div class="hp-art">${pics(hits.slice(3, 6).length ? hits.slice(3, 6) : hits)}<span class="hp-stk hp-stk6">0 сум<br><small>доставка</small></span></div>` });
+    const h = D.createElement('section'); h.id = 'lpHeroP'; h.className = 'hp'; h.setAttribute('aria-roledescription', 'carousel');
+    h.innerHTML = `<div class="hp-track">${slides.map((x, n) => `<article class="hp-s ${x.cls}${n ? '' : ' on'}" aria-hidden="${n ? 'true' : 'false'}">${x.html}</article>`).join('')}</div><div class="hp-nav"><button type="button" class="hp-arr" aria-label="Назад" onclick="LP.heroGo(-1,1)">‹</button><div class="hp-dots">${slides.map((x, n) => `<button type="button" class="hp-dot${n ? '' : ' on'}" aria-label="Слайд ${n + 1}" onclick="LP.heroTo(${n})"><i></i></button>`).join('')}</div><button type="button" class="hp-arr" aria-label="Вперёд" onclick="LP.heroGo(1,1)">›</button></div>`;
+    old.before(h); old.hidden = true; old.style.display = 'none';
+    h.addEventListener('mouseenter', () => { paused = true; h.classList.add('paused') }); h.addEventListener('mouseleave', () => { paused = false; h.classList.remove('paused') });
+    let x0 = 0; h.addEventListener('touchstart', e => { x0 = e.touches[0].clientX }, { passive: true }); h.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 45) LP.heroGo(dx < 0 ? 1 : -1, 1) }, { passive: true });
+    tick(); setInterval(tick, 1000); LP.heroTo(0);
+  }
+  LP.heroTo = function (n) {
+    const h = D.getElementById('lpHeroP'); if (!h) return; idx = (n + slides.length) % slides.length;
+    h.querySelectorAll('.hp-s').forEach((e, i) => { e.classList.toggle('on', i === idx); e.setAttribute('aria-hidden', i === idx ? 'false' : 'true') });
+    h.querySelectorAll('.hp-dot').forEach((e, i) => { e.classList.toggle('on', i === idx); e.classList.toggle('done', i < idx) });
+    const dot = h.querySelectorAll('.hp-dot i')[idx]; if (dot) { dot.style.animation = 'none'; void dot.offsetWidth; dot.style.animation = '' }
+    clearTimeout(timer); const loop = () => { if (paused || D.hidden) { timer = setTimeout(loop, 800); return } LP.heroTo(idx + 1) }; timer = setTimeout(loop, DUR);
+  };
+  LP.heroGo = (d) => LP.heroTo(idx + d);
+  if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', build); else build();
+})();
