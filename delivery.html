@@ -21,5 +21,5 @@
 <script>const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';</script>
 <script src="luma-plus.js?v=2"></script>
 <script>LP.shopReady.then(()=>{const s=LP.shop;const t=money(s.delivery_tashkent),r=money(s.delivery_region),f=money(s.free_from);[['dT',t],['dR',r],['dF',f],['tT',t],['tR',r]].forEach(([i,v])=>{const e=document.getElementById(i);if(e)e.textContent=v});document.querySelectorAll('.tF').forEach(e=>e.textContent=f);if(s.gift_active)document.getElementById('dG').innerHTML='🎁 А от <b>'+money(s.gift_from)+'</b> — '+esc(s.gift_text).toLowerCase()+'.'});</script>
-<script src="i18n-data.js?v=14"></script><script src="i18n.js?v=13"></script>
+<script src="i18n-data.js?v=15"></script><script src="i18n.js?v=13"></script>
 </body></html>
