@@ -1031,7 +1031,7 @@ g.textContent='Местоположение определено: курьер �
 function addrNext(){const r=$('ad_r').value,d=$('ad_d').value,st=$('ad_s').value.trim(),n=$('ad_n').value.trim(),e=m=>$('ge').textContent=m;
 if(!d)return e('Выберите район.');if(st.length<5)return e('Укажите улицу, дом и квартиру.');
 const line=[r,d,st].join(', ')+(n?' (ориентир: '+n+')':'');
-const map=addrGeo||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(['Узбекистан',r,d,st].join(', ')));
+const map=addrGeo||('https://maps.google.com/?q='+['Узбекистан',r,d,st].join(', ').replace(/[&#?%+<>"]/g,encodeURIComponent).replace(/\s+/g,'+'));
 addr=line+'\n'+map;try{localStorage.setItem('luma_addr2',JSON.stringify({region:r,district:d,street:st,note:n}))}catch(x){}payStep()}
 async function payStep(){
 const T=Object.keys(cart).reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0);

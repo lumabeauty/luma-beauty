@@ -119,7 +119,7 @@ input[type=file]{max-width:190px}
 .admin-modal-card{background:var(--adm-card);border-radius:18px;padding:22px;max-width:1000px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 70px #0004}
 .modal-close{float:right}.mini-table{min-width:0!important;font-size:13px}.mini-table td,.mini-table th{padding:8px}
 @media(max-width:700px){.admin-grid{grid-template-columns:1fr}.sales-col{min-width:42px}}
-</style>
+.addr-cell{max-width:280px;line-height:1.45}.map-chip{display:inline-block;margin-top:5px;padding:3px 10px;border-radius:999px;background:#e9faf8;color:#087a72!important;text-decoration:none;font-size:12px;white-space:nowrap}</style>
 </head>
 <body>
 <div id="app"></div>
@@ -290,12 +290,7 @@ async function vOrders(){
           <td><b>#${esc(o.id)}</b></td>
           <td>${dt(o.created_at)}</td>
           <td>${esc(o.customer_name)}<br>${esc(o.phone)}</td>
-          <td>${esc(o.address)
-            .replace(/https:\/\/[^\s<]+/g,u =>
-              `<a href="${u}" target="_blank" rel="noopener">карта</a>`
-            )
-            .replace(/\n/g,'<br>')}
-          </td>
+          <td class="addr-cell">${addrHTML(o.address)}</td>
           <td>${(o.items||[]).map(i =>
             esc(i.title)+' × '+esc(i.qty)
           ).join('<br>')}</td>
@@ -481,6 +476,9 @@ async function vReviews(){
 function filterRevs(){const q=($('revSearch')?.value||'').trim().toLowerCase(),st=$('revSt')?.value||'',rt=$('revRate')?.value||'';document.querySelectorAll('#revTable tr[data-st]').forEach(r=>{r.style.display=(!q||r.dataset.q.includes(q))&&(!st||r.dataset.st===st)&&(!rt||r.dataset.r===rt)?'':'none'})}
 async function setRev(id,status,el){el.disabled=true;const {error}=await sb.from('product_reviews').update({status}).eq('id',id);el.disabled=false;if(error){alert('Не удалось сохранить: '+error.message);return}const r=_revs.find(x=>x.id===id);if(r)r.status=status;el.closest('tr').dataset.st=status}
 async function delRev(id,btn){if(btn.dataset.c!=='1'){btn.dataset.c='1';btn.textContent='Точно удалить?';setTimeout(()=>{btn.dataset.c='';btn.textContent='Удалить'},4000);return}btn.disabled=true;const {error}=await sb.from('product_reviews').delete().eq('id',id);if(error){btn.disabled=false;alert('Не удалось удалить: '+error.message);return}btn.closest('tr').remove();_revs=_revs.filter(x=>x.id!==id)}
+
+function addrParts(a){const L=String(a||'').split('\n').map(x=>x.trim()).filter(Boolean);const url=L.find(x=>/^https?:\/\//.test(x))||'';const rest=L.filter(x=>x!==url);let kind='';const m=(rest[0]||'').match(/^(Самовывоз|Доставка):\s*(.*)$/);if(m){kind=m[1];rest[0]=m[2]}return {kind,lines:rest.filter(Boolean),url}}
+function addrHTML(a){const p=addrParts(a);return (p.kind?'<b>'+(p.kind==='Самовывоз'?'🏬 ':'🚚 ')+esc(p.kind)+'</b><br>':'')+p.lines.map(esc).join('<br>')+(p.url?'<br><a class="map-chip" href="'+esc(p.url)+'" target="_blank" rel="noopener">📍 Открыть на карте</a>':'')}
 async function vLeads(){
   const {data,error} = await sb.from('partner_requests').select('*').order('id',{ascending:false}).limit(500);
   if(error) return $('m').innerHTML = '<p>Не удалось загрузить заявки: '+esc(error.message)+'</p>';
@@ -764,7 +762,7 @@ async function exportOrders(){
   }catch(e){
     console.warn('xlsx export failed, falling back to CSV',e);
     const rows=[['Номер','Дата','Клиент','Телефон','Адрес','Товары','Сумма','Оплата','Статус','Промокод','Кешбэк']];
-    (data||[]).forEach(o=>rows.push([o.id,o.created_at,o.customer_name,o.phone,o.address,(o.items||[]).map(i=>(i.title||'')+' x '+(i.qty||1)).join('; '),o.total,o.payment,ST[o.status]||o.status,o.promo,o.cashback_used]));
+    (data||[]).forEach(o=>rows.push([o.id,o.created_at,o.customer_name,o.phone,(()=>{const p=addrParts(o.address);return [p.kind,...p.lines].filter(Boolean).join(' · ')+(p.url?' · '+p.url:'')})(),(o.items||[]).map(i=>(i.title||'')+' x '+(i.qty||1)).join('; '),o.total,o.payment,ST[o.status]||o.status,o.promo,o.cashback_used]));
     downloadCSV(rows,'luma-orders.csv');
   }
 }
@@ -828,6 +826,7 @@ function buildOrdersWorkbook(ExcelJS, data, ST){
       if(k%2)c.fill={type:'pattern',pattern:'solid',fgColor:{argb:CREAM}};});
     r.getCell(1).font={name:F,size:10,bold:true}; r.getCell(1).alignment={vertical:'top',horizontal:'center'};
     r.getCell(2).numFmt='dd.mm.yyyy hh:mm';
+    {const ap=addrParts(o.address);if(ap.url){const c=r.getCell(5);c.value={text:String(c.value||'')+'\n📍 Открыть на карте',hyperlink:ap.url};c.font={name:F,size:10,color:{argb:'FF087A72'},underline:false}}}
     [8,11,12].forEach(j=>r.getCell(j).numFmt=money);
     r.getCell(7).alignment={vertical:'top',horizontal:'center'}; r.getCell(10).alignment={vertical:'top',horizontal:'center'};
     r.getCell(12).font={name:F,size:10,bold:true};
@@ -892,7 +891,7 @@ async function printOrder(id){
   const {data:o,error}=await sb.from('orders').select('*').eq('id',id).single();
   if(error)return alert('Не удалось загрузить заказ: '+error.message);
   const w=window.open('','_blank');if(!w)return alert('Разреши всплывающие окна для печати чека.');
-  w.document.write('<!doctype html><html lang="ru"><meta charset="utf-8"><title>Заказ #'+esc(o.id)+'</title><style>body{font:14px Arial;padding:28px;color:#30271e}h1{font-family:Georgia;color:#9b7846}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:left}.sum{text-align:right;font-size:20px;margin-top:20px}</style><h1>Luma Beauty</h1><h2>Заказ #'+esc(o.id)+'</h2><p>'+dt(o.created_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+esc(o.address)+'</p><table><tr><th>Товар</th><th>Кол-во</th><th>Цена</th></tr>'+(o.items||[]).map(i=>'<tr><td>'+esc(i.title)+'</td><td>'+esc(i.qty)+'</td><td>'+fmt(i.price)+'</td></tr>').join('')+'</table><p>Статус: '+esc(ST[o.status]||o.status)+'</p><p class="sum">Итого: <b>'+fmt(o.total)+'</b></p><script>window.onload=()=>window.print()<\/script></html>');
+  w.document.write('<!doctype html><html lang="ru"><meta charset="utf-8"><title>Заказ #'+esc(o.id)+'</title><style>body{font:14px Arial;padding:28px;color:#30271e}h1{font-family:Georgia;color:#9b7846}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:left}.sum{text-align:right;font-size:20px;margin-top:20px}</style><h1>Luma Beauty</h1><h2>Заказ #'+esc(o.id)+'</h2><p>'+dt(o.created_at)+'</p><p>'+esc(o.customer_name)+' · '+esc(o.phone)+'</p><p>'+addrHTML(o.address)+'</p><table><tr><th>Товар</th><th>Кол-во</th><th>Цена</th></tr>'+(o.items||[]).map(i=>'<tr><td>'+esc(i.title)+'</td><td>'+esc(i.qty)+'</td><td>'+fmt(i.price)+'</td></tr>').join('')+'</table><p>Статус: '+esc(ST[o.status]||o.status)+'</p><p class="sum">Итого: <b>'+fmt(o.total)+'</b></p><script>window.onload=()=>window.print()<\/script></html>');
   w.document.close();
 }
 async function backupData(){
