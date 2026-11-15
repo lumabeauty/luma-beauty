@@ -210,6 +210,10 @@ async function init(){
         ['returns','Возвраты'],
         ['leads','Заявки'],
         ['reviews','Отзывы'],
+        ['questions','Вопросы'],
+        ['giftcards','Сертификаты'],
+        ['subscribers','Подписчики'],
+        ['shop','Доставка и подарок'],
         ['orderControl','Контроль заказов'],
         ['products','Товары'],
         ['smartStock','Умный склад'],
@@ -243,6 +247,10 @@ function go(k){
     returns:vReturns,
     leads:vLeads,
     reviews:vReviews,
+    questions:vQuestions,
+    giftcards:vGiftCards,
+    subscribers:vSubscribers,
+    shop:vShop,
     products:vProducts,
     clients:vClients,
     cashback:vCashback,
@@ -295,7 +303,7 @@ async function vOrders(){
             esc(i.title)+' × '+esc(i.qty)
           ).join('<br>')}</td>
           <td><b>${fmt(o.total)}</b>
-            ${o.promo ? '<br>'+esc(o.promo)+' −'+esc(o.discount)+'%' : ''}
+            ${o.promo ? '<br>'+esc(o.promo)+' −'+esc(o.discount)+'%' : ''}${o.delivery_fee ? '<br><small>🚚 доставка '+fmt(o.delivery_fee)+'</small>' : ''}${o.gift_card_used ? '<br><small>💳 сертификат −'+fmt(o.gift_card_used)+'</small>' : ''}${o.gift ? '<br><small style="color:#0a7f6f">🎁 '+esc(o.gift)+'</small>' : ''}
           </td>
           <td>${esc(o.payment)}</td>
           <td>
@@ -457,6 +465,56 @@ const LST = {new:'Новая',in_work:'В работе',done:'Обработан
 let _leads = [];
 
 let _revs=[];
+async function vQuestions(){
+  const {data,error}=await sb.from('product_questions').select('id,product_id,author_name,question,answer,status,created_at,products(title)').order('id',{ascending:false}).limit(500);
+  if(error) return $('m').innerHTML='<p>Не удалось загрузить вопросы: '+esc(error.message)+'</p>';
+  const L=data||[],pend=L.filter(q=>q.status==='pending').length;
+  $('m').innerHTML=`<h3>Вопросы покупателей</h3><p class="photo-help">Вопрос появляется на странице товара после того, как вы ответите и опубликуете его. Новых без ответа: <b>${pend}</b>.</p>
+  ${L.length?L.map(q=>`<div class="admin-stat" style="margin:10px 0;text-align:left;${q.status==='pending'?'border:2px solid #c2366a':''}"><small>${dt(q.created_at)} · <a href="product.html?id=${encodeURIComponent(q.product_id)}" target="_blank">${esc(q.products?.title||('#'+q.product_id))}</a> · ${esc(q.author_name||'Покупатель')} · ${q.status==='published'?'✅ опубликован':q.status==='hidden'?'🙈 скрыт':'🕓 ждёт ответа'}</small>
+  <p style="margin:8px 0;font-weight:600">${esc(q.question)}</p>
+  <textarea id="qa${q.id}" rows="2" style="width:100%;box-sizing:border-box" placeholder="Ваш ответ…">${esc(q.answer||'')}</textarea>
+  <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap"><button onclick="saveQA(${q.id},'published',this)">Ответить и опубликовать</button><button class="g" onclick="saveQA(${q.id},'hidden',this)">Скрыть</button><button class="g" onclick="delQA(${q.id},this)">Удалить</button></div></div>`).join(''):'<p style="color:var(--adm-muted)">Вопросов пока нет.</p>'}`;
+}
+async function saveQA(id,status,btn){const answer=($('qa'+id).value||'').trim();if(status==='published'&&answer.length<2)return alert('Напишите ответ перед публикацией.');btn.disabled=true;const {error}=await sb.from('product_questions').update({answer:answer||null,status,answered_at:answer?new Date().toISOString():null}).eq('id',id);btn.disabled=false;if(error)return alert(error.message);vQuestions()}
+async function delQA(id,btn){if(btn.dataset.ok!=='1'){btn.dataset.ok='1';btn.textContent='Точно удалить?';setTimeout(()=>{btn.dataset.ok='';btn.textContent='Удалить'},3000);return}const {error}=await sb.from('product_questions').delete().eq('id',id);if(error)return alert(error.message);vQuestions()}
+
+async function vGiftCards(){
+  const {data,error}=await sb.from('gift_cards').select('*').order('created_at',{ascending:false}).limit(500);
+  if(error) return $('m').innerHTML='<p>Не удалось загрузить сертификаты: '+esc(error.message)+'</p>';
+  const L=data||[];const act=L.filter(g=>g.active);
+  $('m').innerHTML=`<h3>Подарочные сертификаты</h3><p class="photo-help">Сертификаты из заказов создаются автоматически, когда заказ переходит в статус «Оплачен». Здесь можно выпустить сертификат вручную (например, в подарок блогеру) или отключить его.</p>
+  <div class="admin-stats"><div class="admin-stat"><small>Всего</small><b>${L.length}</b></div><div class="admin-stat"><small>Активных</small><b>${act.length}</b></div><div class="admin-stat"><small>Остаток на балансах</small><b>${fmt(act.reduce((n,g)=>n+g.balance,0))}</b></div></div>
+  <div class="order-tools"><input id="gcAmt" type="number" min="10000" step="10000" placeholder="Сумма, сум"><input id="gcNote" placeholder="Комментарий (кому)"><button onclick="newGC(this)">Выпустить сертификат</button></div>
+  ${L.length?`<table><tr><th>Код</th><th>Номинал</th><th>Остаток</th><th>Заказ</th><th>Комментарий</th><th>Создан</th><th>Статус</th></tr>${L.map(g=>`<tr><td><b style="font-family:monospace">${esc(g.code)}</b></td><td>${fmt(g.amount)}</td><td>${fmt(g.balance)}</td><td>${g.order_id?'№'+g.order_id:'—'}</td><td>${esc(g.note||'')}</td><td>${dt(g.created_at)}</td><td><select class="status-select" onchange="setGC('${esc(g.code)}',this.value==='1')"><option value="1"${g.active?' selected':''}>Активен</option><option value="0"${g.active?'':' selected'}>Отключён</option></select></td></tr>`).join('')}</table>`:'<p style="color:var(--adm-muted)">Сертификатов пока нет.</p>'}`;
+}
+async function newGC(btn){const a=Math.round(Number($('gcAmt').value)||0);if(a<10000)return alert('Укажите сумму от 10 000 сум.');btn.disabled=true;const {data:code,error:e1}=await sb.rpc('new_gift_code');if(e1){btn.disabled=false;return alert(e1.message)}const {error}=await sb.from('gift_cards').insert({code,amount:a,balance:a,note:$('gcNote').value.trim()||null});btn.disabled=false;if(error)return alert(error.message);alert('Создан сертификат: '+code);vGiftCards()}
+async function setGC(code,active){const {error}=await sb.from('gift_cards').update({active}).eq('code',code);if(error)alert(error.message)}
+
+async function vSubscribers(){
+  const {data,error}=await sb.from('newsletter_subscribers').select('*').order('id',{ascending:false}).limit(2000);
+  if(error) return $('m').innerHTML='<p>Не удалось загрузить подписчиков: '+esc(error.message)+'</p>';
+  const L=data||[];
+  $('m').innerHTML=`<h3>Подписчики на акции</h3><p class="photo-help">Контакты, оставленные в форме «Скидки и новинки — первыми» внизу сайта.</p><div class="admin-stats"><div class="admin-stat"><small>Всего</small><b>${L.length}</b></div></div>
+  <div class="order-tools"><button onclick="navigator.clipboard.writeText(_subs.map(x=>x.contact).join('\\n'));this.textContent='Скопировано ✓'">Скопировать все контакты</button></div>
+  ${L.length?`<table><tr><th>Дата</th><th>Контакт</th><th>Язык</th></tr>${L.map(x=>`<tr><td>${dt(x.created_at)}</td><td>${esc(x.contact)}</td><td>${esc(x.lang||'')}</td></tr>`).join('')}</table>`:'<p style="color:var(--adm-muted)">Подписчиков пока нет.</p>'}`;
+  window._subs=L;
+}
+
+async function vShop(){
+  const {data}=await sb.from('site_settings').select('value').eq('key','shop').maybeSingle();const s=Object.assign({delivery_tashkent:25000,delivery_region:35000,free_from:500000,gift_active:true,gift_from:1000000,gift_text:'Миниатюра в подарок'},data?.value||{});
+  const {data:np}=await sb.from('promos').select('*').eq('code','NEW').maybeSingle();
+  const F=(id,l,v,t='number')=>`<label style="display:block;margin:10px 0"><small>${l}</small><br><input id="${id}" type="${t}" value="${esc(v)}" style="width:100%;max-width:360px"></label>`;
+  $('m').innerHTML=`<h3>Доставка и подарок к заказу</h3><p class="photo-help">Эти значения используются в корзине, при оформлении заказа (стоимость доставки добавляется к сумме автоматически на сервере), на странице «Доставка и оплата» и в верхней строке сайта.</p>
+  <div class="admin-stat" style="text-align:left;max-width:520px"><b>🚚 Доставка</b>${F('shT','Ташкент, сум',s.delivery_tashkent)}${F('shR','Регионы, сум',s.delivery_region)}${F('shF','Бесплатная доставка от суммы заказа, сум (0 — выключить)',s.free_from)}</div>
+  <div class="admin-stat" style="text-align:left;max-width:520px;margin-top:12px"><b>🎁 Подарок к заказу</b><label style="display:block;margin:10px 0"><input id="shGA" type="checkbox"${s.gift_active?' checked':''}> Включено</label>${F('shGF','От суммы заказа, сум',s.gift_from)}${F('shGT','Что дарим (текст для покупателя)',s.gift_text,'text')}</div>
+  <div class="admin-stat" style="text-align:left;max-width:520px;margin-top:12px"><b>🎟 Промокод на первый заказ NEW</b><label style="display:block;margin:10px 0"><input id="shNA" type="checkbox"${np&&np.active?' checked':''}> Включён</label>${F('shNP','Скидка, %',np?np.percent:10)}<small>Работает только для первого заказа аккаунта.</small></div>
+  <button style="margin-top:14px" onclick="saveShop(this)">Сохранить</button>`;
+}
+async function saveShop(btn){const n=id=>Math.max(0,Math.round(Number($(id).value)||0));const v={delivery_tashkent:n('shT'),delivery_region:n('shR'),free_from:n('shF'),gift_active:$('shGA').checked,gift_from:n('shGF'),gift_text:$('shGT').value.trim().slice(0,80)||'Подарок'};btn.disabled=true;
+ const {error}=await sb.from('site_settings').upsert({key:'shop',value:v,updated_at:new Date().toISOString()});
+ const pct=Math.min(90,Math.max(1,n('shNP')));const {error:e2}=await sb.from('promos').upsert({code:'NEW',percent:pct,active:$('shNA').checked,first_order_only:true});
+ btn.disabled=false;if(error||e2)return alert((error||e2).message);btn.textContent='Сохранено ✓';setTimeout(()=>btn.textContent='Сохранить',1800)}
+
 async function vReviews(){
   const {data,error}=await sb.from('product_reviews').select('id,product_id,rating,body,author_name,status,created_at,products(title)').order('id',{ascending:false}).limit(1000);
   if(error) return $('m').innerHTML='<p>Не удалось загрузить отзывы: '+esc(error.message)+'</p>';

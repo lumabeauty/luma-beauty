@@ -271,4 +271,10 @@
   <url><loc>https://lumabeauty.uz/product.html?id=267</loc></url>
   <url><loc>https://lumabeauty.uz/product.html?id=268</loc></url>
   <url><loc>https://lumabeauty.uz/about.html</loc></url>
+<url><loc>https://lumabeauty.uz/delivery.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://lumabeauty.uz/offers.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://lumabeauty.uz/brands.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://lumabeauty.uz/gifts.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://lumabeauty.uz/faq.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://lumabeauty.uz/track.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

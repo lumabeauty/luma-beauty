@@ -43,7 +43,11 @@ function buildOrder(r: any) {
   out.push(`💳 Оплата: <b>${esc(PAY[String(r.payment || "").toLowerCase()] || r.payment || "не указана")}</b>`);
   if (r.promo === "ПРИВЕТСТВЕННАЯ СКИДКА") out.push(`🎁 <b>Приветственная скидка</b> (−${Number(r.discount) || 0}%)`);
   else if (r.promo) out.push(/^АКЦИЯ/.test(String(r.promo)) ? `🔥 <b>${esc(String(r.promo).replace(/^АКЦИЯ:\s*/, "Акция недели: "))}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}` : `🎟 Промокод: <b>${esc(r.promo)}</b>${Number(r.discount) ? ` (−${Number(r.discount)}%)` : ""}`);
+  if (Number(r.delivery_fee) > 0) out.push(`🚚 Доставка: ${money(r.delivery_fee)}`);
+  else if (!/^Самовывоз/.test(String(r.address || ""))) out.push(`🚚 Доставка: <b>бесплатно</b>`);
+  if (Number(r.gift_card_used) > 0) out.push(`💳 Сертификат ${esc(r.gift_card_code || "")}: −${money(r.gift_card_used)}`);
   if (Number(r.cashback_used) > 0) out.push(`✦ Списан кэшбэк: ${money(r.cashback_used)}`);
+  if (r.gift) out.push(`🎁 <b>ПОДАРОК: ${esc(r.gift)}</b> — положить в заказ!`);
   if (Math.round(sub) !== Math.round(Number(r.total) || 0) && sub > 0) out.push(`Сумма товаров: ${money(sub)}`);
   out.push("━━━━━━━━━━━━");
   out.push(`💰 <b>ИТОГО: ${money(r.total)}</b>`);
