@@ -80,19 +80,19 @@ const SKIN = [
   { k: 'mature', l: 'Зрелая', w: ['зрел', 'морщин', 'упругост', 'anti-wrinkle', 'lifting'] }
 ];
 const CONCERNS = [
-  { k: 'acne', l: 'Акне и расширенные поры', e: '🫧', w: ['акне', 'воспален', 'несовершенств', 'поры', 'жирн', 'прыщ', 'soak out'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/309.jpg?v=2' },
-  { k: 'glow', l: 'Сияние и ровный тон', e: '✨', w: ['сияни', 'тускл', 'неровн', 'тон кожи', 'выравн', 'пигмент', 'осветл', 'whitening', 'radiance', 'ниацинамид', 'glow', 'aura'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/300.jpg?v=2' },
-  { k: 'age', l: 'Морщины и упругость', e: '🌹', w: ['морщин', 'упруг', 'зрел', 'лифтинг', 'lifting', 'коллаген', 'collagen', 'anti-wrinkle', 'resilience', 'женьшен', 'spicule'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/290.jpg?v=2' },
-  { k: 'hydra', l: 'Глубокое увлажнение', e: '💧', w: ['увлаж', 'обезвож', 'гиалурон', 'hyalu', 'moist', 'сух'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/307.jpg?v=2' },
+  { k: 'acne', l: 'Акне и расширенные поры', e: '🫧', w: ['акне', 'воспален', 'несовершенств', 'поры', 'жирн', 'прыщ', 'soak out'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/309.jpg?v=3' },
+  { k: 'glow', l: 'Сияние и ровный тон', e: '✨', w: ['сияни', 'тускл', 'неровн', 'тон кожи', 'выравн', 'пигмент', 'осветл', 'whitening', 'radiance', 'ниацинамид', 'glow', 'aura'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/300.jpg?v=3' },
+  { k: 'age', l: 'Морщины и упругость', e: '🌹', w: ['морщин', 'упруг', 'зрел', 'лифтинг', 'lifting', 'коллаген', 'collagen', 'anti-wrinkle', 'resilience', 'женьшен', 'spicule'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/290.jpg?v=3' },
+  { k: 'hydra', l: 'Глубокое увлажнение', e: '💧', w: ['увлаж', 'обезвож', 'гиалурон', 'hyalu', 'moist', 'сух'], cat: ['Лицо', 'Загар и SPF'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/307.jpg?v=3' },
   { k: 'calm', l: 'Покраснения и раздражение', e: '🌿', w: ['чувствит', 'раздраж', 'центелл', 'cica', 'пантенол', 'panthenol', 'успока', 'алоэ', 'ромашк'], cat: ['Лицо', 'Загар и SPF'], img: 'img/unni-cleansing-soap-foam-3.jpg' },
-  { k: 'sun', l: 'Защита от солнца', e: '☀️', w: ['spf', 'солнцезащ'], cat: ['Лицо', 'Загар и SPF', 'Тело'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/294.jpg?v=2' },
+  { k: 'sun', l: 'Защита от солнца', e: '☀️', w: ['spf', 'солнцезащ'], cat: ['Лицо', 'Загар и SPF', 'Тело'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/294.jpg?v=3' },
   { k: 'hair', l: 'Ломкость и сухость волос', e: '💇‍♀️', w: ['ломк', 'восстанавл', 'питани', 'поврежд', 'глубокого', 'укреплен'], cat: ['Волосы'], img: 'img/11.jpg' },
-  { k: 'blonde', l: 'Блонд без желтизны', e: '👱‍♀️', w: ['блонд', 'желтизн', 'жемчуг'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/288.jpg?v=2' },
+  { k: 'blonde', l: 'Блонд без желтизны', e: '👱‍♀️', w: ['блонд', 'желтизн', 'жемчуг'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/288.jpg?v=3' },
   { k: 'dandruff', l: 'Перхоть и кожа головы', e: '🧴', w: ['перхот'], cat: ['Волосы'], img: 'img/21.jpg' },
   { k: 'lips', l: 'Макияж губ', e: '💄', w: ['помад', 'блеск для губ', 'для губ', 'lip gloss', 'lip oil'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/03-0.jpg' },
   { k: 'eyes', l: 'Глаза и брови', e: '👁️', w: ['теней', 'пигмент для век', 'подводк', 'бров'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/27-0.jpg' },
   { k: 'tone', l: 'Тон, пудра и румяна', e: '🎨', w: ['тональн', 'пудр', 'румян', 'бронзер', 'хайлайтер', 'праймер', 'тинт для лица'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/45-0.jpg' },
-  { k: 'curly', l: 'Уход за кудрявыми волосами', e: '🌀', w: ['кудряв'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/394.jpg?v=2' },
+  { k: 'curly', l: 'Уход за кудрявыми волосами', e: '🌀', w: ['кудряв'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/hq/394.jpg?v=3' },
   { k: 'scent', l: 'Ароматный уход за телом', e: '🌸', w: ['парфюм', 'аромат', 'эфирн', 'цвет'], cat: ['Тело'], img: 'img/1.jpg' }
 ];
 const INGR = [
