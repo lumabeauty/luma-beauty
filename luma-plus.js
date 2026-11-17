@@ -648,7 +648,7 @@ LP.indexInit = async function () {
   if (sp.get('cat')) LP.setCat(sp.get('cat'));
   if (sp.get('brand')) { try { fB = sp.get('brand') } catch (e) { } const s = D.getElementById('fBrand'); if (s) s.value = sp.get('brand') }
   if (sp.get('q')) { LP.setQ(sp.get('q').toLowerCase()); const s = D.querySelector('.sq'); if (s) s.value = sp.get('q') }
-  if (sp.get('addmany')) { sp.get('addmany').split(',').forEach(id => { const i = P.findIndex(p => String(p.id) === id); if (i >= 0) cart[i] = (cart[i] || 0) + 1 }); LS.set('luma_cart', cart); upd(); toast('Добавлено в корзину'); D.getElementById('dr').classList.add('open') }
+  if (sp.get('addmany')) { sp.get('addmany').split(',').forEach(id => { const i = P.findIndex(p => String(p.id) === id); if (i >= 0) cart[i] = (cart[i] || 0) + 1 }); (typeof cartSave==='function'?cartSave():LS.set('luma_cart', cart)); upd(); toast('Добавлено в корзину'); D.getElementById('dr').classList.add('open') }
   if ([...sp.keys()].some(k => ['type', 'concern', 'cat', 'brand', 'q', 'addmany'].includes(k))) { history.replaceState(null, '', location.pathname + location.hash); setTimeout(() => { const c = D.getElementById('catalog'); if (c && location.hash === '#catalog') c.scrollIntoView() }, 400) }
   if (location.hash === '#cart') { D.getElementById('dr').classList.add('open'); history.replaceState(null, '', location.pathname) }
   LP.syncFilterUI();
