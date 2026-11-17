@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><script src="theme.js?v=2"></script>
+<script src="metrika.js?v=1"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
 (function(m,e,t,r,i,k,a){
@@ -215,7 +216,7 @@ function renderRelated(){if(!related.length)return '';return '<section class="re
 async function load(){if(!id){$('content').textContent='Не указан товар. Вернитесь в каталог.';return}
 const {data,error}=await sb.from('products').select('*').eq('id',id).eq('active',true).maybeSingle();
 if(error||!data){$('content').textContent='Товар не найден или больше не доступен.';return}
-product=data;$('crumbName').textContent=data.title;
+product=data;window.LumaYM&&LumaYM.detail(data);$('crumbName').textContent=data.title;
 photos=[data.image,...(Array.isArray(data.gallery)?data.gallery:[])].filter(Boolean).slice(0,5);setProductSEO(data,photos[0]||'');
 let relq=sb.from('products').select('id,title,price,discount_percent,image,category').eq('active',true).neq('id',id).limit(6);if(data.category)relq=relq.eq('category',data.category);const rr=await relq;related=rr.data||[];
 let fav=[];try{fav=JSON.parse(localStorage.getItem('luma_favorites')||'[]')}catch(e){}
