@@ -7,7 +7,7 @@
 <section class="lp-rail" style="padding:0"><div class="lp-rh"><div><h2 class="serif">Гид по подаркам</h2><p>Идеи, которые подходят большинству</p></div></div><div class="lp-tabs" id="gT"></div><div class="lp-pgrid" id="gP"></div></section></main>
 <footer class="lp-fallfoot">© 2026 Luma Beauty · Красота. Уход. Вдохновение. · <a href="tel:+998910010184">+998 91 001 01 84</a></footer>
 <script>const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';</script>
-<script src="luma-plus.js?v=5"></script>
+<script src="luma-plus.js?v=6"></script>
 <script>const G=[['mom','Для мамы'],['friend','Для подруги'],['man','Для мужчины'],['body','Уход за телом'],['cheap','До 300 000 сум'],['sets','Наборы']];let GT='mom',GL=[];
 function pick(k){const t=p=>LP.tags(p),L=GL.filter(p=>p.c!=='Сертификаты'&&p.p);
 if(k==='mom')return L.filter(p=>t(p).cn.includes('age')||t(p).ing.includes('gold')||t(p).ing.includes('gin'));
@@ -19,5 +19,5 @@ if(k==='sets')return L.filter(p=>t(p).ty==='set');return L}
 function drawG(){document.getElementById('gT').innerHTML=G.map(([k,l])=>'<button class="'+(GT===k?'on':'')+'" onclick="GT=\''+k+'\';drawG()">'+l+'</button>').join('');const R=pick(GT).slice(0,12);document.getElementById('gP').innerHTML=R.length?R.map(p=>LP.card(p)).join(''):'<p class="lp-mu">Скоро добавим идеи.</p>'}
 LP.products().then(async list=>{GL=list;await LP.loadHits();const C=list.filter(p=>p.c==='Сертификаты').sort((a,b)=>a.p-b.p);document.getElementById('gcL').innerHTML=C.map(p=>'<div class="gc-c"><img src="'+esc(p.i)+'" alt="'+esc(p.t)+'"><b>'+money(p.p)+'</b><button class="lp-btn" onclick="LP.addById('+p.id+')">В корзину</button></div>').join('')||'<p class="lp-mu">Сертификаты скоро появятся.</p>';drawG()});
 document.head.insertAdjacentHTML('beforeend','<style>.gc-c{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}.gc-c img{width:100%;border-radius:18px;aspect-ratio:4/5;object-fit:cover}.gc-c b{font-size:20px}.gc-c .lp-btn{width:100%}</style>');</script>
-<script src="i18n-data.js?v=16"></script><script src="i18n.js?v=13"></script>
+<script src="i18n-data.js?v=17"></script><script src="i18n.js?v=13"></script>
 </body></html>

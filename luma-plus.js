@@ -51,6 +51,11 @@ const TYPES = [
   { k: 'cert', l: 'Подарочные сертификаты', c: ['Сертификаты'], all: 1 },
   { k: 'perfume', l: 'Ароматы', c: ['Парфюмерия'], all: 1 },
   { k: 'set', l: 'Наборы и миниатюры', c: ['Лицо', 'Тело', 'Волосы'], w: ['набор', ' kit', 'trial'] },
+  { k: 'lips', l: 'Помады и блески', c: ['Макияж'], w: ['помад', 'блеск', 'для губ', 'lip'] },
+  { k: 'eyesh', l: 'Тени, пигменты и подводки', c: ['Макияж'], w: ['теней', 'пигмент', 'подводк'] },
+  { k: 'brow', l: 'Брови', c: ['Макияж'], w: ['бров'] },
+  { k: 'base', l: 'Тон, пудра и румяна', c: ['Макияж'], w: ['тональн', 'пудр', 'румян', 'бронзер', 'хайлайтер', 'праймер', 'тинт', 'контур', 'contour'] },
+  { k: 'fix', l: 'Спреи для макияжа', c: ['Макияж'], w: ['спрей', 'mist'] },
   { k: 'eye', l: 'Для кожи вокруг глаз', c: ['Лицо'], w: ['глаз', 'eye'] },
   { k: 'makeup', l: 'Кушоны и BB-кремы', c: ['Лицо'], w: ['кушон', 'вв-крем', 'bb ', 'cushion', 'pact'] },
   { k: 'spf', l: 'Солнцезащита SPF', c: ['Лицо', 'Загар и SPF', 'Тело'], w: ['солнцезащ', 'sun', 'spf'] },
@@ -84,9 +89,9 @@ const CONCERNS = [
   { k: 'hair', l: 'Ломкость и сухость волос', e: '💇‍♀️', w: ['ломк', 'восстанавл', 'питани', 'поврежд', 'глубокого', 'укреплен'], cat: ['Волосы'], img: 'img/11.jpg' },
   { k: 'blonde', l: 'Блонд без желтизны', e: '👱‍♀️', w: ['блонд', 'желтизн', 'жемчуг'], cat: ['Волосы'], img: 'img/kudryavy-shampun-zhemchug-1.jpg' },
   { k: 'dandruff', l: 'Перхоть и кожа головы', e: '🧴', w: ['перхот'], cat: ['Волосы'], img: 'img/21.jpg' },
-  { k: 'lips', l: 'Макияж губ', e: '💄', w: ['помад', 'блеск для губ', 'для губ', 'lip gloss', 'lip oil'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/03-0.jpg' },
-  { k: 'eyes', l: 'Глаза и брови', e: '👁️', w: ['теней', 'пигмент для век', 'подводк', 'бров'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/27-0.jpg' },
-  { k: 'tone', l: 'Тон, пудра и румяна', e: '🎨', w: ['тональн', 'пудр', 'румян', 'бронзер', 'хайлайтер', 'праймер', 'тинт для лица'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/45-0.jpg' },
+  { k: 'lips', l: 'Макияж губ', e: '💄', w: ['помад', 'блеск для губ', 'для губ', 'lip gloss', 'lip oil'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/03-0.jpg' },
+  { k: 'eyes', l: 'Глаза и брови', e: '👁️', w: ['теней', 'пигмент для век', 'подводк', 'бров'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/27-0.jpg' },
+  { k: 'tone', l: 'Тон, пудра и румяна', e: '🎨', w: ['тональн', 'пудр', 'румян', 'бронзер', 'хайлайтер', 'праймер', 'тинт для лица'], cat: ['Макияж'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/45-0.jpg' },
   { k: 'curly', l: 'Уход за кудрявыми волосами', e: '🌀', w: ['кудряв'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/km/shampoov.jpg' },
   { k: 'scent', l: 'Ароматный уход за телом', e: '🌸', w: ['парфюм', 'аромат', 'эфирн', 'цвет'], cat: ['Тело'], img: 'img/1.jpg' }
 ];
@@ -248,6 +253,7 @@ LP.goBrand = function (b) {
 /* ---------- Mega menu ---------- */
 const MEGA = [
   { c: 'Лицо', ic: '🧖‍♀️', t: ['clean', 'toner', 'serum', 'cream', 'eye', 'makeup', 'spf', 'set'] },
+  { c: 'Макияж', ic: '💄', t: ['lips', 'eyesh', 'brow', 'base', 'fix'] },
   { c: 'Тело', ic: '🛁', t: ['shower', 'lotion', 'scrub', 'hand', 'oil'] },
   { c: 'Волосы', ic: '💇‍♀️', t: ['shampoo', 'cond', 'hmask', 'tint', 'style'] },
   { c: 'Парфюмерия', ic: '🌸', t: ['perfume'] }
