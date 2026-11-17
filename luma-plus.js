@@ -75,16 +75,20 @@ const SKIN = [
   { k: 'mature', l: 'Зрелая', w: ['зрел', 'морщин', 'упругост', 'anti-wrinkle', 'lifting'] }
 ];
 const CONCERNS = [
-  { k: 'acne', l: 'Акне и расширенные поры', e: '🫧', w: ['акне', 'воспален', 'несовершенств', 'поры', 'жирн', 'прыщ', 'soak out'], cat: ['Лицо', 'Загар и SPF'] },
-  { k: 'glow', l: 'Сияние и ровный тон', e: '✨', w: ['сияни', 'тускл', 'неровн', 'тон кожи', 'выравн', 'пигмент', 'осветл', 'whitening', 'radiance', 'ниацинамид', 'glow', 'aura'], cat: ['Лицо', 'Загар и SPF'] },
-  { k: 'age', l: 'Морщины и упругость', e: '🌹', w: ['морщин', 'упруг', 'зрел', 'лифтинг', 'lifting', 'коллаген', 'collagen', 'anti-wrinkle', 'resilience', 'женьшен', 'spicule'], cat: ['Лицо'] },
-  { k: 'hydra', l: 'Глубокое увлажнение', e: '💧', w: ['увлаж', 'обезвож', 'гиалурон', 'hyalu', 'moist', 'сух'], cat: ['Лицо', 'Загар и SPF'] },
-  { k: 'calm', l: 'Покраснения и раздражение', e: '🌿', w: ['чувствит', 'раздраж', 'центелл', 'cica', 'пантенол', 'panthenol', 'успока', 'алоэ', 'ромашк'], cat: ['Лицо', 'Загар и SPF'] },
-  { k: 'sun', l: 'Защита от солнца', e: '☀️', w: ['spf', 'солнцезащ'], cat: ['Лицо', 'Загар и SPF', 'Тело'] },
-  { k: 'hair', l: 'Ломкость и сухость волос', e: '💇‍♀️', w: ['ломк', 'восстанавл', 'питани', 'поврежд', 'глубокого', 'укреплен'], cat: ['Волосы'] },
-  { k: 'blonde', l: 'Блонд без желтизны', e: '👱‍♀️', w: ['блонд', 'желтизн', 'жемчуг'], cat: ['Волосы'] },
-  { k: 'dandruff', l: 'Перхоть и кожа головы', e: '🧴', w: ['перхот'], cat: ['Волосы'] },
-  { k: 'scent', l: 'Ароматный уход за телом', e: '🌸', w: ['парфюм', 'аромат', 'эфирн', 'цвет'], cat: ['Тело'] }
+  { k: 'acne', l: 'Акне и расширенные поры', e: '🫧', w: ['акне', 'воспален', 'несовершенств', 'поры', 'жирн', 'прыщ', 'soak out'], cat: ['Лицо', 'Загар и SPF'], img: 'img/ottie-soak-out-travel-kit-1.jpg' },
+  { k: 'glow', l: 'Сияние и ровный тон', e: '✨', w: ['сияни', 'тускл', 'неровн', 'тон кожи', 'выравн', 'пигмент', 'осветл', 'whitening', 'radiance', 'ниацинамид', 'glow', 'aura'], cat: ['Лицо', 'Загар и SPF'], img: 'img/ottie-platinum-aura-capsule-cream-1.jpg' },
+  { k: 'age', l: 'Морщины и упругость', e: '🌹', w: ['морщин', 'упруг', 'зрел', 'лифтинг', 'lifting', 'коллаген', 'collagen', 'anti-wrinkle', 'resilience', 'женьшен', 'spicule'], cat: ['Лицо'], img: 'img/ottie-imperial-red-ginseng-cream-1.jpg' },
+  { k: 'hydra', l: 'Глубокое увлажнение', e: '💧', w: ['увлаж', 'обезвож', 'гиалурон', 'hyalu', 'moist', 'сух'], cat: ['Лицо', 'Загар и SPF'], img: 'img/ottie-gold-prestige-cream-1.jpg' },
+  { k: 'calm', l: 'Покраснения и раздражение', e: '🌿', w: ['чувствит', 'раздраж', 'центелл', 'cica', 'пантенол', 'panthenol', 'успока', 'алоэ', 'ромашк'], cat: ['Лицо', 'Загар и SPF'], img: 'img/unni-cleansing-soap-foam-3.jpg' },
+  { k: 'sun', l: 'Защита от солнца', e: '☀️', w: ['spf', 'солнцезащ'], cat: ['Лицо', 'Загар и SPF', 'Тело'], img: 'img/darm-moisture-uv-sun-serum-1.jpg' },
+  { k: 'hair', l: 'Ломкость и сухость волос', e: '💇‍♀️', w: ['ломк', 'восстанавл', 'питани', 'поврежд', 'глубокого', 'укреплен'], cat: ['Волосы'], img: 'img/11.jpg' },
+  { k: 'blonde', l: 'Блонд без желтизны', e: '👱‍♀️', w: ['блонд', 'желтизн', 'жемчуг'], cat: ['Волосы'], img: 'img/kudryavy-shampun-zhemchug-1.jpg' },
+  { k: 'dandruff', l: 'Перхоть и кожа головы', e: '🧴', w: ['перхот'], cat: ['Волосы'], img: 'img/21.jpg' },
+  { k: 'lips', l: 'Макияж губ', e: '💄', w: ['помад', 'блеск для губ', 'для губ', 'lip gloss', 'lip oil'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/03-0.jpg' },
+  { k: 'eyes', l: 'Глаза и брови', e: '👁️', w: ['теней', 'пигмент для век', 'подводк', 'бров'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/27-0.jpg' },
+  { k: 'tone', l: 'Тон, пудра и румяна', e: '🎨', w: ['тональн', 'пудр', 'румян', 'бронзер', 'хайлайтер', 'праймер', 'тинт для лица'], cat: ['Лицо'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/dessi/p/45-0.jpg' },
+  { k: 'curly', l: 'Уход за кудрявыми волосами', e: '🌀', w: ['кудряв'], cat: ['Волосы'], img: 'https://wbxglomqselnmoobdmfw.supabase.co/storage/v1/object/public/products/km/shampoov.jpg' },
+  { k: 'scent', l: 'Ароматный уход за телом', e: '🌸', w: ['парфюм', 'аромат', 'эфирн', 'цвет'], cat: ['Тело'], img: 'img/1.jpg' }
 ];
 const INGR = [
   { k: 'cica', l: 'Центелла (cica)', w: ['центелл', 'cica'] }, { k: 'nia', l: 'Ниацинамид', w: ['ниацинамид', 'niacinamide'] },
@@ -339,7 +343,7 @@ LP.story = async function (k) {
 /* ---------- Collections ---------- */
 LP.collectionsHTML = function (list) {
   const L = list.filter(p => p.c !== 'Сертификаты');
-  const cards = CONCERNS.map(c => { const items = L.filter(p => LP.tags(p).cn.includes(c.k)); if (items.length < 2) return ''; const im = items.find(p => p.i); return `<button type="button" class="lp-col" onclick="LP.goConcern('${c.k}')">${im ? `<img src="${esc(im.i)}" alt="" loading="lazy">` : ''}<span class="lp-colt"><em>${c.e}</em><b>${esc(c.l)}</b><small>${items.length} ${LP.word(items.length)}</small></span></button>` }).join('');
+  const cards = CONCERNS.map(c => { const items = L.filter(p => LP.tags(p).cn.includes(c.k)); if (items.length < 2) return ''; const im = c.img ? { i: c.img } : items.find(p => p.i); return `<button type="button" class="lp-col" onclick="LP.goConcern('${c.k}')">${im ? `<img src="${esc(im.i)}" alt="" loading="lazy">` : ''}<span class="lp-colt"><em>${c.e}</em><b>${esc(c.l)}</b><small>${items.length} ${LP.word(items.length)}</small></span></button>` }).join('');
   return cards ? `<section class="lp-cols" id="collections"><div class="lp-rh"><div><h2 class="serif">Подборки по задачам</h2><p>Выберите, что хотите решить, — покажем подходящие средства</p></div></div><div class="lp-colgrid">${cards}</div></section>` : '';
 };
 LP.word = n => { const a = n % 10, b = n % 100; return a === 1 && b !== 11 ? 'товар' : (a >= 2 && a <= 4 && (b < 10 || b >= 20) ? 'товара' : 'товаров') };
