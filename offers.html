@@ -6,7 +6,7 @@
 <main class="lp-page"><div class="lp-tabs" id="ofT"></div><div class="lp-g2" id="ofG"></div><div id="ofB"></div><section class="lp-rail" style="padding:0;margin:26px 0"><div class="lp-rh"><div><h2 class="serif">Товары со скидкой</h2><p>Цены уже снижены</p></div></div><div class="lp-pgrid" id="ofP"></div></section></main>
 <footer class="lp-fallfoot">© 2026 Luma Beauty · Красота. Уход. Вдохновение. · <a href="tel:+998910010184">+998 91 001 01 84</a></footer>
 <script>const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';</script>
-<script src="luma-plus.js?v=7"></script>
+<script src="luma-plus.js?v=8"></script>
 <script>let OF=[],TAB='all';const TABS=[['all','Все'],['sale','Скидки'],['code','Промокоды'],['gift','Подарки'],['sets','Наборы']];
 function tLeft(iso){const l=new Date(iso)-Date.now();if(l<=0)return '';const d=Math.floor(l/864e5),h=Math.floor(l%864e5/36e5);return d?d+' дн '+h+' ч':h+' ч '+Math.floor(l%36e5/6e4)+' мин'}
 (async()=>{await LP.shopReady;const s=LP.shop;const [{data:bp},{data:wo},{data:bd}]=await Promise.all([sb.from('site_settings').select('value').eq('key','bulk_promo').maybeSingle(),sb.from('site_settings').select('value').eq('key','welcome_offer').maybeSingle(),sb.from('bundles').select('*').eq('active',true).order('sort')]);

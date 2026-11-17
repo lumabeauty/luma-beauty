@@ -239,6 +239,6 @@ acctSetLang(lang);load();
 </script><script>
 function addrView(a){const L=String(a||'').split('\n').map(x=>x.trim()).filter(Boolean);const url=L.find(x=>/^https?:\/\//.test(x));const rest=L.filter(x=>x!==url).map(x=>x.replace(/^(Самовывоз|Доставка):\s*/,''));return rest.map(x=>esc(x)).join('<br>')+(url?'<br><a href="'+esc(url)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;padding:4px 12px;border-radius:999px;background:#e9faf8;color:#087a72;text-decoration:none;font-size:13px;font-weight:500">📍 '+t('Открыть на карте')+'</a>':'')}
 </script>
-<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=7"></script><script src="i18n-data.js?v=17"></script><script src="i18n.js?v=13"></script>
+<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=8"></script><script src="i18n-data.js?v=17"></script><script src="i18n.js?v=13"></script>
 <script>(function(){const e=window.setLang;window.setLang=l=>{acctSetLang(l);e(l)};})();</script>
 </body></html>
