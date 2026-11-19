@@ -112,22 +112,50 @@ serve(async (req) => {
   }
   if (!response.ok) return Response.json({ error: "Telegram delivery failed" }, { status: 502 });
 
-  // Накладная PDF ответом на сообщение о заказе. Ошибка здесь не мешает уведомлению.
+  // Накладная PDF ответом на сообщение о заказе — в фоне, чтобы не задерживать ответ базе.
+  // Ошибка здесь не мешает уведомлению; при сбое Telegram — ещё 2 попытки.
   if (!isPartner && record.id) {
-    try {
-      const msg = await response.json().catch(() => null);
+    const msg = await response.json().catch(() => null);
+    const job = (async () => {
       const pdf = await buildInvoice(record);
-      const fd = new FormData();
-      fd.append("chat_id", String(chatId));
-      fd.append("document", new Blob([pdf], { type: "application/pdf" }), `Накладная_${record.id}.pdf`);
-      fd.append("caption", `🧾 Накладная к заказу #${record.id} — откройте и распечатайте`);
-      if (msg?.result?.message_id) fd.append("reply_parameters", JSON.stringify({ message_id: msg.result.message_id, allow_sending_without_reply: true }));
-      fd.append("disable_notification", "true");
-      const r = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", body: fd });
-      if (!r.ok) console.error("invoice send:", r.status, (await r.text()).slice(0, 200));
-    } catch (e) {
-      console.error("invoice:", (e as Error)?.message || String(e));
-    }
+      const caption = `🧾 Накладная к заказу #${record.id} — откройте и распечатайте`;
+      const reply = msg?.result?.message_id ? { message_id: msg.result.message_id, allow_sending_without_reply: true } : undefined;
+      // 1) кладём PDF в хранилище и отправляем ссылкой — Telegram сам скачивает файл (надёжнее загрузки)
+      try {
+        const SB = Deno.env.get("SUPABASE_URL")!, KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const path = `${record.id}/Nakladnaya-${record.id}-${crypto.randomUUID().slice(0, 8)}.pdf`;
+        const up = await fetch(`${SB}/storage/v1/object/invoices/${path}`, { method: "POST", headers: { Authorization: `Bearer ${KEY}`, apikey: KEY, "Content-Type": "application/pdf", "x-upsert": "true" }, body: pdf, signal: AbortSignal.timeout(20000) });
+        if (!up.ok) throw new Error("upload " + up.status + " " + (await up.text()).slice(0, 120));
+        const sg = await fetch(`${SB}/storage/v1/object/sign/invoices/${path}`, { method: "POST", headers: { Authorization: `Bearer ${KEY}`, apikey: KEY, "Content-Type": "application/json" }, body: JSON.stringify({ expiresIn: 86400 }) });
+        const sj = await sg.json();
+        if (!sj?.signedURL) throw new Error("sign " + sg.status);
+        const url = `${SB}/storage/v1${sj.signedURL}`;
+        const r = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, document: url, caption, reply_parameters: reply, disable_notification: true }), signal: AbortSignal.timeout(30000) });
+        if (r.ok) return;
+        console.error("invoice url send:", r.status, (await r.text()).slice(0, 200));
+      } catch (e) {
+        console.error("invoice url:", (e as Error)?.message || String(e));
+      }
+      // 2) запасной путь — прямая загрузка файла
+      for (let k = 0; k < 2; k++) {
+        try {
+          const fd = new FormData();
+          fd.append("chat_id", String(chatId));
+          fd.append("document", new Blob([pdf], { type: "application/pdf" }), `Nakladnaya-${record.id}.pdf`);
+          fd.append("caption", caption);
+          if (reply) fd.append("reply_parameters", JSON.stringify(reply));
+          fd.append("disable_notification", "true");
+          const r = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", body: fd, signal: AbortSignal.timeout(25000) });
+          if (r.ok) return;
+          console.error("invoice send:", r.status, (await r.text()).slice(0, 200));
+        } catch (e) {
+          console.error("invoice try " + (k + 1) + ":", (e as Error)?.message || String(e));
+        }
+        await new Promise((res) => setTimeout(res, 3000));
+      }
+    })().catch((e) => console.error("invoice:", (e as Error)?.message || String(e)));
+    // @ts-ignore EdgeRuntime есть в Supabase
+    if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(job); else await job;
   }
   return Response.json({ success: true });
 });
