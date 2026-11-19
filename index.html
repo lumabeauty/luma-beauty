@@ -1024,6 +1024,17 @@ header nav.beauty-nav a.bnav:focus-visible:after{transform:scaleX(1) rotate(-2de
 .brand-marquee .bm-pill{font-family:'Playfair Display',Georgia,serif!important;font-weight:700!important;letter-spacing:.01em;font-size:20px}
 @media (max-width:700px){.brand-marquee .bm-pill{font-size:15px}}
 </style>
+<style id="perf-css">
+/* скорость: без «матового стекла» на 140 карточках, мигание бейджа ограничено, фон на GPU */
+.pc-deal,.pc-like,.pc-quick,.hp-eye,.hp-tag{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.pc-like{background:#ffffffe8!important}
+.pc-quick{background:#fffffff5!important}
+.pc-gift{animation-iteration-count:2!important}
+.pc:hover .pc-gift{animation-iteration-count:infinite!important}
+#bg{contain:strict}
+.orb,.belt{will-change:transform}
+@media (max-width:700px){.orb{filter:blur(40px)}}
+</style>
 </head><body><div id="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="belt b1"></div><div class="belt b2"></div><div class="word" id="w1"></div><canvas id="sp"></canvas></div>
 <div class="promo-bar" id="promoBar" hidden><button type="button" class="pb-main" onclick="goBundles()"><span class="pb-fire">🔥</span><span class="pb-t"><b>Акция недели:</b> <span>2 товара −5% · 3 и больше −10%</span></span><span class="pb-timer" id="pbTimer"></span><span class="pb-go">Смотреть наборы →</span></button><button type="button" class="pb-x" onclick="closePromoBar()" aria-label="Скрыть">×</button></div><header><a class="logo serif" href="#top"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></a><div style="display:flex;align-items:center;gap:8px"><nav class="beauty-nav"><a class="bnav bnav-cat" href="#catalog"><svg class="bnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21h6M10 21v-5"/><path d="M8 16h4l1-6H7z"/><path d="M8.5 10 10 3l1.5 7"/><path d="M15 6c2.5 0 4 1.5 4 4s-1.5 4-4 4"/></svg><span>Каталог</span></a><a class="bnav bnav-blog" href="blog.html"><svg class="bnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21h6v-7H9z"/><path d="M9.5 14V9.5L12 7l2.5 2.5V14"/><path d="M10.5 9.2 13 4l1.5 1.5-1 3.7"/></svg><span>Блог</span></a><a class="bnav bnav-about" href="about.html"><svg class="bnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8h4l1 3H9z"/><path d="M8.5 11h7a1.5 1.5 0 0 1 1.5 1.5V19a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-6.5A1.5 1.5 0 0 1 8.5 11z"/><path d="M11 5h2v3h-2z"/><path d="M10 15.5h4"/></svg><span>О бренде</span></a><a class="bnav bnav-acc" href="account.html"><svg class="bnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M12 15v6M9.5 21h5"/><path d="M9.5 7.5c.6-1 1.4-1.5 2.5-1.5"/></svg><span>Аккаунт</span></a><a class="bnav bnav-fav" href="#favorites" onclick="showFavorites()"><svg class="bnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5c2.2-2.6 4-4 5.5-4 1.3 0 2.2.8 3.5.8s2.2-.8 3.5-.8c1.5 0 3.3 1.4 5.5 4-2.2 3.5-5.2 5.5-9 5.5s-6.8-2-9-5.5z"/><path d="M3 11.5c3 .9 6 1.3 9 1.3s6-.4 9-1.3"/></svg><span>Мне нравится</span></a></nav><button class="cartbtn fav-head" onclick="showFavorites()" aria-label="Избранное">♡ <span id="favCount">0</span></button><select class="langsel" id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select><button class="cartbtn" id="acc" onclick="acct()">Войти</button><button class="cartbtn" onclick="dr.classList.add('open')">Корзина<b id="cnt">0</b></button></div></header>
 <style id="hero-skel-css">
@@ -1445,8 +1456,8 @@ addEventListener('scroll',()=>{sy=scrollY;rq()},{passive:true});
 if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
 const cv=$('sp'),x=cv.getContext('2d'),D=Math.min(devicePixelRatio||1,2);let W,H;
 const rs=()=>{W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;cv.style.width=W+'px';cv.style.height=H+'px';x.setTransform(D,0,0,D,0,0)};rs();addEventListener('resize',rs);
-const ps=Array.from({length:W<640?26:48},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.6,v:.15+Math.random()*.4,a:Math.random()*6.28,s:.4+Math.random()*1.2,g:Math.random()<.4}));
-function fr(t){x.clearRect(0,0,W,H);for(const p of ps){p.y-=p.v;p.a+=.01;if(p.y<-10){p.y=H+10;p.x=Math.random()*W}const al=.25+.45*Math.abs(Math.sin(t/1000*p.s+p.a)),c=p.g?'184,138,90':'217,138,155';x.beginPath();x.fillStyle=`rgba(${c},${al})`;x.shadowBlur=10;x.shadowColor=`rgba(${c},.6)`;x.arc(p.x+Math.sin(p.a)*22,p.y,p.r,0,6.283);x.fill()}requestAnimationFrame(fr)}
+const ps=Array.from({length:W<640?16:30},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.6,v:.15+Math.random()*.4,a:Math.random()*6.28,s:.4+Math.random()*1.2,g:Math.random()<.4}));
+let lastF=0;function fr(t){if(t-lastF<33){requestAnimationFrame(fr);return}lastF=t;x.clearRect(0,0,W,H);for(const p of ps){p.y-=p.v;p.a+=.01;if(p.y<-10){p.y=H+10;p.x=Math.random()*W}const al=.25+.45*Math.abs(Math.sin(t/1000*p.s+p.a)),c=p.g?'184,138,90':'217,138,155';const px=p.x+Math.sin(p.a)*22;x.beginPath();x.fillStyle=`rgba(${c},${al*.22})`;x.arc(px,p.y,p.r*3.2,0,6.283);x.fill();x.beginPath();x.fillStyle=`rgba(${c},${al})`;x.arc(px,p.y,p.r,0,6.283);x.fill()}requestAnimationFrame(fr)}
 requestAnimationFrame(fr)})();
 
 
