@@ -140,7 +140,7 @@ async function showProduct(ctx: any, id: number, back?: string) {
   const cap = lines.filter((x, i) => x || i > 1).join('\n');
   const img = p.image_sm || p.image;
   if (img && /^https:/.test(img)) {
-    try { return await ctx.replyWithPhoto(img, { caption: cap, parse_mode: 'HTML', reply_markup: kb }); } catch (_) { /* фото не загрузилось — отправим текстом */ }
+    try { return await ctx.replyWithPhoto(img, { caption: cap, parse_mode: 'HTML', reply_markup: kb }); } catch (e) { console.error('product photo:', p.id, (e as any)?.description || String(e)); }
   }
   return ctx.reply(cap, { parse_mode: 'HTML', reply_markup: kb });
 }
@@ -188,7 +188,7 @@ async function showSale(ctx: any) {
   const media = (items || []).filter((p: any) => /^https:/.test(p.image_sm || p.image || '')).map((p: any) => ({ type: 'photo' as const, media: p.image_sm || p.image }));
   if (media.length >= 2) {
     (media[0] as any).caption = discounted ? '🔥 Сейчас со скидкой' : '✨ Популярное в Luma Beauty';
-    try { await ctx.replyWithMediaGroup(media); } catch (_) { /* */ }
+    try { await ctx.replyWithMediaGroup(media); } catch (e) { console.error('sale album:', (e as any)?.description || String(e)); }
   }
   const kb = new InlineKeyboard();
   (items || []).forEach((p: any) => kb.text(clip(p.title, 34) + ' — ' + money(price(p)), `p:${p.id}`).row());
@@ -334,6 +334,7 @@ const SHOP_HELP = `🛠 <b>Управление ботом</b>
 <b>/send текст</b> — рассылка всем подписчикам
 <b>/promo 10 7 текст</b> — каждому свой промокод −10% на 7 дней
 С фото: отправьте фото (или альбом до 10 фото) и в подписи напишите /send или /promo.
+Или просто вставьте ссылку на товар с сайта: /send Новинка! https://lumabeauty.uz/product.html?id=279 — бот сам добавит фото, название и цену.
 
 ❓ <b>Вопросы покупателей</b> приходят сюда. Чтобы ответить — нажмите «Ответить» (Reply) на вопрос и напишите ответ (можно с фото).
 <b>/questions</b> — вопросы без ответа
@@ -349,14 +350,28 @@ function bcBody(b: any, code?: string, until?: Date) {
   if (b.promo_percent && code && until) t += `\n\n🎁 Ваш личный промокод: <code>${code}</code>\nСкидка <b>${b.promo_percent}%</b> до ${dmy(until)} — введите его при оформлении заказа.`;
   return t;
 }
-const custKb = (id: number) => new InlineKeyboard().url('🛍 Смотреть на сайте', utm(SITE, 'b' + id)).row().text('🔕 Отписаться от акций', 'unsub');
-async function albumPhotos(group: string | null, fallback: string | null) {
+function custKb(id: number, productIds?: number[] | null) {
+  const kb = new InlineKeyboard();
+  if (productIds?.length === 1) kb.url('🛒 Купить', utm(`${SITE}product.html?id=${productIds[0]}`, 'b' + id)).row();
+  else if (productIds && productIds.length > 1) productIds.slice(0, 4).forEach((pid, i) => { kb.url(`🛒 Товар ${i + 1}`, utm(`${SITE}product.html?id=${pid}`, 'b' + id)); if (i % 2) kb.row(); });
+  if (productIds && productIds.length > 1) kb.row();
+  return kb.url('🛍 Смотреть на сайте', utm(SITE, 'b' + id)).row().text('🔕 Отписаться от акций', 'unsub');
+}
+async function albumPhotos(group: string | null, fallback: string | null, urls?: string[] | null) {
+  if (urls?.length) return urls.slice(0, 10);
   if (!group) return fallback ? [fallback] : [];
   const { data } = await sb.from('bot_albums').select('file_id,msg_id').eq('group_id', group).order('msg_id');
   const ids = (data || []).map((r: any) => r.file_id);
   return ids.length ? ids.slice(0, 10) : (fallback ? [fallback] : []);
 }
 async function sendPost(chat: number | string, photos: string[], text: string, kb: InlineKeyboard) {
+  try { return await sendPostRaw(chat, photos, text, kb); }
+  catch (e) {
+    if (photos.length && /wrong|failed to get|file|image|photo/i.test(String((e as any)?.description || ''))) return sendPostRaw(chat, [], text, kb);
+    throw e;
+  }
+}
+async function sendPostRaw(chat: number | string, photos: string[], text: string, kb: InlineKeyboard) {
   if (photos.length > 1) {
     const media = photos.map((p, i) => ({ type: 'photo' as const, media: p, ...(i === 0 ? { caption: text, parse_mode: 'HTML' as const } : {}) }));
     await bot.api.sendMediaGroup(chat, media);
@@ -381,14 +396,25 @@ async function draft(ctx: any, isPromo: boolean) {
   if (text.length > 850) return ctx.reply('Текст слишком длинный (максимум 850 символов).');
   const photo = ctx.message?.photo?.length ? ctx.message.photo[ctx.message.photo.length - 1].file_id : null;
   const group = ctx.message?.media_group_id || null;
-  const { data: b, error } = await sb.from('bot_broadcasts').insert({ text, photo, media_group: group, promo_percent: pct, promo_days: days, created_by: ctx.from?.first_name ?? null }).select().single();
+  // ссылки на товары сайта → фото и цена товара в рассылке
+  const ids = [...new Set([...text.matchAll(/product\.html\?id=(\d+)/g)].map((m) => Number(m[1])))].slice(0, 10);
+  let urls: string[] = [];
+  if (ids.length) {
+    const { data: ps } = await sb.from('products').select('id,title,kind,price,discount_percent,image,image_sm').in('id', ids);
+    const items = ids.map((i) => (ps || []).find((p: any) => p.id === i)).filter(Boolean) as any[];
+    text = text.replace(/https?:\/\/\S*product\.html\?id=\d+\S*/g, '').replace(/[ \t]+\n/g, '\n').trim();
+    const list = items.map((p) => `🛍 ${p.kind ? p.kind + ' · ' : ''}${p.title}\n💰 ${Number(p.discount_percent) ? money(p.price) + ' → ' : ''}${money(price(p))}`).join('\n\n');
+    text = (text ? text + '\n\n' : '') + list;
+    if (!photo && !group) urls = items.map((p) => p.image || p.image_sm).filter((u: string) => /^https:/.test(u || ''));
+  }
+  const { data: b, error } = await sb.from('bot_broadcasts').insert({ text, photo, media_group: group, photos: urls.length ? urls : null, product_ids: ids.length ? ids : null, promo_percent: pct, promo_days: days, created_by: ctx.from?.first_name ?? null }).select().single();
   if (error) return ctx.reply('Ошибка: ' + error.message);
   if (group) await new Promise((r) => setTimeout(r, 3000)); // ждём остальные фото альбома
-  const photos = await albumPhotos(group, photo);
+  const photos = await albumPhotos(group, photo, b.photos);
   const n = await audience();
   const until = days ? new Date(Date.now() + days * 864e5) : undefined;
   await ctx.reply(`👁 <b>Предпросмотр рассылки #${b.id}</b>${photos.length ? ` · фото: ${photos.length}` : ''}${pct ? ` · промокод −${pct}% на ${days} дн.` : ''}`, { parse_mode: 'HTML' });
-  await sendPost(ctx.chat.id, photos, bcBody(b, pct ? 'LBXXXXXX' : undefined, until), custKb(b.id));
+  await sendPost(ctx.chat.id, photos, bcBody(b, pct ? 'LBXXXXXX' : undefined, until), custKb(b.id, b.product_ids));
   return ctx.reply(`Отправить ${n} подписчикам?`, { reply_markup: new InlineKeyboard().text(`✅ Отправить (${n} чел.)`, `bc:${b.id}:go`).text('✖️ Отмена', `bc:${b.id}:no`) });
 }
 // фото альбома без подписи — запоминаем, чтобы собрать альбом для рассылки
@@ -421,7 +447,7 @@ bot.command('questions', async (ctx) => {
 
 async function runBroadcast(id: number, done: (t: string) => Promise<unknown>) {
   const { data: b } = await sb.from('bot_broadcasts').select('*').eq('id', id).single();
-  const photos = await albumPhotos(b.media_group, b.photo);
+  const photos = await albumPhotos(b.media_group, b.photo, b.photos);
   const { data: users } = await sb.from('bot_users').select('chat_id').eq('unsubscribed', false);
   let ok = 0, bad = 0;
   for (const u of users || []) {
@@ -437,7 +463,7 @@ async function runBroadcast(id: number, done: (t: string) => Promise<unknown>) {
         }
         if (!code) throw new Error('promo');
       }
-      await sendPost(u.chat_id, photos, bcBody(b, code, until), custKb(id));
+      await sendPost(u.chat_id, photos, bcBody(b, code, until), custKb(id, b.product_ids));
       ok++;
     } catch (e) {
       bad++;
