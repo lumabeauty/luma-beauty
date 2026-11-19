@@ -37,7 +37,7 @@
 `;
 
   function wheelSVG(prizes) {
-    const n = prizes.length, a = 360 / n, R = 150, CL = W.LW_COLORS || COLORS;
+    const n = prizes.length, a = 360 / n, R = 150, CL = COLORS;
     const light = (h) => { const v = parseInt(h.slice(1), 16); return ((v >> 16) * .299 + ((v >> 8) & 255) * .587 + (v & 255) * .114) > 170; };
     const pt = (deg, r) => { const t = (deg - 90) * Math.PI / 180; return [150 + r * Math.cos(t), 150 + r * Math.sin(t)] };
     let s = `<svg viewBox="0 0 300 300" id="lwSvg" style="transform:rotate(${rot}deg)"><defs><linearGradient id="lwGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a1a1a"/><stop offset="1" stop-color="#4a3410"/></linearGradient></defs>`;
