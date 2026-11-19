@@ -97,7 +97,8 @@ footer .logo{display:inline-block!important;line-height:0!important;font-size:0!
 footer .logo-img{height:62px;margin:0 auto}
 @media(max-width:760px){header .logo-img,.top .logo-img{height:34px}footer .logo-img{height:52px}}
 @media(max-width:380px){header .logo-img{height:30px}}
-</style></head><body>
+</style><script>(function(){try{var s=location.search,L=localStorage;if(/[?&]app=1/.test(s))L.setItem("luma_app","1");if(/[?&]app=0/.test(s))L.removeItem("luma_app");window.__lappBuy=/[?&]buy=1/.test(s);if(L.getItem("luma_app")==="1"&&matchMedia("(max-width:768px)").matches)document.documentElement.classList.add("lapp")}catch(e){}})()</script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap"><link rel="stylesheet" href="luma-app.css?v=1">
+</head><body>
 <header class="top"><a class="logo" href="index.html"><img class="logo-img" src="img/logo-luma.png" alt="Luma Beauty" width="116" height="48"></a><nav><a class="hide-m" href="index.html#catalog" data-t>Каталог</a><a class="hide-m" href="blog.html" data-t>Блог</a><a class="on" href="account.html" data-t>Аккаунт</a><select class="langsel" id="lang" aria-label="Language" onchange="setLang(this.value)"><option value="ru">RU</option><option value="uz">UZ</option><option value="en">EN</option><option value="kk">KZ</option><option value="ko">KR</option></select></nav></header>
 <main id="app"><div class="card hero"><div class="sk" style="width:84px;height:84px;border-radius:50%"></div><div><div class="sk" style="height:14px;width:120px"></div><div class="sk" style="height:34px;width:260px;margin:12px 0"></div><div class="sk" style="height:14px;width:160px"></div></div></div><div class="stats"><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div><div class="card sk" style="height:96px"></div></div></main>
 <footer><span data-t>Luma Beauty · Красота в деталях</span></footer>
@@ -254,7 +255,8 @@ acctSetLang(lang);load();
 </script><script>
 function addrView(a){const L=String(a||'').split('\n').map(x=>x.trim()).filter(Boolean);const url=L.find(x=>/^https?:\/\//.test(x));const rest=L.filter(x=>x!==url).map(x=>x.replace(/^(Самовывоз|Доставка):\s*/,''));return rest.map(x=>esc(x)).join('<br>')+(url?'<br><a href="'+esc(url)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;padding:4px 12px;border-radius:999px;background:#e9faf8;color:#087a72;text-decoration:none;font-size:13px;font-weight:500">📍 '+t('Открыть на карте')+'</a>':'')}
 </script>
-<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=13"></script><script src="i18n-data.js?v=19"></script><script src="i18n.js?v=13"></script>
+<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=14"></script><script src="i18n-data.js?v=19"></script><script src="i18n.js?v=13"></script>
 <script>(function(){const e=window.setLang;window.setLang=l=>{acctSetLang(l);e(l)};})();</script>
-<script src="wheel.js?v=2" defer></script>
+<script src="wheel.js?v=3" defer></script>
+<script src="luma-app.js?v=1"></script>
 </body></html>
