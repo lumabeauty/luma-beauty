@@ -285,13 +285,13 @@ LP.utilBar = function () {
 LP.paintUtil = function () {
   const b = D.getElementById('lpUtil'); if (!b) return; const s = LP.shop, c = LP.city();
   const fee = c === 'tashkent' ? s.delivery_tashkent : s.delivery_region;
-  b.innerHTML = `<button type="button" class="lp-city" onclick="LP.pickCity()">📍 <b>${esc(LP.cityName())}</b> ▾</button><span class="lp-uinfo"><span>🚚 Доставка ${money(fee)}</span> · <b>бесплатно от ${money(s.free_from)}</b></span><span class="lp-ulinks"><a href="track.html">📦 Отследить заказ</a><a href="delivery.html">Доставка и оплата</a><a href="faq.html">Помощь</a><a href="tel:+998910010184">☎ +998 91 001 01 84</a></span>`;
+  b.innerHTML = `<button type="button" class="lp-city" onclick="LP.pickCity()">📍 <b>${esc(LP.cityName())}</b> ▾</button><span class="lp-uinfo"><span>🚚 Доставка ${money(fee)}</span>${s.free_from ? ` · <b>бесплатно от ${money(s.free_from)}</b>` : ''}</span><span class="lp-ulinks"><a href="track.html">📦 Отследить заказ</a><a href="delivery.html">Доставка и оплата</a><a href="faq.html">Помощь</a><a href="tel:+998910010184">☎ +998 91 001 01 84</a></span>`;
 };
 LP.pickCity = function () {
   const s = LP.shop;
   LP.sheet(`<h3 class="serif">Куда доставить?</h3><p class="lp-mu">От города зависит стоимость и срок доставки.</p>
-  <button type="button" class="lp-opt${LP.city() === 'tashkent' ? ' on' : ''}" onclick="LP.setCity('tashkent')"><b>🏙 Ташкент</b><small>Курьер в день заказа или на следующий день · ${money(s.delivery_tashkent)} · бесплатно от ${money(s.free_from)}</small></button>
-  <button type="button" class="lp-opt${LP.city() === 'region' ? ' on' : ''}" onclick="LP.setCity('region')"><b>🇺🇿 Регионы Узбекистана</b><small>Почтой BTS / EMU за 1–3 дня · ${money(s.delivery_region)} · бесплатно от ${money(s.free_from)}</small></button>
+  <button type="button" class="lp-opt${LP.city() === 'tashkent' ? ' on' : ''}" onclick="LP.setCity('tashkent')"><b>🏙 Ташкент</b><small>Курьер в день заказа или на следующий день · ${money(s.delivery_tashkent)}${s.free_from ? ` · бесплатно от ${money(s.free_from)}` : ''}</small></button>
+  <button type="button" class="lp-opt${LP.city() === 'region' ? ' on' : ''}" onclick="LP.setCity('region')"><b>🇺🇿 Регионы Узбекистана</b><small>Почтой BTS / EMU за 1–3 дня · ${money(s.delivery_region)}${s.free_from ? ` · бесплатно от ${money(s.free_from)}` : ''}</small></button>
   <button type="button" class="lp-opt" onclick="LP.setCity('tashkent')"><b>🏬 Самовывоз</b><small>Ташкент, Order Plaza — бесплатно</small></button>
   <a class="lp-link" href="delivery.html">Подробнее о доставке и оплате →</a>`);
 };
@@ -422,7 +422,7 @@ LP.paintCartBars = function () {
   const sub = LP.cartSub(), s = LP.shop; if (!sub) { b.innerHTML = ''; return }
   const fee = LP.fee(sub), city = LP.city();
   const left = Math.max(0, s.free_from - sub), pct = Math.min(100, sub / s.free_from * 100);
-  let h = `<div class="lp-cb1"><div class="lp-cbt">${left > 0 ? `<span>🚚 До бесплатной доставки осталось</span> <b>${money(left)}</b>` : '<b>🎉 Доставка бесплатно!</b>'}</div><i class="lp-pg"><b style="width:${pct}%"></b></i></div>`;
+  let h = s.free_from ? `<div class="lp-cb1"><div class="lp-cbt">${left > 0 ? `<span>🚚 До бесплатной доставки осталось</span> <b>${money(left)}</b>` : '<b>🎉 Доставка бесплатно!</b>'}</div><i class="lp-pg"><b style="width:${pct}%"></b></i></div>` : '';
   if (s.gift_active && s.gift_from) { const gl = Math.max(0, s.gift_from - sub), gp = Math.min(100, sub / s.gift_from * 100); h += `<div class="lp-cb1 lp-gift"><div class="lp-cbt">${gl > 0 ? `<span>🎁 До подарка осталось</span> <b>${money(gl)}</b><br><small>${esc(s.gift_text)}</small>` : `<b>🎁 ${esc(s.gift_text)}</b><br><small>Положим в ваш заказ!</small>`}</div><i class="lp-pg"><b style="width:${gp}%"></b></i></div>` }
   h += `<div class="lp-cdel"><span>Доставка · <button type="button" onclick="LP.pickCity()">${esc(LP.cityName(city))} ▾</button></span><b>${fee ? money(fee) : 'бесплатно'}</b></div>`;
   let first = !store.get('luma_has_order', false); if (first) h += `<div class="lp-first"><span>🎉 Первый заказ? Промокод NEW — скидка 10%</span></div>`;
@@ -576,7 +576,7 @@ LP.productPage = async function () {
     const buy = info.querySelector('.buyrow');
     if (buy && p.c !== 'Сертификаты') {
       const s = LP.shop, c = LP.city(), sp = sale(p), fee = LP.fee(sp);
-      buy.insertAdjacentHTML('afterend', `<div class="lp-dbox"><div><b>🚚 Доставка: ${esc(LP.cityName(c))}</b> <button type="button" onclick="LP.pickCity()">изменить</button><span>${c === 'tashkent' ? 'Сегодня или завтра' : '1–3 дня'} · ${fee ? money(fee) : 'бесплатно'}${fee ? ` · бесплатно от ${money(s.free_from)}` : ''}</span></div><div><b>🏬 Самовывоз</b><span>Ташкент, Order Plaza — бесплатно</span></div><div><b>↩ Возврат</b><span>10 дней, если упаковка не вскрыта · <a href="faq.html#returns">условия</a></span></div><div><b>💬 Нужна консультация?</b><span><a href="https://t.me/${esc((W.CFG && W.CFG.TG_USER) || 'lumabeautyuzz')}" target="_blank" rel="noopener">Спросить в Telegram</a> · подберём уход бесплатно</span></div></div>`);
+      buy.insertAdjacentHTML('afterend', `<div class="lp-dbox"><div><b>🚚 Доставка: ${esc(LP.cityName(c))}</b> <button type="button" onclick="LP.pickCity()">изменить</button><span>${c === 'tashkent' ? 'Сегодня или завтра' : '1–3 дня'} · ${fee ? money(fee) : 'бесплатно'}${fee && s.free_from ? ` · бесплатно от ${money(s.free_from)}` : ''}</span></div><div><b>🏬 Самовывоз</b><span>Ташкент, Order Plaza — бесплатно</span></div><div><b>↩ Возврат</b><span>10 дней, если упаковка не вскрыта · <a href="faq.html#returns">условия</a></span></div><div><b>💬 Нужна консультация?</b><span><a href="https://t.me/${esc((W.CFG && W.CFG.TG_USER) || 'lumabeautyuzz')}" target="_blank" rel="noopener">Спросить в Telegram</a> · подберём уход бесплатно</span></div></div>`);
     }
   }
   // extra tabs: how to use, brand

@@ -37,17 +37,18 @@
 `;
 
   function wheelSVG(prizes) {
-    const n = prizes.length, a = 360 / n, R = 150;
+    const n = prizes.length, a = 360 / n, R = 150, CL = W.LW_COLORS || COLORS;
+    const light = (h) => { const v = parseInt(h.slice(1), 16); return ((v >> 16) * .299 + ((v >> 8) & 255) * .587 + (v & 255) * .114) > 170; };
     const pt = (deg, r) => { const t = (deg - 90) * Math.PI / 180; return [150 + r * Math.cos(t), 150 + r * Math.sin(t)] };
     let s = `<svg viewBox="0 0 300 300" id="lwSvg" style="transform:rotate(${rot}deg)"><defs><linearGradient id="lwGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a1a1a"/><stop offset="1" stop-color="#4a3410"/></linearGradient></defs>`;
     prizes.forEach((p, i) => {
       const [x1, y1] = pt(i * a, R), [x2, y2] = pt((i + 1) * a, R);
-      s += `<path d="M150 150L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${p.amount ? COLORS[i % COLORS.length] : 'url(#lwGold)'}" stroke="#fff" stroke-width="2.5"/>`;
+      s += `<path d="M150 150L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${p.amount ? CL[i % CL.length] : 'url(#lwGold)'}" stroke="#fff" stroke-width="2.5"/>`;
       const mid = i * a + a / 2;
       const big = p.amount ? String(p.amount / 1000) + ' 000' : 'НАБОР';
       const small = p.amount ? 'сум' : 'ДУХОВ';
-      const col = '#fff';
-      s += `<g transform="rotate(${mid} 150 150)"><text x="150" y="44" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-weight="800" font-size="${p.amount ? 18 : 13}" fill="${p.amount ? col : '#ffd54a'}" stroke="rgba(0,0,0,.25)" stroke-width=".6" paint-order="stroke">${big}</text><text x="150" y="61" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-size="11" font-weight="600" fill="${p.amount ? col : '#ffd54a'}">${small}</text>${p.amount ? '' : '<text x="150" y="84" text-anchor="middle" font-size="18">🎁</text>'}</g>`;
+      const col = p.amount && light(CL[i % CL.length]) ? '#30251E' : '#fff';
+      s += `<g transform="rotate(${mid} 150 150)"><text x="150" y="44" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-weight="800" font-size="${p.amount ? 18 : 13}" fill="${p.amount ? col : '#ffd54a'}" stroke="${col === '#fff' ? 'rgba(0,0,0,.25)' : 'rgba(255,255,255,.4)'}" stroke-width=".6" paint-order="stroke">${big}</text><text x="150" y="61" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-size="11" font-weight="600" fill="${p.amount ? col : '#ffd54a'}">${small}</text>${p.amount ? '' : '<text x="150" y="84" text-anchor="middle" font-size="18">🎁</text>'}</g>`;
     });
     for (let i = 0; i < n * 2; i++) { const [x, y] = pt(i * a / 2, 141); s += `<circle cx="${x}" cy="${y}" r="3" fill="${i % 2 ? '#fff' : '#ffe066'}"/>` }
     return s + '</svg>';
