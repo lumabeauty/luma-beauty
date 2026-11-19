@@ -101,9 +101,9 @@
     var hero = D.getElementById('lpHeroP') || $('.luma-hero');
     if (!hero) return false;
     var ins = $('.bloom-insta'); if (ins) ins.remove();
-    var order = [trust(), D.getElementById('lpStories'), $('.bloom-categories'), D.getElementById('lpHits'), D.getElementById('bundles'),
-      D.getElementById('lpNew'), D.getElementById('collections'), D.getElementById('skinHelp'), D.getElementById('catalog'),
-      D.getElementById('lpRecent'), $('.brand-marquee')];
+    var order = [trust(), D.getElementById('lpStories'), $('.bloom-categories'), $('.brand-marquee'), D.getElementById('lpHits'), D.getElementById('bundles'),
+      D.getElementById('lpNew'), D.getElementById('collections'), D.getElementById('catalog'),
+      D.getElementById('lpRecent'), D.getElementById('skinHelp')];
     var anchor = hero.classList.contains('luma-hero') ? hero : ($('.luma-hero') || hero);
     order.forEach(function (el) { if (!el) return; if (anchor.nextElementSibling !== el) anchor.after(el); anchor = el; });
     mergeTop(); brands(); bundleArrows();
