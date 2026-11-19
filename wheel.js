@@ -1,7 +1,7 @@
 /* Luma Beauty — ежедневный барабан удачи (сертификаты 1 000–15 000 сум и набор духов) */
 (function () {
   const D = document, W = window;
-  const COLORS = ['#f6d7df', '#fff6ee', '#e9c9a0', '#fbe9ee', '#f2c6d1', '#fff6ee', '#ead2b0', '#fbe9ee'];
+  const COLORS = ['#ff1f6b', '#ff8a00', '#8e2de2', '#00b894', '#ff3b30', '#ffc300', '#2d7dff', '#e91e8c'];
   const money = (n) => Number(n || 0).toLocaleString('ru-RU').replace(/ | /g, ' ') + ' сум';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const dm = (d) => { try { return new Date(d).toLocaleDateString('ru-RU', { timeZone: 'Asia/Tashkent', day: '2-digit', month: '2-digit' }) } catch (e) { return '' } };
@@ -9,47 +9,47 @@
   let cfg = null, rot = 0, busy = false;
 
   const css = `
-.lw-wh{position:fixed;right:18px;bottom:calc(80px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px));z-index:71;width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;background:conic-gradient(#f2c6d1 0 45deg,#fff6ee 0 90deg,#e9c9a0 0 135deg,#fbe9ee 0 180deg,#f2c6d1 0 225deg,#fff6ee 0 270deg,#e9c9a0 0 315deg,#fbe9ee 0);box-shadow:0 0 0 4px #9b7846,0 12px 26px -10px rgba(80,20,40,.55);display:grid;place-items:center;animation:lwWob 4s ease-in-out infinite;padding:0}
-.lw-wh b{width:22px;height:22px;border-radius:50%;background:#9b7846;color:#fff;display:grid;place-items:center;font:700 13px/1 Arial;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.lw-wh{position:fixed;left:18px;bottom:calc(84px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px));z-index:60;width:58px;height:58px;border-radius:50%;border:0;cursor:pointer;background:conic-gradient(#ff1f6b 0 45deg,#ff8a00 0 90deg,#8e2de2 0 135deg,#00b894 0 180deg,#ff3b30 0 225deg,#ffc300 0 270deg,#2d7dff 0 315deg,#e91e8c 0);box-shadow:0 0 0 4px #ffb300,0 12px 26px -8px rgba(255,31,107,.7);display:grid;place-items:center;animation:lwWob 4s ease-in-out infinite;padding:0}
+.lw-wh b{width:22px;height:22px;border-radius:50%;background:#1a1a1a;color:#ffd54a;color:#fff;display:grid;place-items:center;font:700 13px/1 Arial;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .lw-wh i{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#e0245e;color:#fff;font:700 11px/20px Arial;font-style:normal;box-shadow:0 0 0 2px #fff}
 .lw-wh i[hidden]{display:none}
-.lw-wh-lbl{position:fixed;right:80px;bottom:calc(94px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px));z-index:71;background:#fff;color:#7a5a30;border:1px solid #ecd9bf;border-radius:99px;padding:6px 12px;font:600 12px/1 Jost,Arial,sans-serif;box-shadow:0 8px 20px -10px rgba(80,20,40,.35);pointer-events:none;white-space:nowrap}
+.lw-wh-lbl{position:fixed;left:84px;bottom:calc(100px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px));z-index:60;background:linear-gradient(135deg,#ff1f6b,#8e2de2);color:#fff;border-radius:99px;padding:7px 13px;font:700 12px/1 Jost,Arial,sans-serif;box-shadow:0 8px 20px -8px rgba(255,31,107,.6);pointer-events:none;white-space:nowrap}
 @keyframes lwWob{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-14deg)}94%{transform:rotate(10deg)}}
 .lw-wm{position:fixed;inset:0;z-index:9500;background:rgba(40,20,28,.55);display:flex;align-items:center;justify-content:center;padding:14px;animation:lwFade .2s}
 @keyframes lwFade{from{opacity:0}}
-.lw-wc{position:relative;width:min(420px,100%);max-height:calc(100vh - 28px);overflow:auto;background:linear-gradient(#fff,#fff8f3);border-radius:24px;padding:22px 20px 18px;text-align:center;font:14px/1.45 Jost,Arial,sans-serif;color:#30271e;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
-.lw-wc h3{margin:0 0 4px;font:600 24px/1.2 'Cormorant Garamond',Georgia,serif;color:#9b7846}
+.lw-wc{position:relative;width:min(420px,100%);max-height:calc(100vh - 28px);overflow:auto;background:linear-gradient(#fff,#fff0f6);border-radius:24px;padding:22px 20px 18px;text-align:center;font:14px/1.45 Jost,Arial,sans-serif;color:#30271e;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
+.lw-wc h3{margin:0 0 4px;font:700 26px/1.2 'Cormorant Garamond',Georgia,serif;background:linear-gradient(90deg,#ff1f6b,#8e2de2);-webkit-background-clip:text;background-clip:text;color:transparent}
 .lw-wc p{margin:0 0 12px;color:#6b5d52}
 .lw-x{position:absolute;top:10px;right:12px;border:0;background:none;font-size:26px;line-height:1;color:#a08b7a;cursor:pointer}
 .lw-stage{position:relative;width:min(320px,78vw);aspect-ratio:1;margin:6px auto 14px}
-.lw-stage svg{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 0 0 8px #9b7846,0 0 0 11px #e9c9a0,0 18px 36px -12px rgba(80,40,10,.5);transition:transform 5.2s cubic-bezier(.12,.72,.12,1)}
-.lw-pin{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid #e0245e;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));z-index:2}
-.lw-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:#9b7846;color:#fff;font:700 11px/1.1 Jost,Arial,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:2}
+.lw-stage svg{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 0 0 8px #ffb300,0 0 0 12px #ff1f6b,0 18px 40px -10px rgba(255,31,107,.55);transition:transform 5.2s cubic-bezier(.12,.72,.12,1)}
+.lw-pin{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid #1a1a1a;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));z-index:2}
+.lw-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;border:4px solid #ffb300;background:linear-gradient(135deg,#ff1f6b,#8e2de2);color:#fff;font:800 11px/1.1 Jost,Arial,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:2}
 .lw-hub:disabled{opacity:.85;cursor:default}
-.lw-btn{display:inline-block;border:0;border-radius:99px;background:#9b7846;color:#fff;font:600 15px/1 Jost,Arial,sans-serif;padding:14px 26px;cursor:pointer;text-decoration:none}
-.lw-btn.alt{background:#fff;color:#9b7846;border:1.5px solid #e2cba8}
-.lw-res{background:#fff;border:1.5px dashed #d8b98d;border-radius:16px;padding:14px;margin:4px 0 12px}
+.lw-btn{display:inline-block;border:0;border-radius:99px;background:linear-gradient(135deg,#ff1f6b,#8e2de2);box-shadow:0 10px 22px -10px rgba(255,31,107,.7);color:#fff;font:600 15px/1 Jost,Arial,sans-serif;padding:14px 26px;cursor:pointer;text-decoration:none}
+.lw-btn.alt{background:#fff;color:#e0115f;border:1.5px solid #ff9fc0;box-shadow:none}
+.lw-res{background:#fff;border:2px dashed #ff6fa3;border-radius:16px;padding:14px;margin:4px 0 12px}
 .lw-res big{display:block;font:700 22px/1.25 Jost,Arial,sans-serif;color:#30271e;margin-bottom:4px}
-.lw-code{display:inline-block;margin:8px 0 6px;padding:8px 14px;border-radius:10px;background:#fbf3ea;font:700 18px/1 monospace;letter-spacing:.06em;color:#7a5a30}
+.lw-code{display:inline-block;margin:8px 0 6px;padding:8px 14px;border-radius:10px;background:#fff0f6;font:700 18px/1 monospace;letter-spacing:.06em;color:#d10f5a}
 .lw-rules{font-size:12px;color:#8b7c70;margin-top:10px}
 .lw-acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-@media(max-width:860px){.lw-wh{right:12px;width:50px;height:50px;bottom:calc(74px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px))}.lw-wh-lbl{display:none}}
+@media(max-width:860px){.lw-wh{left:12px;width:52px;height:52px;bottom:calc(76px + var(--lp-nav,0px) + env(safe-area-inset-bottom,0px))}.lw-wh-lbl{display:none}}
 `;
 
   function wheelSVG(prizes) {
     const n = prizes.length, a = 360 / n, R = 150;
     const pt = (deg, r) => { const t = (deg - 90) * Math.PI / 180; return [150 + r * Math.cos(t), 150 + r * Math.sin(t)] };
-    let s = `<svg viewBox="0 0 300 300" id="lwSvg" style="transform:rotate(${rot}deg)">`;
+    let s = `<svg viewBox="0 0 300 300" id="lwSvg" style="transform:rotate(${rot}deg)"><defs><linearGradient id="lwGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a1a1a"/><stop offset="1" stop-color="#4a3410"/></linearGradient></defs>`;
     prizes.forEach((p, i) => {
       const [x1, y1] = pt(i * a, R), [x2, y2] = pt((i + 1) * a, R);
-      s += `<path d="M150 150L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${p.amount ? COLORS[i % COLORS.length] : '#9b7846'}" stroke="#fff" stroke-width="2"/>`;
+      s += `<path d="M150 150L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${p.amount ? COLORS[i % COLORS.length] : 'url(#lwGold)'}" stroke="#fff" stroke-width="2.5"/>`;
       const mid = i * a + a / 2;
       const big = p.amount ? String(p.amount / 1000) + ' 000' : 'НАБОР';
       const small = p.amount ? 'сум' : 'ДУХОВ';
-      const col = p.amount ? '#5a3e22' : '#fff';
-      s += `<g transform="rotate(${mid} 150 150)"><text x="150" y="44" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-weight="700" font-size="${p.amount ? 17 : 13}" fill="${col}">${big}</text><text x="150" y="61" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-size="11" fill="${col}">${small}</text>${p.amount ? '' : '<text x="150" y="84" text-anchor="middle" font-size="18">🎁</text>'}</g>`;
+      const col = '#fff';
+      s += `<g transform="rotate(${mid} 150 150)"><text x="150" y="44" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-weight="800" font-size="${p.amount ? 18 : 13}" fill="${p.amount ? col : '#ffd54a'}" stroke="rgba(0,0,0,.25)" stroke-width=".6" paint-order="stroke">${big}</text><text x="150" y="61" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-size="11" font-weight="600" fill="${p.amount ? col : '#ffd54a'}">${small}</text>${p.amount ? '' : '<text x="150" y="84" text-anchor="middle" font-size="18">🎁</text>'}</g>`;
     });
-    for (let i = 0; i < n * 2; i++) { const [x, y] = pt(i * a / 2, 141); s += `<circle cx="${x}" cy="${y}" r="3" fill="${i % 2 ? '#fff' : '#f7d48a'}"/>` }
+    for (let i = 0; i < n * 2; i++) { const [x, y] = pt(i * a / 2, 141); s += `<circle cx="${x}" cy="${y}" r="3" fill="${i % 2 ? '#fff' : '#ffe066'}"/>` }
     return s + '</svg>';
   }
 
@@ -153,6 +153,16 @@
     b.innerHTML = '<b>★</b><i hidden></i>'; b.onclick = open; D.body.appendChild(b);
     const l = D.createElement('div'); l.id = 'lwLbl'; l.className = 'lw-wh-lbl'; l.textContent = '🎁 Крутите барабан!'; l.hidden = true; D.body.appendChild(l);
     paintBadge();
+    // ставим над кнопкой консультации слева (её высота меняется на разных страницах)
+    const place = () => {
+      const ch = D.querySelector('#lpChat .lp-chb') || D.getElementById('lpChat');
+      const r = ch && ch.getBoundingClientRect();
+      if (r && r.height && getComputedStyle(ch).display !== 'none') {
+        const bot = Math.round(innerHeight - r.top + 12);
+        b.style.bottom = bot + 'px'; l.style.bottom = (bot + 16) + 'px';
+      } else { b.style.bottom = ''; l.style.bottom = '' }
+    };
+    place(); addEventListener('resize', place); setInterval(place, 2000);
     // после входа — сразу открыть барабан
     const c = client();
     if (c) c.auth.onAuthStateChange((ev) => {

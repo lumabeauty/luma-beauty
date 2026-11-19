@@ -35,5 +35,5 @@ function drawG(){document.getElementById('gT').innerHTML=G.map(([k,l])=>'<button
 LP.products().then(async list=>{GL=list;await LP.loadHits();const C=list.filter(p=>p.c==='Сертификаты').sort((a,b)=>a.p-b.p);document.getElementById('gcL').innerHTML=C.map(p=>'<div class="gc-c"><img src="'+esc(p.i)+'" alt="'+esc(p.t)+'"><b>'+money(p.p)+'</b><button class="lp-btn" onclick="LP.addById('+p.id+')">В корзину</button></div>').join('')||'<p class="lp-mu">Сертификаты скоро появятся.</p>';drawG()});
 document.head.insertAdjacentHTML('beforeend','<style>.gc-c{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}.gc-c img{width:100%;border-radius:18px;aspect-ratio:4/5;object-fit:cover}.gc-c b{font-size:20px}.gc-c .lp-btn{width:100%}</style>');</script>
 <script src="i18n-data.js?v=19"></script><script src="i18n.js?v=13"></script>
-<script src="wheel.js?v=1" defer></script>
+<script src="wheel.js?v=2" defer></script>
 </body></html>
