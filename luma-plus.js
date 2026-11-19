@@ -441,6 +441,8 @@ LP.payExtras = function () {
   const gift = s.gift_active && sub >= s.gift_from ? s.gift_text : '';
   firstPay.insertAdjacentHTML('beforebegin', `<div id="lpPayX" class="lp-payx"><div class="lp-prow"><span>Товары</span><b>${money(sub)}</b></div><div class="lp-prow"><span>${pickup ? '🏬 Самовывоз' : '🚚 Доставка' + (tash ? ' по Ташкенту' : ' в регион')}</span><b>${fee ? money(fee) : 'бесплатно'}</b></div>${gift ? `<div class="lp-prow lp-pg2"><span>🎁 ${esc(gift)}</span><b>в подарок</b></div>` : ''}<div class="lp-prow lp-gcrow" id="lpGcRow"></div><div class="lp-gc"><input id="lpGc" placeholder="Код подарочного сертификата" autocomplete="off" value="${esc(LP.gc ? LP.gc.code : '')}"><button type="button" onclick="LP.checkGc()">Применить</button></div><p class="lp-mu" id="lpGcMsg"></p><div class="lp-prow lp-ptot"><span>Итого к оплате</span><b id="lpPayTot"></b></div></div>`);
   LP._fee = fee; LP.paintPayTot();
+  let wc = ''; try { wc = localStorage.getItem('luma_wheel_code') || '' } catch (e) { }
+  const gi = D.getElementById('lpGc'); if (wc && gi && !gi.value) { gi.value = wc; LP.checkGc() }
 };
 LP.paintPayTot = function () {
   const e = D.getElementById('lpPayTot'); if (!e) return; const sub = LP.cartSub(); let t = sub + (LP._fee || 0);
@@ -451,10 +453,12 @@ LP.paintPayTot = function () {
 LP.checkGc = async function () {
   const v = (D.getElementById('lpGc').value || '').trim().toUpperCase(), m = D.getElementById('lpGcMsg');
   if (!v) { LP.gc = null; m.textContent = ''; LP.paintPayTot(); return }
-  const { data, error } = await LP.sb().rpc('check_gift_card', { c: v });
-  if (error || data == null || data < 0) { LP.gc = null; m.textContent = 'Сертификат не найден. Проверьте код.'; m.className = 'lp-mu lp-err' }
-  else if (data === 0) { LP.gc = null; m.textContent = 'На этом сертификате не осталось средств.'; m.className = 'lp-mu lp-err' }
-  else { LP.gc = { code: v, balance: data }; m.textContent = 'Сертификат применён. Баланс: ' + money(data); m.className = 'lp-mu lp-ok' }
+  const { data, error } = await LP.sb().rpc('gift_card_info', { c: v });
+  const bal = data && data.balance != null ? Number(data.balance) : -1, min = data ? Number(data.min_order) || 0 : 0;
+  if (error || bal < 0) { LP.gc = null; m.textContent = 'Сертификат не найден или срок его действия истёк.'; m.className = 'lp-mu lp-err' }
+  else if (bal === 0) { LP.gc = null; m.textContent = 'На этом сертификате не осталось средств.'; m.className = 'lp-mu lp-err' }
+  else if (min && LP.cartSub() < min) { LP.gc = null; m.textContent = 'Этот сертификат действует для заказа от ' + money(min) + '. Добавьте товаров ещё на ' + money(min - LP.cartSub()) + '.'; m.className = 'lp-mu lp-err' }
+  else { LP.gc = { code: v, balance: bal }; m.textContent = 'Сертификат применён. Баланс: ' + money(bal) + (data.expires_at ? ' · действует до ' + new Date(data.expires_at).toLocaleDateString('ru-RU') : ''); m.className = 'lp-mu lp-ok' }
   LP.paintPayTot();
 };
 D.addEventListener('input', e => { if (e.target && e.target.id === 'cbUse') LP.paintPayTot() });
@@ -675,11 +679,11 @@ LP.indexInit = async function () {
 /* ---------- Account: gift certificates ---------- */
 LP.accountExtras = async function () {
   const c = LP.sb(); if (!c) return; const { data: { session } } = await c.auth.getSession(); if (!session) return;
-  const { data } = await c.from('gift_cards').select('code,amount,balance,active,created_at,order_id').order('created_at', { ascending: false });
+  const { data } = await c.from('gift_cards').select('code,amount,balance,active,created_at,order_id,expires_at,min_order').order('created_at', { ascending: false });
   if (!data || !data.length) return;
   const app = D.getElementById('app'); if (!app) return;
   const box = D.createElement('section'); box.className = 'lp-page'; box.id = 'lpGcAcc'; box.style.maxWidth = '820px';
-  box.innerHTML = `<div class="lp-card2"><h2>🎀 Мои подарочные сертификаты</h2><p class="lp-mu">Подарите код или используйте сами — введите его при оформлении заказа.</p>${data.map(g => `<div class="lp-prow" style="align-items:center;border-top:1px solid #efdfe3;padding:10px 0"><span><b style="font-family:monospace;font-size:16px;letter-spacing:.06em">${esc(g.code)}</b><br><small class="lp-mu">Номинал ${money(g.amount)} · заказ №${g.order_id || '—'}</small></span><span style="text-align:right"><b>${money(g.balance)}</b><br><button type="button" class="lp-link" style="border:0;background:none;cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(g.code)}');this.textContent='Скопировано ✓'">Скопировать код</button></span></div>`).join('')}</div>`;
+  box.innerHTML = `<div class="lp-card2"><h2>🎀 Мои подарочные сертификаты</h2><p class="lp-mu">Подарите код или используйте сами — введите его при оформлении заказа.</p>${data.map(g => `<div class="lp-prow" style="align-items:center;border-top:1px solid #efdfe3;padding:10px 0"><span><b style="font-family:monospace;font-size:16px;letter-spacing:.06em">${esc(g.code)}</b><br><small class="lp-mu">Номинал ${money(g.amount)} · ${g.order_id ? 'заказ №' + g.order_id : '🎡 выигрыш в барабане'}${g.expires_at ? ' · до ' + new Date(g.expires_at).toLocaleDateString('ru-RU') : ''}${g.min_order ? ' · заказ от ' + money(g.min_order) : ''}</small></span><span style="text-align:right"><b>${money(g.balance)}</b><br><button type="button" class="lp-link" style="border:0;background:none;cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(g.code)}');this.textContent='Скопировано ✓'">Скопировать код</button></span></div>`).join('')}</div>`;
   app.after(box);
 };
 

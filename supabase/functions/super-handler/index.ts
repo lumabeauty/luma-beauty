@@ -81,6 +81,11 @@ serve(async (req) => {
   const body = await req.json();
   const record = body.record ?? body;
   const isPartner = body.type === "partner";
+  if (body.type === "wheel") {
+    const t = `🎡 <b>ВЫИГРЫШ В БАРАБАНЕ: ${esc(record.label)}</b>\n\n👤 ${esc(record.name || "Покупатель")}\n📞 ${esc(record.phone || "—")}\n\nСвяжитесь с покупателем, чтобы передать приз.`;
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: t, parse_mode: "HTML" }) });
+    return Response.json({ success: r.ok });
+  }
   const text = isPartner ? buildPartner(record) : buildOrder(record);
   const adminRow = [{ text: isPartner ? "📋 Открыть заявки" : "📋 Открыть заказ в админке", url: "https://lumabeauty.uz/admin.html" }];
   // Кнопки смены статуса обрабатывает функция tg-bot (вебхук бота).
