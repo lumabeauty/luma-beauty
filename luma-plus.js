@@ -35,12 +35,12 @@ LP.cityName = c => (c || LP.city()) === 'tashkent' ? 'Ташкент' : 'Рег�
 LP.fee = (sub, city) => { const s = LP.shop; if (s.free_from && sub >= s.free_from) return 0; return (city || LP.city()) === 'tashkent' ? +s.delivery_tashkent || 0 : +s.delivery_region || 0 };
 
 /* ---------- Product data (normalized) ---------- */
-const norm = r => ({ id: r.id, t: r.title, k: r.kind || '', c: r.category, v: r.volume || '', p: r.price, d: Number(r.discount_percent) || 0, i: r.image || '', su: r.suits || '', ds: r.description || '', ing: r.ingredients || '', st: r.stock == null ? null : Number(r.stock) });
+const norm = r => ({ id: r.id, t: r.title, k: r.kind || '', c: r.category, v: r.volume || '', p: r.price, d: Number(r.discount_percent) || 0, i: r.image_sm || r.image || '', I: r.image || '', su: r.suits || '', ds: r.description || '', ing: r.ingredients || '', st: r.stock == null ? null : Number(r.stock) });
 LP.products = async function () {
   try { if (typeof P !== 'undefined' && Array.isArray(P) && P.length) return P } catch (e) { }
   if (LP._P) return LP._P;
   const c = LP.sb(); if (!c) return [];
-  if (!LP._PP) LP._PP = c.from('products').select('id,title,kind,category,volume,price,discount_percent,image,suits,description,ingredients,stock,sort').eq('active', true).order('sort').order('id').then(({ data }) => (LP._P = (data || []).map(norm)));
+  if (!LP._PP) LP._PP = c.from('products').select('id,title,kind,category,volume,price,discount_percent,image,image_sm,suits,description,ingredients,stock,sort').eq('active', true).order('sort').order('id').then(({ data }) => (LP._P = (data || []).map(norm)));
   return LP._PP;
 };
 const sale = p => Math.round(Number(p.p || 0) * (100 - (p.d || 0)) / 100);
@@ -716,14 +716,14 @@ if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', boot); el
     let tries = 0; while ((typeof P === 'undefined' || !P.length) && tries++ < 80) await new Promise(r => setTimeout(r, 150));
     const old = D.querySelector('.luma-hero'); if (!old || D.getElementById('lpHeroP')) return;
     const c = LP.sb(); const L = P.filter(p => p.i && p.c !== 'Сертификаты');
-    const by = ids => ids.map(id => L.find(p => String(p.id) === String(id))).filter(Boolean).map(p => p.i);
+    const by = ids => ids.map(id => L.find(p => String(p.id) === String(id))).filter(Boolean).map(p => p.I || p.i);
     let heroPh = []; try { const { data } = await c.from('home_hero').select('photos').eq('id', 1).maybeSingle(); if (Array.isArray(data?.photos)) heroPh = data.photos.filter(Boolean) } catch (e) { }
     let bp = null, bundles = []; try { const [a, b] = await Promise.all([c.from('site_settings').select('value').eq('key', 'bulk_promo').maybeSingle(), c.from('bundles').select('product_ids').eq('active', true).order('sort').limit(2)]); bp = a.data && a.data.value; bundles = b.data || [] } catch (e) { }
     await LP.shopReady; if (!LP.fresh) await LP.loadHits();
-    const s = LP.shop, hits = (LP.hits.length ? LP.hits : L).map(p => p.i), fresh = (LP.fresh || []).map(p => p.i).filter(Boolean);
+    const s = LP.shop, hits = (LP.hits.length ? LP.hits : L).map(p => p.I || p.i), fresh = (LP.fresh || []).map(p => p.I || p.i).filter(Boolean);
     const bundlePh = bundles.length ? by(bundles[0].product_ids || []) : hits;
-    const cica = L.filter(p => LP.tags(p).ing.includes('cica')).map(p => p.i);
-    const gc = P.filter(p => p.c === 'Сертификаты').sort((a, b) => b.p - a.p).map(p => p.i);
+    const cica = L.filter(p => LP.tags(p).ing.includes('cica')).map(p => p.I || p.i);
+    const gc = P.filter(p => p.c === 'Сертификаты').sort((a, b) => b.p - a.p).map(p => p.I || p.i);
     slides = [];
     slides.push({ k: 'brand', cls: 'hp-brand', html: `<div class="hp-copy"><span class="hp-eye">LUMA BEAUTY · КОРЕЙСКАЯ КОСМЕТИКА</span><h2 class="hp-t">Искусство<br>быть <em>собой</em></h2><p class="hp-p">Премиальный уход из Кореи для вашей естественной красоты — 100% оригинал и доставка по всему Узбекистану.</p><div class="hp-btns"><a class="hp-cta" href="#catalog">Открыть каталог <span>→</span></a><a class="hp-ghost" href="https://www.instagram.com/lumabeautyuz/" target="_blank" rel="noopener">Instagram ↗</a></div></div><div class="hp-art">${ai('hero-brand.jpg', 307, [])}<span class="hp-stk hp-stk1">100%<br><small>оригинал</small></span><svg class="hp-ring" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="hpc" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#hpc">BEAUTY IS A RITUAL • LUMA BEAUTY • KOREAN CARE • </textPath></text></svg></div>` });
     if (bp && bp.active && new Date(bp.ends_at) > Date.now()) {
