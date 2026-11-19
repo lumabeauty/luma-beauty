@@ -25,7 +25,7 @@ ym(114302709, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLa
 </main>
 <footer class="lp-fallfoot">© 2026 Luma Beauty · Красота. Уход. Вдохновение. · <a href="tel:+998910010184">+998 91 001 01 84</a></footer>
 <script>const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>Number(n||0).toLocaleString('ru-RU').replace(/\u00a0|\u202f/g,' ')+' сум';</script>
-<script src="luma-plus.js?v=11"></script>
+<script src="luma-plus.js?v=12"></script>
 <script>const ST=[['new','Заказ принят','📝'],['paid','Оплачен и собирается','💳'],['shipped','Передан в доставку','🚚'],['done','Доставлен','✅']];
 const sp=new URLSearchParams(location.search);if(sp.get('n'))document.getElementById('trN').value=sp.get('n');
 async function track(e){e.preventDefault();const n=parseInt(document.getElementById('trN').value.replace(/\D/g,'')),p=document.getElementById('trP').value,m=document.getElementById('trM');m.textContent='Ищем заказ…';
