@@ -309,7 +309,7 @@ LP.closeSheet = () => { const s = D.getElementById('lpSheet'); if (s) s.classLis
 LP.STORIES = [
   { k: 'new', l: 'Новинки', e: '✨' }, { k: 'hits', l: 'Хиты', e: '🔥' }, { k: 'sale', l: 'Скидки', e: '%' },
   { k: 'quiz', l: 'Тест кожи', e: '🧪' }, { k: 'sets', l: 'Наборы', e: '🧺' }, { k: 'gift', l: 'Подарки', e: '🎁' },
-  { k: 'spf', l: 'SPF', e: '☀️' }, { k: 'cica', l: 'Центелла', e: '🌿' }, { k: 'blog', l: 'Советы', e: '📖' }
+  { k: 'blog', l: 'Советы', e: '📖' }
 ];
 LP.storyItems = function (k, list) {
   const L = list.filter(p => p.c !== 'Сертификаты' && p.i);
