@@ -435,6 +435,8 @@ bot.command('stats', async (ctx) => {
   const { count: q } = await sb.from('bot_questions').select('id', { count: 'exact', head: true }).is('answered_at', null);
   const { data: last } = await sb.from('bot_broadcasts').select('id,sent,failed,sent_at,promo_percent').eq('status', 'sent').order('id', { ascending: false }).limit(3);
   const t = [`👥 Пользователей бота: <b>${all || 0}</b>`, `📣 Получат рассылку: <b>${n}</b>`, `❓ Вопросов без ответа: <b>${q || 0}</b>`];
+  const { data: going } = await sb.from('bot_broadcasts').select('id,sent,failed,recipients').eq('status', 'sending');
+  (going || []).forEach((g: any) => t.push(`⏳ Рассылка #${g.id} идёт: ${g.sent + g.failed} из ${g.recipients}`));
   if (last?.length) t.push('', 'Последние рассылки:', ...last.map((b: any) => `#${b.id} · ${b.sent_at ? dmy(new Date(b.sent_at)) : ''} · доставлено ${b.sent}${b.promo_percent ? ` · промокоды −${b.promo_percent}%` : ''}`));
   return ctx.reply(t.join('\n'), { parse_mode: 'HTML' });
 });
@@ -445,35 +447,79 @@ bot.command('questions', async (ctx) => {
   return ctx.reply('❓ <b>Без ответа:</b>\n\n' + data.map((q: any) => `#${q.id} · ${esc(q.user_name || '')}: ${esc(clip(q.text || '(фото)', 120))}`).join('\n') + '\n\nОтветьте (Reply) на исходное сообщение вопроса выше в чате.', { parse_mode: 'HTML' });
 });
 
-async function runBroadcast(id: number, done: (t: string) => Promise<unknown>) {
-  const { data: b } = await sb.from('bot_broadcasts').select('*').eq('id', id).single();
-  const photos = await albumPhotos(b.media_group, b.photo, b.photos);
-  const { data: users } = await sb.from('bot_users').select('chat_id').eq('unsubscribed', false);
-  let ok = 0, bad = 0;
-  for (const u of users || []) {
-    if (String(u.chat_id) === SHOP_CHAT) continue;
-    try {
-      let code: string | undefined, until: Date | undefined;
-      if (b.promo_percent) {
-        until = new Date(Date.now() + b.promo_days * 864e5);
-        for (let k = 0; k < 3 && !code; k++) {
-          const c = genCode();
-          const { error } = await sb.from('promos').insert({ code: c, percent: b.promo_percent, active: true, first_order_only: false, expires_at: until.toISOString(), max_uses: 1, source: `bot:b${id}:${u.chat_id}` });
-          if (!error) code = c;
-        }
-        if (!code) throw new Error('promo');
-      }
-      await sendPost(u.chat_id, photos, bcBody(b, code, until), custKb(id, b.product_ids));
-      ok++;
-    } catch (e) {
-      bad++;
-      if (/blocked|deactivated|chat not found/i.test(String((e as any)?.description || ''))) await sb.from('bot_users').update({ unsubscribed: true }).eq('chat_id', u.chat_id);
+// Рассылка идёт порциями: одна функция работает ~100 сек, потом сама запускает продолжение.
+// Прогресс (cursor, sent, failed) хранится в базе, поэтому обрыв не теряет получателей.
+const BC_BUDGET_MS = 100_000;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  for (let k = 0; ; k++) {
+    try { return await fn(); }
+    catch (e) {
+      const ra = Number((e as any)?.parameters?.retry_after || 0);
+      if ((e as any)?.error_code === 429 && k < 3) { await sleep(Math.min(ra || 3, 30) * 1000 + 300); continue; }
+      throw e;
     }
-    await new Promise((r) => setTimeout(r, photos.length > 1 ? 400 : 80));
   }
-  await sb.from('bot_broadcasts').update({ status: 'sent', sent: ok, failed: bad, sent_at: new Date().toISOString() }).eq('id', id);
-  await done(`📣 Рассылка #${id} отправлена: ✅ ${ok}${bad ? ` · не доставлено ${bad}` : ''}` + (b.promo_percent ? `\nПромокоды: ${ok} шт., −${b.promo_percent}%, ${b.promo_days} дн. Использования видны в заказах (поле «промокод»).` : '') + `\nПереходы — в Метрике, метка utm_campaign=b${id}.`);
 }
+function continueBroadcast(id: number) {
+  return fetch(URL_SELF, { method: 'POST', headers: { 'content-type': 'application/json', 'x-order-secret': SECRET }, body: JSON.stringify({ action: 'bc_continue', id }) })
+    .then((r) => r.text()).catch((e) => console.error('bc continue:', String(e)));
+}
+async function runBroadcast(id: number) {
+  const started = Date.now();
+  // берём «аренду», чтобы одну рассылку не отправляли две функции сразу
+  const lease = () => new Date(Date.now() + 150_000).toISOString();
+  const { data: claimed } = await sb.from('bot_broadcasts').update({ lease_until: lease(), last_tick: new Date().toISOString() })
+    .eq('id', id).eq('status', 'sending').or(`lease_until.is.null,lease_until.lt."${new Date().toISOString()}"`).select('*');
+  const b = claimed?.[0];
+  if (!b) return;
+  const photos = await albumPhotos(b.media_group, b.photo, b.photos);
+  let ok = Number(b.sent) || 0, bad = Number(b.failed) || 0, cursor: number | null = b.cursor ?? null;
+  for (;;) {
+    let q = sb.from('bot_users').select('chat_id').eq('unsubscribed', false).order('chat_id').limit(200);
+    if (cursor != null) q = q.gt('chat_id', cursor);
+    const { data: users, error } = await q;
+    if (error) { console.error('bc users:', error.message); await sb.from('bot_broadcasts').update({ lease_until: null }).eq('id', id); return; }
+    if (!users?.length) break;
+    for (const u of users) {
+      if (Date.now() - started > BC_BUDGET_MS) {
+        await sb.from('bot_broadcasts').update({ sent: ok, failed: bad, cursor, lease_until: null, last_tick: new Date().toISOString() }).eq('id', id);
+        await continueBroadcast(id);
+        return;
+      }
+      cursor = Number(u.chat_id);
+      if (String(u.chat_id) === SHOP_CHAT) continue;
+      try {
+        let code: string | undefined, until: Date | undefined;
+        if (b.promo_percent) {
+          until = new Date(Date.now() + b.promo_days * 864e5);
+          for (let k = 0; k < 3 && !code; k++) {
+            const c = genCode();
+            const { error } = await sb.from('promos').insert({ code: c, percent: b.promo_percent, active: true, first_order_only: false, expires_at: until.toISOString(), max_uses: 1, source: `bot:b${id}:${u.chat_id}` });
+            if (!error) code = c;
+          }
+          if (!code) throw new Error('promo');
+        }
+        try { await withRetry(() => sendPost(u.chat_id, photos, bcBody(b, code, until), custKb(id, b.product_ids))); }
+        catch (e) { if (code) await sb.from('promos').delete().eq('code', code); throw e; }
+        ok++;
+      } catch (e) {
+        bad++;
+        if (/blocked|deactivated|chat not found/i.test(String((e as any)?.description || ''))) await sb.from('bot_users').update({ unsubscribed: true }).eq('chat_id', u.chat_id);
+      }
+      await sb.from('bot_broadcasts').update({ sent: ok, failed: bad, cursor, lease_until: lease(), last_tick: new Date().toISOString() }).eq('id', id);
+      await sleep(photos.length > 1 ? 400 : 60);
+    }
+  }
+  const { data: fin } = await sb.from('bot_broadcasts').update({ status: 'sent', sent: ok, failed: bad, cursor, lease_until: null, sent_at: new Date().toISOString() }).eq('id', id).eq('status', 'sending').select('id');
+  if (!fin?.length) return;
+  await bot.api.sendMessage(SHOP_CHAT, `📣 Рассылка #${id} отправлена: ✅ ${ok}${bad ? ` · не доставлено ${bad}` : ''}` + (b.promo_percent ? `\nПромокоды: ${ok} шт., −${b.promo_percent}%, ${b.promo_days} дн. Использования видны в заказах (поле «промокод»).` : '') + `\nПереходы — в Метрике, метка utm_campaign=b${id}.`).catch(() => {});
+}
+const background = (job: Promise<unknown>) => {
+  const j = job.catch((e) => console.error('broadcast error:', String(e)));
+  // @ts-ignore EdgeRuntime есть в Supabase
+  if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(j); else return j;
+};
 bot.callbackQuery(/^bc:(\d+):(go|no)$/, async (ctx) => {
   if (!isShop(ctx)) return ctx.answerCallbackQuery({ text: 'Нет доступа' });
   const id = Number(ctx.match[1]);
@@ -482,14 +528,11 @@ bot.callbackQuery(/^bc:(\d+):(go|no)$/, async (ctx) => {
     try { await ctx.editMessageText('✖️ Рассылка отменена.'); } catch (_) { /* */ }
     return ctx.answerCallbackQuery({ text: 'Отменено' });
   }
-  const { data: rows } = await sb.from('bot_broadcasts').update({ status: 'sending', recipients: await audience() }).eq('id', id).eq('status', 'draft').select('id');
+  const { data: rows } = await sb.from('bot_broadcasts').update({ status: 'sending', recipients: await audience(), cursor: null, lease_until: null }).eq('id', id).eq('status', 'draft').select('id');
   if (!rows?.length) return ctx.answerCallbackQuery({ text: 'Уже отправлено или отменено' });
   try { await ctx.editMessageText('⏳ Отправляю…'); } catch (_) { /* */ }
   await ctx.answerCallbackQuery({ text: 'Отправляю…' });
-  const chat = ctx.chat!.id;
-  const job = runBroadcast(id, (t) => bot.api.sendMessage(chat, t)).catch((e) => console.error('broadcast error:', String(e)));
-  // @ts-ignore EdgeRuntime есть в Supabase
-  if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(job); else await job;
+  await background(runBroadcast(id));
 });
 bot.callbackQuery('unsub', async (ctx) => {
   if (isPrivate(ctx)) await sb.from('bot_users').upsert({ chat_id: ctx.chat!.id, unsubscribed: true }, { onConflict: 'chat_id' });
@@ -566,6 +609,10 @@ Deno.serve(async (req) => {
       await bot.api.setMyShortDescription('Каталог, акции, статусы заказов и вопросы — Luma Beauty 💄');
       const me = await bot.api.getMe();
       return Response.json({ ok, username: me.username });
+    }
+    if (b.action === 'bc_continue' && b.id) {
+      background(runBroadcast(Number(b.id)));
+      return Response.json({ ok: true });
     }
     if (b.type === 'status' && b.id) {
       const { data: o } = await sb.from('orders').select('id,status,address,tg_chat_id').eq('id', b.id).maybeSingle();
