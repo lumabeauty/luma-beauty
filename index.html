@@ -1410,7 +1410,7 @@ const base=ks.reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0),max=Math.min(cashb
 if(cb>max)return toast('Можно использовать не более '+f(max));
 const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''}\n    ${cart[k]} шт × ${String(finalPrice(P[k])).replace(/\B(?=(\d{3})+(?!\d))/g,' ')} = ${f(finalPrice(P[k])*cart[k])}`).join('\n');
 const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa(),p_cashback_to_use:cb,p_welcome:(W&&W.token)||null,p_gift_code:(window.LP&&LP.gc&&LP.gc.code)||null});
-if(error){console.error(error);return toast(error.message?.includes('cashback')?'Проверьте баланс кешбэка и сумму списания':(error.message?.includes('gift card')?'Сертификат недействителен — проверьте код':'Не удалось создать заказ, попробуйте ещё раз'))}try{localStorage.setItem('luma_has_order','true');if(window.LP)LP.gc=null}catch(x){}
+if(error){console.error(error);return toast(error.message?.includes('cashback')?'Проверьте баланс кешбэка и сумму списания':(error.message?.includes('gift card min order')?'Сертификат действует для заказа от '+f(Number((error.message.match(/\d+/)||[0])[0])):error.message?.includes('gift card expired')?'Срок действия сертификата истёк':error.message?.includes('gift card')?'Сертификат недействителен — проверьте код':'Не удалось создать заказ, попробуйте ещё раз'))}try{localStorage.setItem('luma_has_order','true');if(window.LP&&LP.gc&&LP.gc.code===localStorage.getItem('luma_wheel_code'))localStorage.removeItem('luma_wheel_code');if(window.LP)LP.gc=null}catch(x){}
 const o=data.id,T=data.total,used=Number(data.cashback_used)||0;let u='';
 if(m=='payme'&&PAYME_ID)u='https://checkout.paycom.uz/'+btoa(`m=${PAYME_ID};ac.order_id=${o};a=${T*100};l=ru`);
 if(m=='click'&&CLICK_SERVICE&&CLICK_MERCHANT)u=`https://my.click.uz/services/pay?service_id=${CLICK_SERVICE}&merchant_id=${CLICK_MERCHANT}&amount=${T}&transaction_param=${o}`;
@@ -1578,7 +1578,7 @@ if(typeof window.favToggle==='function'){const _fav=window.favToggle;window.favT
  if(!RM){requestAnimationFrame(()=>{document.querySelectorAll('.pc-like').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(JSON.stringify(id))){b.classList.add(was?'fx-unpop':'fx-pop')}})})}return r}}
 })();
 </script>
-<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=12"></script><script src="i18n-data.js?v=19"></script><script src="i18n.js?v=13"></script>
+<link rel="stylesheet" href="luma-plus.css?v=7"><script src="luma-plus.js?v=13"></script><script src="i18n-data.js?v=19"></script><script src="i18n.js?v=13"></script>
 <script>
 function goSkin(){const el=document.getElementById('skinHelp');if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(!document.querySelector('#skinQuizBody .sl-q,#skinQuizBody .sl-res'))setTimeout(()=>{try{skinQuizStart()}catch(e){}},500)}
 function skinFabClose(){try{sessionStorage.setItem('luma_fab_off','1')}catch(e){}const f=document.getElementById('skinFab');if(f)f.hidden=true}
@@ -1639,4 +1639,5 @@ async function initWelcome(){let s=null;try{s=JSON.parse(localStorage.getItem('l
  document.getElementById('wlPct').textContent='−'+W.pct+'%';render();upd();wTick();window.__wT=setInterval(wTick,1000)}
 initWelcome();
 </script>
+<script src="wheel.js?v=1" defer></script>
 </body></html>
