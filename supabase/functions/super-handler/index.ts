@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { buildInvoice } from "./invoice.ts";
 
 // Accepts calls only from the database triggers (they send the shared x-order-secret header).
 const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -105,5 +106,23 @@ serve(async (req) => {
     response = await send({ text: plain, disable_web_page_preview: true, reply_markup: keyboard });
   }
   if (!response.ok) return Response.json({ error: "Telegram delivery failed" }, { status: 502 });
+
+  // Накладная PDF ответом на сообщение о заказе. Ошибка здесь не мешает уведомлению.
+  if (!isPartner && record.id) {
+    try {
+      const msg = await response.json().catch(() => null);
+      const pdf = await buildInvoice(record);
+      const fd = new FormData();
+      fd.append("chat_id", String(chatId));
+      fd.append("document", new Blob([pdf], { type: "application/pdf" }), `Накладная_${record.id}.pdf`);
+      fd.append("caption", `🧾 Накладная к заказу #${record.id} — откройте и распечатайте`);
+      if (msg?.result?.message_id) fd.append("reply_parameters", JSON.stringify({ message_id: msg.result.message_id, allow_sending_without_reply: true }));
+      fd.append("disable_notification", "true");
+      const r = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", body: fd });
+      if (!r.ok) console.error("invoice send:", r.status, (await r.text()).slice(0, 200));
+    } catch (e) {
+      console.error("invoice:", (e as Error)?.message || String(e));
+    }
+  }
   return Response.json({ success: true });
 });
