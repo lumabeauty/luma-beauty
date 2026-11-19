@@ -25,7 +25,7 @@
   function init() {
     var st = D.createElement('style'); st.id = 'lw-css'; st.textContent = css; D.head.appendChild(st);
 
-    if (!D.querySelector('.lw-tg')) {
+    if (false) { // кнопка «Написать нам» отключена по просьбе владельца
       var a = D.createElement('a');
       a.className = 'lw-tg'; a.href = 'https://t.me/' + TG; a.target = '_blank'; a.rel = 'noopener';
       a.setAttribute('aria-label', 'Написать в Telegram');
