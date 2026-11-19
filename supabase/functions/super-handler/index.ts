@@ -81,7 +81,15 @@ serve(async (req) => {
   const record = body.record ?? body;
   const isPartner = body.type === "partner";
   const text = isPartner ? buildPartner(record) : buildOrder(record);
-  const keyboard = { inline_keyboard: [[{ text: isPartner ? "📋 Открыть заявки" : "📋 Открыть заказ в админке", url: "https://lumabeauty.uz/admin.html" }]] };
+  const adminRow = [{ text: isPartner ? "📋 Открыть заявки" : "📋 Открыть заказ в админке", url: "https://lumabeauty.uz/admin.html" }];
+  // Кнопки смены статуса обрабатывает функция tg-bot (вебхук бота).
+  const keyboard = isPartner || !record.id
+    ? { inline_keyboard: [adminRow] }
+    : { inline_keyboard: [[
+        { text: "💳 Оплачен", callback_data: `st:${record.id}:paid` },
+        { text: "🚚 Передан курьеру", callback_data: `st:${record.id}:shipped` },
+        { text: "✅ Выполнен", callback_data: `st:${record.id}:done` },
+      ], adminRow] };
 
   const send = (payload: Record<string, unknown>) =>
     fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -94,7 +102,7 @@ serve(async (req) => {
   if (!response.ok) {
     // Fallback: plain text without HTML tags, so a formatting problem never loses an order.
     const plain = text.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
-    response = await send({ text: plain, disable_web_page_preview: true });
+    response = await send({ text: plain, disable_web_page_preview: true, reply_markup: keyboard });
   }
   if (!response.ok) return Response.json({ error: "Telegram delivery failed" }, { status: 502 });
   return Response.json({ success: true });
