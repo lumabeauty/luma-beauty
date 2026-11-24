@@ -463,7 +463,7 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
   .lp-mega.mm-on { padding: 0 !important; align-items: stretch !important; background: rgba(28, 20, 15, .4) !important; backdrop-filter: none !important; }
   .lp-mega.mm-on .lp-mbox { --m-bg: #F8F3EA; --m-card: #FFFDF8; --m-ink: #30251E; --m-ink2: #5B4C40; --m-mute: #8A7B6C; --m-gold: #B8955D; --m-gold-d: #8E6D3B; --m-line: #ECE2D2; --m-soft: #F2EADD;
     max-width: none !important; width: 100% !important; height: 100% !important; max-height: none !important; border-radius: 0 !important; padding: 0 !important; background: var(--m-bg) !important; color: var(--m-ink) !important; overflow: hidden !important; box-shadow: none !important; animation: mmUp .32s cubic-bezier(.2, .85, .25, 1) both; }
-  html.dark .lp-mega.mm-on .lp-mbox { --m-bg: #15110E; --m-card: #201915; --m-ink: #F3EADF; --m-ink2: #D9CBBB; --m-mute: #A99886; --m-gold: #CDAA6E; --m-gold-d: #E0C08A; --m-line: #33291F; --m-soft: #2A211B; }
+  html.dark .lp-mega.mm-on .lp-mbox { --m-bg: #050505; --m-card: #121212; --m-ink: #F2F2F2; --m-ink2: #CFCFCF; --m-mute: #9A9A9A; --m-gold: #2EE6E0; --m-gold-d: #5CF0EB; --m-line: #262626; --m-soft: #1A1A1A; }
   @keyframes mmUp { from { transform: translateY(5%); opacity: .3; } }
   .lp-mega.mm-on .lp-mx { display: none !important; }
   .lp-mega.mm-on #lpMegaIn { height: 100%; }
@@ -491,7 +491,7 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
   .mm-cat:active { transform: scale(.97); }
   .mm-cat:first-child { grid-column: 1 / -1; flex-direction: row; align-items: center; }
   .mm-ph { display: block; aspect-ratio: 1.25 / 1; background: radial-gradient(circle at 50% 60%, #fff 0, var(--m-soft) 70%); overflow: hidden; }
-  html.dark .mm-ph { background: radial-gradient(circle at 50% 60%, #3A2F25 0, var(--m-soft) 70%); }
+  html.dark .mm-ph { background: radial-gradient(circle at 50% 60%, #2A2A2A 0, var(--m-soft) 70%); }
   .mm-cat:first-child .mm-ph { width: 46%; flex: none; aspect-ratio: 1.15 / 1; }
   .mm-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .mm-ct { display: flex; flex-direction: column; gap: 2px; padding: 11px 34px 13px 13px; }
@@ -551,7 +551,7 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
 @media (max-width: 760px) {
   .am-menu { --a-card: #FFFDF8; --a-ink: #30251E; --a-mute: #8A7B6C; --a-gold-d: #8E6D3B; --a-gold: #B8955D; --a-line: #ECE2D2; --a-soft: #F2EADD;
     display: block; margin: 4px 0 18px; font-family: Jost, 'Helvetica Neue', Arial, sans-serif; color: var(--a-ink); }
-  html.dark .am-menu { --a-card: #201915; --a-ink: #F3EADF; --a-mute: #A99886; --a-gold-d: #E0C08A; --a-gold: #CDAA6E; --a-line: #33291F; --a-soft: #2A211B; }
+  html.dark .am-menu { --a-card: #121212; --a-ink: #F2F2F2; --a-mute: #9A9A9A; --a-gold-d: #5CF0EB; --a-gold: #2EE6E0; --a-line: #262626; --a-soft: #1A1A1A; }
   .am-h { padding: 16px 6px 8px; font: 600 11.5px Jost, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--a-mute); }
   .am-box { background: var(--a-card); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22); }
   .am-i { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 58px; padding: 0 16px; margin: 0; border: 0; border-bottom: 1px solid var(--a-line); border-radius: 0; background: none; color: var(--a-ink); font: 400 16px Jost, Arial, sans-serif; text-align: left; text-decoration: none; cursor: pointer; box-shadow: none; }
@@ -575,7 +575,7 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
   aside#dr { --c-bg: #F8F3EA; --c-card: #FFFDF8; --c-ink: #30251E; --c-mute: #8A7B6C; --c-gold: #B8955D; --c-gold-d: #8E6D3B; --c-line: #ECE2D2; --c-soft: #F2EADD;
     width: 100% !important; max-width: none !important; left: 0 !important; right: 0 !important; border-radius: 0 !important; background: var(--c-bg) !important; color: var(--c-ink) !important;
     padding: env(safe-area-inset-top, 0px) 0 0 !important; box-shadow: none !important; display: flex !important; flex-direction: column; overflow-y: auto !important; overscroll-behavior: contain; font-family: Jost, 'Helvetica Neue', Arial, sans-serif; }
-  html.dark aside#dr { --c-bg: #15110E; --c-card: #201915; --c-ink: #F3EADF; --c-mute: #A99886; --c-gold: #CDAA6E; --c-gold-d: #E0C08A; --c-line: #33291F; --c-soft: #2A211B; }
+  html.dark aside#dr { --c-bg: #050505; --c-card: #121212; --c-ink: #F2F2F2; --c-mute: #9A9A9A; --c-gold: #2EE6E0; --c-gold-d: #5CF0EB; --c-line: #262626; --c-soft: #1A1A1A; }
   aside#dr > h3 { position: sticky; top: 0; z-index: 3; display: flex !important; align-items: center; justify-content: space-between; margin: 0 !important; padding: 12px 14px 12px 18px !important; background: color-mix(in srgb, var(--c-bg) 94%, transparent) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--c-line); font: 600 30px/1.1 'Cormorant Garamond', Georgia, serif !important; color: var(--c-ink) !important; letter-spacing: .005em !important; text-transform: none !important; }
   aside#dr > h3 button { width: 44px !important; height: 44px !important; flex: none; border-radius: 50% !important; border: 0 !important; background: var(--c-card) !important; color: var(--c-ink) !important; font-size: 24px !important; line-height: 1 !important; box-shadow: 0 2px 10px -4px rgba(48, 37, 30, .25) !important; padding: 0 !important; }
   aside#dr #items { flex: none; padding: 12px 14px 4px !important; }
@@ -591,7 +591,7 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
   aside#dr .tot b { font: 600 24px Jost, Arial, sans-serif !important; color: var(--c-ink) !important; }
   aside#dr .buy { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 2; flex: none; width: auto !important; min-height: 56px; margin: 6px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important; padding: 0 !important; border: 0 !important; border-radius: 16px !important;
     box-shadow: 0 0 0 6px var(--c-bg), 0 16px 0 16px var(--c-bg) !important; background: var(--c-ink) !important; color: var(--c-bg) !important; font: 500 16px Jost, Arial, sans-serif !important; letter-spacing: .03em; }
-  html.dark body aside#dr .buy { background: var(--c-gold) !important; color: #1B140F !important; }
+  html.dark body aside#dr .buy { background: var(--c-gold) !important; color: #050505 !important; }
   aside#dr .bb { background: var(--c-card) !important; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22); }
   aside#dr .bb-t, aside#dr .bb-t * { color: var(--c-ink) !important; }
   aside#dr .bb-p { background: var(--c-soft) !important; }
