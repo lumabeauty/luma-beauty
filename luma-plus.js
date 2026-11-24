@@ -264,10 +264,83 @@ LP.megaHTML = function (list) {
   const more = `<div class="lp-mcol lp-mmore"><a href="offers.html">🔥 Все акции</a><a href="brands.html">🏷 Бренды A–Я</a><a href="gifts.html">🎁 Подарки и сертификаты</a><a href="index.html#bundles" onclick="LP.closeMega()">🧺 Готовые наборы</a><a href="#" onclick="LP.closeMega();if(typeof goSkin==='function'){goSkin();return false}location.href='index.html#skinQuiz';return false">🧪 Тест кожи — подбор ухода</a><a href="blog.html">📖 Блог о красоте</a><div class="lp-mpromo"><b>Первый заказ?</b><span>Промокод <em>NEW</em> — скидка 10%</span></div></div>`;
   return `<div class="lp-mgrid">${cols}${col}${more}</div>`;
 };
+/* ---------- Каталог на телефоне: красивый экран вместо двух колонок ---------- */
+const MM_I18N = [
+  ['Каталог', 'Catalog', 'Katalog', 'Каталог', '카탈로그'],
+  ['Найти средство, бренд или компонент', 'Find a product, brand or ingredient', 'Mahsulot, brend yoki tarkibni qidirish', 'Өнім, бренд немесе құрамды іздеу', '제품, 브랜드, 성분 검색'],
+  ['Категории', 'Categories', 'Kategoriyalar', 'Санаттар', '카테고리'],
+  ['Подборки по задачам', 'Shop by concern', 'Muammo bo‘yicha tanlov', 'Мәселе бойынша таңдау', '고민별 추천'],
+  ['Популярные бренды', 'Popular brands', 'Mashhur brendlar', 'Танымал брендтер', '인기 브랜드'],
+  ['Все бренды', 'All brands', 'Barcha brendlar', 'Барлық брендтер', '전체 브랜드'],
+  ['Ещё', 'More', 'Yana', 'Тағы', '더보기'],
+  ['Все товары', 'All products', 'Barcha mahsulotlar', 'Барлық тауарлар', '전체 상품'],
+  ['Популярное', 'Popular', 'Ommabop', 'Танымал', '인기'],
+  ['Акции и скидки', 'Deals & sales', 'Aksiya va chegirmalar', 'Акциялар мен жеңілдіктер', '세일 & 할인'],
+  ['Бренды A–Я', 'Brands A–Z', 'Brendlar A–Z', 'Брендтер A–Я', '브랜드 A–Z'],
+  ['Подарки и сертификаты', 'Gifts & gift cards', 'Sovg‘alar va sertifikatlar', 'Сыйлықтар мен сертификаттар', '선물 & 기프트카드'],
+  ['Готовые наборы', 'Ready-made sets', 'Tayyor to‘plamlar', 'Дайын жиынтықтар', '세트 상품'],
+  ['Тест кожи', 'Skin test', 'Teri testi', 'Тері тесті', '피부 테스트'],
+  ['Блог о красоте', 'Beauty blog', 'Go‘zallik blogi', 'Сұлулық блогы', '뷰티 블로그'],
+  ['Первый заказ?', 'First order?', 'Birinchi buyurtmami?', 'Алғашқы тапсырыс па?', '첫 주문이신가요?'],
+  ['скидка 10% по промокоду', '10% off with code', 'promokod bilan 10% chegirma', 'промокод бойынша 10% жеңілдік', '프로모션 코드로 10% 할인'],
+  ['товаров', 'products', 'mahsulot', 'тауар', '개 상품'],
+  ['товара', 'products', 'mahsulot', 'тауар', '개 상품'],
+  ['товар', 'product', 'mahsulot', 'тауар', '개 상품'],
+  ['брендов', 'brands', 'brend', 'бренд', '개 브랜드'],
+  ['Назад', 'Back', 'Orqaga', 'Артқа', '뒤로']
+];
+let mmI18n = false;
+const mmN = n => { const a = n % 10, b = n % 100; const w = a === 1 && b !== 11 ? 'товар' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'товара' : 'товаров'; return `${n} <span>${w}</span>` };
+const mmImg = p => p && (p.i || p.I) ? esc(p.i || p.I) : '';
+LP.megaMobileHTML = function (list) {
+  if (!mmI18n && W.LUMA_I18N_ADD) { try { W.LUMA_I18N_ADD(MM_I18N); mmI18n = true } catch (e) { } }
+  const priced = list.filter(p => p.p);
+  const brands = {}; priced.forEach(p => { if (p.k) brands[p.k] = (brands[p.k] || 0) + 1 });
+  const topB = Object.entries(brands).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const cats = MEGA.map((m, i) => { const ps = priced.filter(p => p.c === m.c); return { i, m, n: ps.length, p: ps.find(p => p.i) } }).filter(x => x.n);
+  const sales = priced.filter(p => Number(p.d) > 0);
+  const card = x => `<button type="button" class="mm-cat" onclick="LP.megaCat(${x.i})"><span class="mm-ph">${x.p ? `<img src="${mmImg(x.p)}" alt="" loading="lazy">` : ''}</span><span class="mm-ct"><b>${esc(x.m.c)}</b><small>${mmN(x.n)}</small></span><i aria-hidden="true">›</i></button>`;
+  const cons = CONCERNS.filter(c => priced.some(p => c.cat.includes(p.c)));
+  return `<div class="mm" id="mmRoot"><section class="mm-v mm-main">
+    <div class="mm-hd"><div><h2>Каталог</h2><p>${mmN(priced.length)} · ${Object.keys(brands).length} <span>брендов</span></p></div><button type="button" class="mm-x" onclick="LP.closeMega()" aria-label="Закрыть">×</button></div>
+    <button type="button" class="mm-search" onclick="LP.closeMega();LP.openSearch()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Найти средство, бренд или компонент</span></button>
+    <h3 class="mm-h">Категории</h3>
+    <div class="mm-cats">${cats.map(card).join('')}
+      <a class="mm-cat mm-sale" href="offers.html"><span class="mm-ph"><em>%</em></span><span class="mm-ct"><b>Акции и скидки</b><small>${sales.length ? mmN(sales.length) : ''}</small></span><i aria-hidden="true">›</i></a></div>
+    <h3 class="mm-h">Подборки по задачам</h3>
+    <div class="mm-cons">${cons.map(c => `<button type="button" onclick="LP.goConcern('${c.k}')"><span class="mm-cimg">${c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy">` : ''}<em>${c.e}</em></span><span>${esc(c.l)}</span></button>`).join('')}</div>
+    ${topB.length ? `<h3 class="mm-h">Популярные бренды <a href="brands.html">Все бренды</a></h3><div class="mm-brands">${topB.map(([b, n]) => `<button type="button" onclick='LP.goBrand(${esc(JSON.stringify(b))})'><b>${esc(b)}</b><small>${n}</small></button>`).join('')}</div>` : ''}
+    <h3 class="mm-h">Ещё</h3>
+    <div class="mm-more">
+      <a href="brands.html"><i>Aa</i><span>Бренды A–Я</span></a>
+      <a href="gifts.html"><i>🎁</i><span>Подарки и сертификаты</span></a>
+      <a href="index.html#bundles" onclick="LP.closeMega()"><i>🧺</i><span>Готовые наборы</span></a>
+      <a href="#" onclick="LP.closeMega();if(typeof goSkin==='function'){goSkin();return false}location.href='index.html#skinQuiz';return false"><i>🧪</i><span>Тест кожи</span></a>
+      <a href="blog.html"><i>📖</i><span>Блог о красоте</span></a>
+    </div>
+    <div class="mm-promo"><div><b>Первый заказ?</b><span>скидка 10% по промокоду</span></div><em>NEW</em></div>
+  </section><section class="mm-v mm-sub" id="mmSub" aria-hidden="true"></section></div>`;
+};
+LP.megaCat = async function (i) {
+  const m = MEGA[i], sub = D.getElementById('mmSub'), root = D.getElementById('mmRoot'); if (!m || !sub) return;
+  const list = (await LP.products()).filter(p => p.p);
+  const ps = list.filter(p => p.c === m.c);
+  const types = m.t.map(k => { const q = list.filter(p => LP.tags(p).ty === k && (k === 'spf' || p.c === m.c)); return { k, n: q.length, p: q.find(p => p.i) } }).filter(x => x.n);
+  const pop = ps.filter(p => p.i).slice(0, 4);
+  sub.innerHTML = `<div class="mm-hd sub"><button type="button" class="mm-bk" onclick="LP.megaBack()" aria-label="Назад">‹</button><div><h2>${esc(m.c)}</h2><p>${mmN(ps.length)}</p></div><button type="button" class="mm-x" onclick="LP.closeMega()" aria-label="Закрыть">×</button></div>
+    <div class="mm-list">
+      <button type="button" class="mm-row all" onclick="LP.goCat('${m.c}')"><span class="mm-th">${pop[0] ? `<img src="${mmImg(pop[0])}" alt="" loading="lazy">` : ''}</span><b>Все товары</b><small>${ps.length}</small><i>›</i></button>
+      ${types.map(x => `<button type="button" class="mm-row" onclick="LP.goType('${x.k}')"><span class="mm-th">${x.p ? `<img src="${mmImg(x.p)}" alt="" loading="lazy">` : ''}</span><b>${esc(LP.typeLabel(x.k))}</b><small>${x.n}</small><i>›</i></button>`).join('')}
+    </div>
+    ${pop.length ? `<h3 class="mm-h">Популярное</h3><div class="mm-pop">${pop.map(p => `<a href="product.html?id=${encodeURIComponent(p.id)}"><span class="mm-pi"><img src="${mmImg(p)}" alt="" loading="lazy"></span><small>${esc(p.k || '')}</small><b>${esc(p.t)}</b><em>${money(sale(p))}</em></a>`).join('')}</div>` : ''}`;
+  sub.scrollTop = 0; sub.setAttribute('aria-hidden', 'false'); root.classList.add('sub-on');
+};
+LP.megaBack = function () { const r = D.getElementById('mmRoot'), s = D.getElementById('mmSub'); if (r) r.classList.remove('sub-on'); if (s) s.setAttribute('aria-hidden', 'true') };
+const mmMobile = () => W.matchMedia && W.matchMedia('(max-width: 760px)').matches;
 LP.openMega = async function () {
   let m = D.getElementById('lpMega');
   if (!m) { m = D.createElement('div'); m.id = 'lpMega'; m.className = 'lp-mega'; m.innerHTML = '<div class="lp-mbox"><button type="button" class="lp-mx" onclick="LP.closeMega()" aria-label="Закрыть">×</button><div id="lpMegaIn">Загрузка…</div></div>'; D.body.appendChild(m); m.addEventListener('click', e => { if (e.target === m) LP.closeMega() }) }
-  m.classList.add('on'); const list = await LP.products(); D.getElementById('lpMegaIn').innerHTML = LP.megaHTML(list);
+  m.classList.add('on'); m.classList.toggle('mm-on', mmMobile()); const list = await LP.products(); D.getElementById('lpMegaIn').innerHTML = mmMobile() ? LP.megaMobileHTML(list) : LP.megaHTML(list);
 };
 LP.closeMega = () => { const m = D.getElementById('lpMega'); if (m) m.classList.remove('on') };
 
