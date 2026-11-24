@@ -545,3 +545,61 @@ body:has(#mus) .lp-chat{bottom:calc(68px + var(--lp-nav))}
   body:has(.lp-mega.mm-on.on) .lp-nav { z-index: 130 !important; }
 }
 @media (max-width: 360px) { .mm-cat:first-child .mm-ct b { font-size: 24px; } .mm-ct b { font-size: 19px; } }
+
+/* ---------- Профиль на телефоне: меню ---------- */
+.am-menu { display: none; }
+@media (max-width: 760px) {
+  .am-menu { --a-card: #FFFDF8; --a-ink: #30251E; --a-mute: #8A7B6C; --a-gold-d: #8E6D3B; --a-gold: #B8955D; --a-line: #ECE2D2; --a-soft: #F2EADD;
+    display: block; margin: 4px 0 18px; font-family: Jost, 'Helvetica Neue', Arial, sans-serif; color: var(--a-ink); }
+  html.dark .am-menu { --a-card: #201915; --a-ink: #F3EADF; --a-mute: #A99886; --a-gold-d: #E0C08A; --a-gold: #CDAA6E; --a-line: #33291F; --a-soft: #2A211B; }
+  .am-h { padding: 16px 6px 8px; font: 600 11.5px Jost, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--a-mute); }
+  .am-box { background: var(--a-card); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22); }
+  .am-i { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 58px; padding: 0 16px; margin: 0; border: 0; border-bottom: 1px solid var(--a-line); border-radius: 0; background: none; color: var(--a-ink); font: 400 16px Jost, Arial, sans-serif; text-align: left; text-decoration: none; cursor: pointer; box-shadow: none; }
+  .am-i:last-child { border-bottom: 0; }
+  .am-i:active { background: var(--a-soft); }
+  .am-i > i { width: 36px; height: 36px; flex: none; border-radius: 12px; display: grid; place-items: center; background: var(--a-soft); color: var(--a-gold-d); font: 600 15px 'Cormorant Garamond', Georgia, serif; font-style: normal; }
+  .am-i > span { flex: 1; min-width: 0; }
+  .am-i > small { color: var(--a-mute); font-size: 12.5px; }
+  .am-i:not(.sw)::after { content: ""; width: 8px; height: 8px; border-right: 1.6px solid var(--a-mute); border-top: 1.6px solid var(--a-mute); transform: rotate(45deg); flex: none; }
+  .am-i input[type=checkbox] { position: absolute; opacity: 0; pointer-events: none; }
+  .am-sw { position: relative; width: 48px; height: 28px; flex: none; border-radius: 99px; background: var(--a-line); transition: background .2s; }
+  .am-sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform .22s; }
+  .am-i input:checked + .am-sw { background: var(--a-gold); }
+  .am-i input:checked + .am-sw::after { transform: translateX(20px); }
+  .am-i select { height: 40px; max-width: 46%; padding: 0 30px 0 12px; border: 1px solid var(--a-line); border-radius: 12px; background: var(--a-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5' fill='none' stroke='%238A7B6C' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") right 8px center/16px no-repeat; color: var(--a-ink); font: 400 15px Jost, Arial, sans-serif; -webkit-appearance: none; appearance: none; }
+  body:has(.am-menu) #lpChat .lp-chb, body:has(.am-menu) #lwFab, body:has(.am-menu) #lwLbl { display: none !important; }
+}
+
+/* ---------- Корзина на телефоне: на весь экран ---------- */
+@media (max-width: 760px) {
+  aside#dr { --c-bg: #F8F3EA; --c-card: #FFFDF8; --c-ink: #30251E; --c-mute: #8A7B6C; --c-gold: #B8955D; --c-gold-d: #8E6D3B; --c-line: #ECE2D2; --c-soft: #F2EADD;
+    width: 100% !important; max-width: none !important; left: 0 !important; right: 0 !important; border-radius: 0 !important; background: var(--c-bg) !important; color: var(--c-ink) !important;
+    padding: env(safe-area-inset-top, 0px) 0 0 !important; box-shadow: none !important; display: flex !important; flex-direction: column; overflow-y: auto !important; overscroll-behavior: contain; font-family: Jost, 'Helvetica Neue', Arial, sans-serif; }
+  html.dark aside#dr { --c-bg: #15110E; --c-card: #201915; --c-ink: #F3EADF; --c-mute: #A99886; --c-gold: #CDAA6E; --c-gold-d: #E0C08A; --c-line: #33291F; --c-soft: #2A211B; }
+  aside#dr > h3 { position: sticky; top: 0; z-index: 3; display: flex !important; align-items: center; justify-content: space-between; margin: 0 !important; padding: 12px 14px 12px 18px !important; background: color-mix(in srgb, var(--c-bg) 94%, transparent) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--c-line); font: 600 30px/1.1 'Cormorant Garamond', Georgia, serif !important; color: var(--c-ink) !important; letter-spacing: .005em !important; text-transform: none !important; }
+  aside#dr > h3 button { width: 44px !important; height: 44px !important; flex: none; border-radius: 50% !important; border: 0 !important; background: var(--c-card) !important; color: var(--c-ink) !important; font-size: 24px !important; line-height: 1 !important; box-shadow: 0 2px 10px -4px rgba(48, 37, 30, .25) !important; padding: 0 !important; }
+  aside#dr #items { flex: none; padding: 12px 14px 4px !important; }
+  aside#dr #items > * { background: var(--c-card) !important; border: 0 !important; border-radius: 18px !important; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22) !important; margin: 0 0 10px !important; padding: 10px !important; }
+  aside#dr #items img { border-radius: 12px !important; }
+  aside#dr #items button { min-width: 36px; min-height: 36px; border-radius: 11px !important; }
+  aside#dr #bulkBar, aside#dr #lpCartBars { padding: 0 14px; }
+  aside#dr .promo-row { display: flex !important; gap: 8px; margin: 6px 14px 0 !important; }
+  aside#dr .promo-row input { flex: 1; min-width: 0; height: 48px !important; border-radius: 13px !important; border: 1px solid var(--c-line) !important; background: var(--c-card) !important; padding: 0 14px !important; color: var(--c-ink) !important; font-size: 16px !important; }
+  aside#dr .promo-row button { height: 48px !important; border-radius: 13px !important; padding: 0 18px !important; background: var(--c-soft) !important; color: var(--c-ink) !important; border: 0 !important; font: 500 14.5px Jost, Arial, sans-serif !important; }
+  aside#dr #pm { padding: 2px 18px 0; font-size: 13px; }
+  aside#dr .tot { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 2; display: flex !important; justify-content: space-between; align-items: baseline; margin: auto 0 0 !important; padding: 14px 18px 4px !important; border-top: 1px solid var(--c-line); background: var(--c-bg) !important; font: 500 15px Jost, Arial, sans-serif !important; color: var(--c-ink) !important; }
+  aside#dr .tot b { font: 600 24px Jost, Arial, sans-serif !important; color: var(--c-ink) !important; }
+  aside#dr .buy { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 2; flex: none; width: auto !important; min-height: 56px; margin: 6px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important; padding: 0 !important; border: 0 !important; border-radius: 16px !important;
+    box-shadow: 0 0 0 6px var(--c-bg), 0 16px 0 16px var(--c-bg) !important; background: var(--c-ink) !important; color: var(--c-bg) !important; font: 500 16px Jost, Arial, sans-serif !important; letter-spacing: .03em; }
+  html.dark body aside#dr .buy { background: var(--c-gold) !important; color: #1B140F !important; }
+  aside#dr .bb { background: var(--c-card) !important; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22); }
+  aside#dr .bb-t, aside#dr .bb-t * { color: var(--c-ink) !important; }
+  aside#dr .bb-p { background: var(--c-soft) !important; }
+  aside#dr .bb-p i, aside#dr .bb-p b, aside#dr .lp-pg b { background: linear-gradient(90deg, #E2CDA6, var(--c-gold)) !important; }
+  aside#dr .lp-cb1 { background: var(--c-card) !important; border: 0 !important; border-radius: 16px !important; box-shadow: 0 2px 12px -6px rgba(48, 37, 30, .22); }
+  aside#dr .lp-cb1, aside#dr .lp-cb1 * { color: var(--c-ink) !important; }
+  aside#dr .lp-cb1 i, aside#dr .lp-cb1 .lp-pg { background: var(--c-soft) !important; }
+  aside#dr #lpCartBars button, aside#dr #lpCartBars a { color: var(--c-gold-d) !important; }
+  aside#dr .lp-first { border-color: color-mix(in srgb, var(--c-gold) 60%, transparent) !important; background: var(--c-card) !important; color: var(--c-ink) !important; }
+  body:has(#dr.open) .lp-nav, body:has(#dr.open) #lwFab, body:has(#dr.open) #lpChat, body:has(#dr.open) #skinFab, body:has(#dr.open) #mus { display: none !important; }
+}
