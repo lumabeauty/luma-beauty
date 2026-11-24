@@ -80,6 +80,7 @@
   function paint(el) {
     if (!el || el.nodeType !== 1 || SKIP[el.tagName.toUpperCase()] || el.closest && el.closest('svg')) return;
     if (el.classList && el.classList.contains('luma-theme-btn')) return;
+    if (el.matches && el.matches('aside#dr .buy')) return;
     var cs = getComputedStyle(el), set = {};
     var bg = parse(cs.backgroundColor); if (bg && bg.a > .02) { var nb = darkBg(bg); if (nb) set['background-color'] = nb }
     if (cs.backgroundImage && cs.backgroundImage !== 'none') { var g = gradientDark(cs.backgroundImage); if (g) set['background-image'] = g }

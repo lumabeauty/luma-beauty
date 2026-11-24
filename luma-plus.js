@@ -344,6 +344,67 @@ LP.openMega = async function () {
 };
 LP.closeMega = () => { const m = D.getElementById('lpMega'); if (m) m.classList.remove('on') };
 
+/* ---------- Профиль на телефоне: удобное меню ---------- */
+const AM_I18N = [
+  ['Мои заказы', 'My orders', 'Buyurtmalarim', 'Тапсырыстарым', '내 주문'],
+  ['Мне нравится', 'Favorites', 'Sevimlilar', 'Таңдаулылар', '찜 목록'],
+  ['Барабан удачи', 'Lucky wheel', 'Omad barabani', 'Сәттілік барабаны', '행운의 룰렛'],
+  ['Каждый день', 'Daily', 'Har kuni', 'Күн сайын', '매일'],
+  ['Консультация', 'Consultation', 'Maslahat', 'Кеңес', '상담'],
+  ['Отследить заказ', 'Track order', 'Buyurtmani kuzatish', 'Тапсырысты қадағалау', '주문 조회'],
+  ['Подарочные сертификаты', 'Gift cards', 'Sovg‘a sertifikatlari', 'Сыйлық сертификаттары', '기프트 카드'],
+  ['Тест кожи', 'Skin test', 'Teri testi', 'Тері тесті', '피부 테스트'],
+  ['Тёмная тема', 'Dark theme', 'Tungi rejim', 'Қараңғы тақырып', '다크 모드'],
+  ['Язык', 'Language', 'Til', 'Тіл', '언어'],
+  ['Доставка и оплата', 'Delivery & payment', 'Yetkazish va to‘lov', 'Жеткізу және төлем', '배송 및 결제'],
+  ['Вопросы и ответы', 'FAQ', 'Savol-javoblar', 'Сұрақ-жауап', '자주 묻는 질문'],
+  ['Покупки', 'Shopping', 'Xaridlar', 'Сатып алулар', '쇼핑'],
+  ['Настройки', 'Settings', 'Sozlamalar', 'Баптаулар', '설정'],
+  ['Помощь', 'Help', 'Yordam', 'Көмек', '도움말']
+];
+LP.accountMenu = function () {
+  if (PAGE !== 'account') return;
+  const app = D.getElementById('app'); if (!app) return;
+  if (W.LUMA_I18N_ADD) try { W.LUMA_I18N_ADD(AM_I18N) } catch (e) { }
+  const put = () => {
+    if (!app.children.length || app.querySelector('.card.sk') || app.querySelector('.am-menu')) return;
+    const dark = D.documentElement.classList.contains('dark');
+    const curL = (W.LUMA_LANG || D.documentElement.lang || 'ru').slice(0, 2);
+    const row = (ico, label, attrs, sub) => `<${attrs.href ? `a href="${attrs.href}"` : `button type="button" data-k="${attrs.k}"`} class="am-i"><i>${ico}</i><span>${label}</span>${sub ? `<small>${sub}</small>` : ''}</${attrs.href ? 'a' : 'button'}>`;
+    const m = D.createElement('div'); m.className = 'am-menu';
+    m.innerHTML = `<div class="am-h">Покупки</div><div class="am-box">
+      ${app.querySelector('.orders') ? row('🛍', 'Мои заказы', { k: 'orders' }) : ''}
+      ${row('♡', 'Мне нравится', { href: 'index.html#fav' })}
+      ${row('◎', 'Барабан удачи', { k: 'wheel' }, 'Каждый день')}
+      ${row('🧪', 'Тест кожи', { href: 'index.html#skinHelp' })}
+      ${row('🎁', 'Подарочные сертификаты', { href: 'gifts.html' })}
+      ${row('📦', 'Отследить заказ', { href: 'track.html' })}</div>
+      <div class="am-h">Настройки</div><div class="am-box">
+      <label class="am-i sw"><i>☾</i><span>Тёмная тема</span><input type="checkbox" data-k="theme"${dark ? ' checked' : ''}><b class="am-sw"></b></label>
+      <label class="am-i sw"><i>Aa</i><span>Язык</span><select data-k="lang">${[['ru', 'Русский'], ['uz', 'O‘zbekcha'], ['en', 'English'], ['kk', 'Қазақша'], ['ko', '한국어']].map(o => `<option value="${o[0]}"${o[0] === curL ? ' selected' : ''}>${o[1]}</option>`).join('')}</select></label></div>
+      <div class="am-h">Помощь</div><div class="am-box">
+      ${row('💬', 'Консультация', { k: 'chat' })}
+      ${row('🚚', 'Доставка и оплата', { href: 'delivery.html' })}
+      ${row('?', 'Вопросы и ответы', { href: 'faq.html' })}</div>`;
+    const hero = app.querySelector('.card.hero, .card.guest');
+    if (hero && hero.nextSibling) hero.after(m); else app.appendChild(m);
+    m.addEventListener('click', e => {
+      const b = e.target.closest('button[data-k]'); if (!b) return;
+      const k = b.dataset.k;
+      if (k === 'orders') { const o = app.querySelector('.orders'); if (o) o.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+      if (k === 'wheel') { if (W.LumaWheel) LumaWheel.open() }
+      if (k === 'chat') { const c = D.getElementById('lpChat'); const t = c && c.querySelector('.lp-chb'); if (t) { e.stopPropagation(); t.click() } else location.href = 'https://t.me/Hak1mjon' }
+    });
+    m.addEventListener('change', e => {
+      const k = e.target.dataset.k;
+      if (k === 'theme' && W.LumaTheme) { if ((D.documentElement.classList.contains('dark')) !== e.target.checked) LumaTheme.toggle() }
+      if (k === 'lang' && typeof W.setLang === 'function') W.setLang(e.target.value);
+    });
+  };
+  new MutationObserver(put).observe(app, { childList: true });
+  put();
+};
+
 /* ---------- Utility bar (city + delivery) ---------- */
 LP.utilBar = function () {
   if (D.getElementById('lpUtil')) return;
@@ -728,6 +789,7 @@ LP.indexInit = async function () {
   if (sp.get('addmany')) { sp.get('addmany').split(',').forEach(id => { const i = P.findIndex(p => String(p.id) === id); if (i >= 0) cart[i] = (cart[i] || 0) + 1 }); (typeof cartSave==='function'?cartSave():LS.set('luma_cart', cart)); upd(); toast('Добавлено в корзину'); D.getElementById('dr').classList.add('open') }
   if ([...sp.keys()].some(k => ['type', 'concern', 'cat', 'brand', 'q', 'addmany'].includes(k))) { history.replaceState(null, '', location.pathname + location.hash); setTimeout(() => { const c = D.getElementById('catalog'); if (c && location.hash === '#catalog') c.scrollIntoView() }, 400) }
   if (location.hash === '#cart') { D.getElementById('dr').classList.add('open'); history.replaceState(null, '', location.pathname) }
+  if (location.hash === '#fav' && typeof showFavorites === 'function') { history.replaceState(null, '', location.pathname); setTimeout(() => { try { showFavorites() } catch (e) { } }, 300) }
   LP.syncFilterUI();
   await LP.loadHits();
   render();
@@ -762,7 +824,7 @@ LP.accountExtras = async function () {
 
 /* ---------- Boot ---------- */
 function boot() {
-  LP.utilBar(); LP.headerButtons(); LP.chat(); LP.bottomNav(); LP.footer();
+  LP.utilBar(); LP.headerButtons(); LP.chat(); LP.bottomNav(); LP.footer(); try { LP.accountMenu() } catch (e) { }
   D.addEventListener('lp:shop', () => { LP.paintUtil(); LP.paintCartBars() });
   D.addEventListener('keydown', e => { if (e.key === 'Escape') { LP.closeMega(); LP.closeSheet(); LP.closeSearch() } if ((e.key === '/' && !/input|textarea|select/i.test((D.activeElement || {}).tagName || ''))) { e.preventDefault(); LP.openSearch('') } });
   if (isIndex) LP.indexInit();
