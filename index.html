@@ -1404,18 +1404,26 @@ if(data>0){promoDisc=data/100;pcode=c;m.textContent='Промокод приме
 function buy(){const T=Object.keys(cart).reduce((s,k)=>s+finalPrice(P[k])*cart[k],0);if(!T)return toast('Корзина пуста');window.LumaYM&&LumaYM.checkout();dr.classList.remove('open');
 if(!user){pend=true;toast('Войдите, чтобы оформить заказ');return acct('in')}
 addrStep()}
+let payBusy=false,orderKey=null;
+function newKey(){try{if(crypto.randomUUID)return crypto.randomUUID()}catch(e){}return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)}
+function payBtns(on){document.querySelectorAll('[onclick^="pay("]').forEach(b=>{if(on){b.dataset.t=b.dataset.t||b.innerHTML;b.disabled=true;b.style.opacity='.6';b.innerHTML='Оформляем…'}else{b.disabled=false;b.style.opacity='';if(b.dataset.t){b.innerHTML=b.dataset.t;delete b.dataset.t}}})}
 async function pay(m){
+if(payBusy)return;payBusy=true;payBtns(true);
+try{return await pay0(m)}finally{payBusy=false;payBtns(false)}}
+async function pay0(m){
 const N=m=='payme'?'Payme':'Click',ks=Object.keys(cart),cb=Math.max(0,Math.floor(Number($('cbUse')?.value)||0));
 const base=ks.reduce((sum,k)=>sum+finalPrice(P[k])*cart[k],0),max=Math.min(cashbackBalance,Math.floor(base*0.5));
 if(cb>max)return toast('Можно использовать не более '+f(max));
 const L=ks.map((k,n)=>`${n+1}. ${P[k].k?P[k].k+' ':''}${P[k].t}${P[k].v?' ('+P[k].v+')':''}\n    ${cart[k]} шт × ${String(finalPrice(P[k])).replace(/\B(?=(\d{3})+(?!\d))/g,' ')} = ${f(finalPrice(P[k])*cart[k])}`).join('\n');
-const {data,error}=await sb.rpc('create_order',{items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa(),p_cashback_to_use:cb,p_welcome:(W&&W.token)||null,p_gift_code:(window.LP&&LP.gc&&LP.gc.code)||null});
+const args={items:ks.map(k=>({id:P[k].id,qty:cart[k]})),promo_code:pcode,pay:m,addr:fa(),p_cashback_to_use:cb,p_welcome:(W&&W.token)||null,p_gift_code:(window.LP&&LP.gc&&LP.gc.code)||null};
+const sig=JSON.stringify(args);if(!orderKey||orderKey.sig!==sig)orderKey={sig,key:newKey()};
+const {data,error}=await sb.rpc('create_order',{...args,p_idem:orderKey.key});
 if(error){console.error(error);return toast(error.message?.includes('cashback')?'Проверьте баланс кешбэка и сумму списания':(error.message?.includes('gift card min order')?'Сертификат действует для заказа от '+f(Number((error.message.match(/\d+/)||[0])[0])):error.message?.includes('gift card expired')?'Срок действия сертификата истёк':error.message?.includes('gift card')?'Сертификат недействителен — проверьте код':'Не удалось создать заказ, попробуйте ещё раз'))}try{localStorage.setItem('luma_has_order','true');if(window.LP&&LP.gc&&LP.gc.code===localStorage.getItem('luma_wheel_code'))localStorage.removeItem('luma_wheel_code');if(window.LP)LP.gc=null}catch(x){}
 const o=data.id,T=data.total,used=Number(data.cashback_used)||0;let u='';
 if(m=='payme'&&PAYME_ID)u='https://checkout.paycom.uz/'+btoa(`m=${PAYME_ID};ac.order_id=${o};a=${T*100};l=ru`);
 if(m=='click'&&CLICK_SERVICE&&CLICK_MERCHANT)u=`https://my.click.uz/services/pay?service_id=${CLICK_SERVICE}&merchant_id=${CLICK_MERCHANT}&amount=${T}&transaction_param=${o}`;
 const txt=`🛍 Заказ №${o} — Luma Beauty\n\n👤 ${user.name||''}, ${user.phone||''}\n💳 Оплата: ${N}\n🚚 ${fa().split('\n')[0]}\n\n📦 Состав заказа:\n${L}\n\n${data.discount?'🎟 '+(data.promo||('Промокод '+pcode))+' (−'+data.discount+'%)\n':''}${data.delivery_fee?'🚚 Доставка: '+f(data.delivery_fee)+'\n':(mode=='pickup'?'':'🚚 Доставка: бесплатно\n')}${data.gift_card_used?'💳 Сертификат: −'+f(data.gift_card_used)+'\n':''}${data.gift?'🎁 Подарок: '+data.gift+'\n':''}${used?'✦ Списан кешбэк: '+f(used)+'\n':''}💰 Итого к оплате: ${f(T)}`;
-const qty={...cart};try{window.LumaYM&&LumaYM.purchase(data,qty,{promo:pcode})}catch(x){}cart={};cartSave();upd();
+const qty={...cart};try{window.LumaYM&&LumaYM.purchase(data,qty,{promo:pcode})}catch(x){}orderKey=null;cart={};cartSave();upd();
 const tg=TG_USER?`<a class="order-tg" target="_blank" rel="noopener" href="https://t.me/${TG_USER}?text=${encodeURIComponent(txt)}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M20.6 4.3 3.4 10.9c-1.2.5-1.1 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.6.4.8.8.8.4 0 .6-.2.9-.5l2.2-2.1 4.5 3.3c.8.5 1.4.2 1.6-.8l2.9-13.7c.3-1.2-.4-1.8-1.6-1.4Zm-3 3.4-7.9 7.1-.3 3.3-1.5-4.6 9.3-5.9c.4-.3.8-.1.4.1Z"/></svg><span>Сообщить о заказе в Telegram</span></a>`:'';
 const py=u?`<a class="pay ${m}" style="text-align:center;text-decoration:none" href="${u}">Перейти к оплате ${N}</a>`:`<p class="mu">Оплата ${N} пока не подключена: мы свяжемся с вами по заказу.</p>`;
 const itemRows=ks.map(k=>`<div class="order-line">${P[k].i?`<img src="${safeImage(P[k].i)}" alt="">`:'<i class="ol-ph"></i>'}<span class="ol-t">${P[k].k?`<small class="ol-k">${escHTML(P[k].k)}</small>`:''}<span class="ol-n">${escHTML(P[k].t)}</span><small class="ol-q">${qty[k]||0} × ${f(finalPrice(P[k]))}${P[k].v?' · '+escHTML(P[k].v):''}</small></span><b>${f(finalPrice(P[k])*(qty[k]||0))}</b></div>`).join('');
